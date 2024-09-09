@@ -45,9 +45,15 @@ tasks.named('test') {
 }
 
 jacocoTestReport {
+	afterEvaluate {
+		classDirectories = files(classDirectories.files.collect {
+			fileTree(dir: it,
+					exclude: ['**/common/config', "**/presentation/**"])
+		})
+	}
 	reports {
-		xml.required.set(false)
-		html.required.set(false)
+		xml.required.set(true)
+		html.required.set(true)
 	}
 }
 
