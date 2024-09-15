@@ -1,15 +1,20 @@
 package kr.codeit.relaxtogether.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 import kr.codeit.relaxtogether.dto.user.request.EmailCheckRequest;
+import kr.codeit.relaxtogether.dto.user.request.JoinUserRequest;
 import kr.codeit.relaxtogether.entity.User;
 import kr.codeit.relaxtogether.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 @SpringBootTest
 public class UserServiceTest {
 
@@ -18,6 +23,9 @@ public class UserServiceTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
     @DisplayName("해당 이메일을 갖고 있는 유저가 존재할 경우 true를 반환합니다.")
     @Test
@@ -62,5 +70,27 @@ public class UserServiceTest {
 
         // then
         assertThat(result).isFalse();
+    }
+
+    @DisplayName("회원가입 시 유저 정보가 DB에 저장됩니다.")
+    @Test
+    void signup() {
+        // given
+        JoinUserRequest request = JoinUserRequest.builder()
+            .email("test@test.com")
+            .password("password")
+            .name("name")
+            .companyName("companyName")
+            .build();
+
+        // when
+        userService.signup(request);
+
+        // then
+        assertThat(userRepository.findAll()).hasSize(1)
+            .extracting("email", "name", "companyName")
+            .containsExactlyInAnyOrder(
+                tuple("test@test.com", "name", "companyName")
+            );
     }
 }
