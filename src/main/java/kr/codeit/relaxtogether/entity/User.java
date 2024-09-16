@@ -26,6 +26,7 @@ public class User extends BaseTimeEntity {
     private String password;
     private String name;
     private String companyName;
+    private String profileImage;
     private boolean isDeleted;
 
     @Builder
@@ -34,5 +35,10 @@ public class User extends BaseTimeEntity {
         this.password = password;
         this.name = name;
         this.companyName = companyName;
+    }
+
+    public void update(String companyName, String profileImage) {
+        this.companyName = companyName;
+        this.profileImage = profileImage;
     }
 }
