@@ -1,6 +1,7 @@
 package kr.codeit.relaxtogether.dto.gathering;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -15,7 +16,6 @@ import lombok.Getter;
 public class CreateGatheringRequest {
 
     @Schema(description = "모임 이름", example = "건강한 몸 만들기")
-    @NotBlank(message = "모임 이름은 필수입니다.")
     private String name;
 
     @Schema(description = "모임 장소", allowableValues = {"건대입구", "홍대입구", "을지로3가", "신림"})
@@ -51,6 +51,12 @@ public class CreateGatheringRequest {
         this.dateTime = dateTime;
         this.registrationEnd = registrationEnd;
         this.capacity = capacity;
+    }
+
+    @AssertTrue(message = "모임 이름은 워케이션일 경우 필수입니다.")
+    private boolean isValidName() {
+        Type enumType = Type.fromText(type);
+        return enumType != Type.WORKATION || (name != null && !name.isBlank());
     }
 
     public Gathering toEntity() {
