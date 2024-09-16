@@ -1,12 +1,15 @@
-package kr.codeit.relaxtogether.entity;
+package kr.codeit.relaxtogether.entity.gathering;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import kr.codeit.relaxtogether.entity.BaseTimeEntity;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,24 +26,31 @@ public class Gathering extends BaseTimeEntity {
     @Column(name = "gathering_id")
     private Long id;
 
-    private String location;
-    private String type;
     private String name;
-    private LocalDateTime dateTime;
-    private int capacity;
+
+    @Enumerated(value = EnumType.STRING)
+    private Location location;
+
     private String image;
+
+    @Enumerated(value = EnumType.STRING)
+    private Type type;
+
+    private LocalDateTime dateTime;
     private LocalDateTime registrationEnd;
+    private int capacity;
     private boolean isDeleted;
 
     @Builder
-    public Gathering(String location, String type, String name, LocalDateTime dateTime, int capacity, String image,
-        LocalDateTime registrationEnd) {
-        this.location = location;
-        this.type = type;
+    private Gathering(String name, Location location, String image, Type type, LocalDateTime dateTime,
+        LocalDateTime registrationEnd, int capacity) {
         this.name = name;
-        this.dateTime = dateTime;
-        this.capacity = capacity;
+        this.location = location;
         this.image = image;
+        this.type = type;
+        this.dateTime = dateTime;
         this.registrationEnd = registrationEnd;
+        this.capacity = capacity;
+        this.isDeleted = false;
     }
 }
