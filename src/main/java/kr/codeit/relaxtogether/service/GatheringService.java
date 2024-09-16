@@ -19,6 +19,11 @@ public class GatheringService {
 
     @Transactional
     public void createGathering(CreateGatheringRequest request) {
+
+        if (request.getRegistrationEnd().isAfter(request.getDateTime())) {
+            throw new IllegalArgumentException("모집 종료일은 모임 시작일 이전이어야 합니다.");
+        }
+
         Gathering gathering = request.toEntity();
         gatheringRepository.save(gathering);
 
