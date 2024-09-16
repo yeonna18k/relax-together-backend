@@ -52,4 +52,21 @@ public class UserRepositoryTest {
         // then
         assertThat(result).isFalse();
     }
+
+    @DisplayName("이메일로 유저 객체를 조회합니다.")
+    @Test
+    void findByEmail() {
+        // given
+        User user = User.builder()
+            .email("test@test.com")
+            .build();
+
+        userRepository.save(user);
+
+        // when
+        User findUser = userRepository.findByEmail("test@test.com").get();
+
+        // then
+        assertThat(findUser.getEmail()).isEqualTo("test@test.com");
+    }
 }
