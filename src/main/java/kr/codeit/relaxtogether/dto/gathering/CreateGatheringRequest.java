@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import kr.codeit.relaxtogether.entity.gathering.Gathering;
 import kr.codeit.relaxtogether.entity.gathering.Location;
 import kr.codeit.relaxtogether.entity.gathering.Type;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
@@ -31,6 +32,18 @@ public class CreateGatheringRequest {
 
     @Min(value = 5, message = "모집 정원은 최소 5명 이상이어야 합니다.")
     private int capacity;
+
+    @Builder
+    private CreateGatheringRequest(String name, String location, String image, String type, LocalDateTime dateTime,
+        LocalDateTime registrationEnd, int capacity) {
+        this.name = name;
+        this.location = location;
+        this.image = image;
+        this.type = type;
+        this.dateTime = dateTime;
+        this.registrationEnd = registrationEnd;
+        this.capacity = capacity;
+    }
 
     public Gathering toEntity() {
         return Gathering.builder()
