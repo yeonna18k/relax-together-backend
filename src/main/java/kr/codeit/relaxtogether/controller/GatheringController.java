@@ -1,5 +1,6 @@
 package kr.codeit.relaxtogether.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import kr.codeit.relaxtogether.dto.gathering.CreateGatheringRequest;
 import kr.codeit.relaxtogether.service.GatheringService;
@@ -17,6 +18,7 @@ public class GatheringController {
 
     private final GatheringService gatheringService;
 
+    @Operation(summary = "모임 생성", description = "모임 생성 API")
     @PostMapping
     public ResponseEntity<Void> createGathering(@Valid @RequestBody CreateGatheringRequest request) {
         gatheringService.createGathering(request);
