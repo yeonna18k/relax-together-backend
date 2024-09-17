@@ -29,11 +29,11 @@ public class CreateGatheringRequest {
     @NotBlank(message = "서비스 타입은 필수입니다.")
     private String type;
 
-    @Schema(description = "모임 날짜 및 시간 (YYYY-MM-DDTHH:MM:SS)", example = "2024-09-16T19:01:08.058Z")
+    @Schema(description = "모임 날짜 및 시간 (YYYY-MM-DDTHH:MM:SS)")
     @Future(message = "모임 시작일은 현재 시간 이후여야 합니다.")
     private LocalDateTime dateTime;
 
-    @Schema(description = "모집 마감 날짜 및 시간 (선택 사항, YYYY-MM-DDTHH:MM:SS)", example = "2024-09-16T19:01:08.058Z")
+    @Schema(description = "모집 마감 날짜 및 시간 (선택 사항, YYYY-MM-DDTHH:MM:SS)")
     @Future(message = "모집 종료일은 현재 시간 이후여야 합니다.")
     private LocalDateTime registrationEnd;
 
