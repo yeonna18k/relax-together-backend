@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.tuple;
 
 import kr.codeit.relaxtogether.dto.user.request.EmailCheckRequest;
 import kr.codeit.relaxtogether.dto.user.request.JoinUserRequest;
+import kr.codeit.relaxtogether.dto.user.request.UpdateUserRequest;
 import kr.codeit.relaxtogether.entity.User;
 import kr.codeit.relaxtogether.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -92,5 +93,29 @@ public class UserServiceTest {
             .containsExactlyInAnyOrder(
                 tuple("test@test.com", "name", "companyName")
             );
+    }
+
+    @DisplayName("유저 정보를 업데이트합니다.")
+    @Test
+    void update() {
+        // given
+        String email = "test@test.com";
+        User user = User.builder()
+            .email(email)
+            .companyName("before")
+            .build();
+
+        userRepository.save(user);
+
+        UpdateUserRequest request = UpdateUserRequest.builder()
+            .companyName("after")
+            .profileImage(null)
+            .build();
+
+        // when
+        userService.update(request, email);
+
+        // then
+        assertThat(userRepository.findByEmail(email).get().getCompanyName()).isEqualTo("after");
     }
 }
