@@ -2,6 +2,8 @@ package kr.codeit.relaxtogether.service;
 
 import kr.codeit.relaxtogether.dto.user.request.EmailCheckRequest;
 import kr.codeit.relaxtogether.dto.user.request.JoinUserRequest;
+import kr.codeit.relaxtogether.dto.user.request.UpdateUserRequest;
+import kr.codeit.relaxtogether.entity.User;
 import kr.codeit.relaxtogether.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -23,5 +25,11 @@ public class UserService {
     @Transactional
     public void signup(JoinUserRequest joinUserRequest) {
         userRepository.save(joinUserRequest.toEntity(passwordEncoder));
+    }
+
+    @Transactional
+    public void update(UpdateUserRequest updateUserRequest, String email) {
+        User user = userRepository.findByEmail(email).get();
+        user.update(updateUserRequest.getCompanyName(), updateUserRequest.getProfileImage());
     }
 }
