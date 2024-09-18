@@ -1,4 +1,4 @@
-package kr.codeit.relaxtogether.entity;
+package kr.codeit.relaxtogether.entity.gathering;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,6 +9,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import kr.codeit.relaxtogether.entity.BaseTimeEntity;
+import kr.codeit.relaxtogether.entity.User;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,7 +36,7 @@ public class UserGathering extends BaseTimeEntity {
     private Gathering gathering;
 
     @Builder
-    public UserGathering(User user, Gathering gathering) {
+    private UserGathering(User user, Gathering gathering) {
         this.user = user;
         this.gathering = gathering;
     }
