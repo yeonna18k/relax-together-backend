@@ -4,6 +4,7 @@ import java.util.List;
 import kr.codeit.relaxtogether.auth.LoginFilter;
 import kr.codeit.relaxtogether.auth.jwt.JwtFilter;
 import kr.codeit.relaxtogether.auth.jwt.JwtUtil;
+import kr.codeit.relaxtogether.repository.JwtTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,6 +29,7 @@ public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JwtUtil jwtUtil;
+    private final JwtTokenRepository jwtTokenRepository;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
@@ -58,8 +60,9 @@ public class SecurityConfig {
                         "/v3/api-docs/**").permitAll()
                     .anyRequest().authenticated()
             )
-            .addFilterBefore(new JwtFilter(jwtUtil), LoginFilter.class)
-            .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil),
+            .addFilterBefore(new JwtFilter(jwtUtil, jwtTokenRepository), LoginFilter.class)
+            .addFilterAt(
+                new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, jwtTokenRepository),
                 UsernamePasswordAuthenticationFilter.class)
             .build();
     }
