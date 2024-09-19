@@ -6,12 +6,14 @@ import kr.codeit.relaxtogether.auth.CustomUserDetails;
 import kr.codeit.relaxtogether.dto.user.request.EmailCheckRequest;
 import kr.codeit.relaxtogether.dto.user.request.JoinUserRequest;
 import kr.codeit.relaxtogether.dto.user.request.UpdateUserRequest;
+import kr.codeit.relaxtogether.dto.user.response.UserDetailsResponse;
 import kr.codeit.relaxtogether.repository.JwtTokenRepository;
 import kr.codeit.relaxtogether.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,6 +39,15 @@ public class UserController {
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body("success");
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserDetailsResponse> loginUserDetails(
+        @AuthenticationPrincipal CustomUserDetails userDetails) {
+        UserDetailsResponse userDetailsResponse = userService.getUserDetails(userDetails.getUsername());
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(userDetailsResponse);
     }
 
     @PutMapping("/me")
