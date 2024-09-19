@@ -23,7 +23,7 @@ class GatheringTest {
         Gathering gathering = Gathering.builder()
             .name("Test Gathering")
             .location(Location.HONGDAE)
-            .image("test_image_url")
+            .imageUrl("test_image_url")
             .type(Type.WORKATION)
             .dateTime(LocalDateTime.now().plusDays(1))
             .registrationEnd(LocalDateTime.now().plusDays(1))
