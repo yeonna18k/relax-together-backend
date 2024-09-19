@@ -52,12 +52,14 @@ public class SecurityConfig {
             .headers(headerConfig -> headerConfig.frameOptions(FrameOptionsConfig::sameOrigin))
             .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth ->
-                auth.requestMatchers("/auths/check-email",
+                auth.requestMatchers(
+                        "/auths/check-email",
                         "/auths/signup",
                         "/auths/login",
                         "/h2-console/**",
                         "/swagger-ui/**",
-                        "/v3/api-docs/**").permitAll()
+                        "/v3/api-docs/**",
+                        "/gatherings").permitAll()
                     .anyRequest().authenticated()
             )
             .addFilterBefore(new JwtFilter(jwtUtil, jwtTokenRepository), LoginFilter.class)
