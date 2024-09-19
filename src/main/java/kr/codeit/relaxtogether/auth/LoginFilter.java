@@ -8,6 +8,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import kr.codeit.relaxtogether.auth.jwt.JwtUtil;
 import kr.codeit.relaxtogether.dto.user.request.LoginRequest;
+import kr.codeit.relaxtogether.entity.JwtToken;
+import kr.codeit.relaxtogether.repository.JwtTokenRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,10 +21,13 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
+    private final JwtTokenRepository jwtTokenRepository;
 
-    public LoginFilter(AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
+    public LoginFilter(AuthenticationManager authenticationManager, JwtUtil jwtUtil,
+        JwtTokenRepository jwtTokenRepository) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
+        this.jwtTokenRepository = jwtTokenRepository;
         this.setFilterProcessesUrl("/auths/login");
     }
 
@@ -50,6 +55,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String email = userDetails.getUsername();
 
         String token = jwtUtil.createJwt(email);
+        jwtTokenRepository.save(JwtToken.builder()
+            .token(token)
+            .build());
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write("{\"token\":\"" + token + "\"}");
