@@ -1,6 +1,7 @@
 package kr.codeit.relaxtogether.config;
 
 import kr.codeit.relaxtogether.auth.LoginFilter;
+import kr.codeit.relaxtogether.auth.jwt.JwtFilter;
 import kr.codeit.relaxtogether.auth.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -52,6 +53,7 @@ public class SecurityConfig {
                         "/v3/api-docs/**").permitAll()
                     .anyRequest().authenticated()
             )
+            .addFilterBefore(new JwtFilter(jwtUtil), LoginFilter.class)
             .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil),
                 UsernamePasswordAuthenticationFilter.class)
             .build();
