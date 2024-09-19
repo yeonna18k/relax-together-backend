@@ -3,6 +3,7 @@ package kr.codeit.relaxtogether.service;
 import kr.codeit.relaxtogether.dto.user.request.EmailCheckRequest;
 import kr.codeit.relaxtogether.dto.user.request.JoinUserRequest;
 import kr.codeit.relaxtogether.dto.user.request.UpdateUserRequest;
+import kr.codeit.relaxtogether.dto.user.response.UserDetailsResponse;
 import kr.codeit.relaxtogether.entity.User;
 import kr.codeit.relaxtogether.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,11 @@ public class UserService {
 
     public boolean checkEmail(EmailCheckRequest emailCheckRequest) {
         return userRepository.existsByEmail(emailCheckRequest.getEmail());
+    }
+
+    public UserDetailsResponse getUserDetails(String email) {
+        User user = userRepository.findByEmail(email).get();
+        return UserDetailsResponse.of(user);
     }
 
     @Transactional
