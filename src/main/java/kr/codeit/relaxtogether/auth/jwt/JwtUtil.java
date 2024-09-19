@@ -12,11 +12,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtUtil {
 
-    private static final long EXPIRATION_TIME = 60 * 60 * 1000;
+    private static final int EXPIRATION_TIME = 60 * 60 * 1000;
 
     private SecretKey secretKey;
 
-    public JwtUtil(@Value("${spring.jwt.secret}")String secret) {
+    public JwtUtil(@Value("${spring.jwt.secret}") String secret) {
         this.secretKey = new SecretKeySpec(
             secret.getBytes(StandardCharsets.UTF_8),
             SIG.HS256.key().build().getAlgorithm()
