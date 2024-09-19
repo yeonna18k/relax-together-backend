@@ -1,10 +1,12 @@
 package kr.codeit.relaxtogether.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import kr.codeit.relaxtogether.auth.CustomUserDetails;
 import kr.codeit.relaxtogether.dto.user.request.EmailCheckRequest;
 import kr.codeit.relaxtogether.dto.user.request.JoinUserRequest;
 import kr.codeit.relaxtogether.dto.user.request.UpdateUserRequest;
+import kr.codeit.relaxtogether.repository.JwtTokenRepository;
 import kr.codeit.relaxtogether.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserService userService;
+    private final JwtTokenRepository jwtTokenRepository;
 
     @PostMapping("/check-email")
     public ResponseEntity<Boolean> checkEmail(@Valid @RequestBody EmailCheckRequest emailCheckRequest) {
@@ -42,6 +45,16 @@ public class UserController {
         userService.update(updateUserRequest, userDetails.getUsername());
         return ResponseEntity
             .status(HttpStatus.NO_CONTENT)
+            .body("success");
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletRequest request) {
+        String authorization = request.getHeader("Authorization");
+        String token = authorization.split(" ")[1];
+        jwtTokenRepository.deleteByToken(token);
+        return ResponseEntity
+            .status(HttpStatus.OK)
             .body("success");
     }
 }
