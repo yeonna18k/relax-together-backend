@@ -24,7 +24,8 @@ public class UserService {
     }
 
     public UserDetailsResponse getUserDetails(String email) {
-        User user = userRepository.findByEmail(email).get();
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(RuntimeException::new);
         return UserDetailsResponse.of(user);
     }
 
@@ -35,7 +36,8 @@ public class UserService {
 
     @Transactional
     public void update(UpdateUserRequest updateUserRequest, String email) {
-        User user = userRepository.findByEmail(email).get();
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(RuntimeException::new);
         user.update(updateUserRequest.getCompanyName(), updateUserRequest.getProfileImage());
     }
 }
