@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.tuple;
 import kr.codeit.relaxtogether.dto.user.request.EmailCheckRequest;
 import kr.codeit.relaxtogether.dto.user.request.JoinUserRequest;
 import kr.codeit.relaxtogether.dto.user.request.UpdateUserRequest;
+import kr.codeit.relaxtogether.dto.user.response.UserDetailsResponse;
 import kr.codeit.relaxtogether.entity.User;
 import kr.codeit.relaxtogether.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -117,5 +118,29 @@ public class UserServiceTest {
 
         // then
         assertThat(userRepository.findByEmail(email).get().getCompanyName()).isEqualTo("after");
+    }
+
+    @DisplayName("이메일을 통해 해당 유저의 정보를 가져옵니다.")
+    @Test
+    void getUserDetails() {
+        // given
+        String email = "test@test.com";
+        String name = "name";
+        String companyName = "com";
+        User user = User.builder()
+            .email(email)
+            .name(name)
+            .companyName(companyName)
+            .build();
+
+        userRepository.save(user);
+
+        // when
+        UserDetailsResponse userDetails = userService.getUserDetails(email);
+
+        // then
+        assertThat(userDetails.getEmail()).isEqualTo(email);
+        assertThat(userDetails.getName()).isEqualTo(name);
+        assertThat(userDetails.getCompanyName()).isEqualTo(companyName);
     }
 }
