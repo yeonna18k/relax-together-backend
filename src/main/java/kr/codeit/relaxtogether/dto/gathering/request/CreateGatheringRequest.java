@@ -1,4 +1,4 @@
-package kr.codeit.relaxtogether.dto.gathering;
+package kr.codeit.relaxtogether.dto.gathering.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.AssertTrue;
@@ -22,8 +22,8 @@ public class CreateGatheringRequest {
     @NotBlank(message = "장소는 필수입니다.")
     private String location;
 
-    @Schema(description = "모임 이미지", type = "string", format = "binary", example = "선택된 파일 없음")
-    private String image;
+    @Schema(description = "모임 이미지", type = "string", example = "https://firebasestorage.googleapis.com/b0/b/example")
+    private String imageUrl;
 
     @Schema(description = "모임 서비스 종류", allowableValues = {"워케이션", "마인드풀니스", "오피스 스트레칭"})
     @NotBlank(message = "서비스 타입은 필수입니다.")
@@ -42,11 +42,11 @@ public class CreateGatheringRequest {
     private int capacity;
 
     @Builder
-    private CreateGatheringRequest(String name, String location, String image, String type, LocalDateTime dateTime,
+    private CreateGatheringRequest(String name, String location, String imageUrl, String type, LocalDateTime dateTime,
         LocalDateTime registrationEnd, int capacity) {
         this.name = name;
         this.location = location;
-        this.image = image;
+        this.imageUrl = imageUrl;
         this.type = type;
         this.dateTime = dateTime;
         this.registrationEnd = registrationEnd;
@@ -63,7 +63,7 @@ public class CreateGatheringRequest {
         return Gathering.builder()
             .name(name)
             .location(Location.fromText(location))
-            .image(image)
+            .imageUrl(imageUrl)
             .type(Type.fromText(type))
             .dateTime(dateTime)
             .registrationEnd(registrationEnd)

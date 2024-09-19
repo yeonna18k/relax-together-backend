@@ -8,6 +8,7 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import java.time.LocalDateTime;
 import java.util.Set;
+import kr.codeit.relaxtogether.dto.gathering.request.CreateGatheringRequest;
 import kr.codeit.relaxtogether.entity.gathering.Type;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,7 +31,7 @@ class CreateGatheringRequestTest {
         CreateGatheringRequest request = CreateGatheringRequest.builder()
             .name("")
             .location("건대입구")
-            .image("some-image-url")
+            .imageUrl("some-image-url")
             .type(Type.WORKATION.getText())
             .dateTime(LocalDateTime.now().plusDays(1))
             .registrationEnd(LocalDateTime.now().plusDays(2))
@@ -52,7 +53,7 @@ class CreateGatheringRequestTest {
         CreateGatheringRequest request = CreateGatheringRequest.builder()
             .name(null)
             .location("건대입구")
-            .image("some-image-url")
+            .imageUrl("some-image-url")
             .type(Type.WORKATION.getText())
             .dateTime(LocalDateTime.now().plusDays(1))
             .registrationEnd(LocalDateTime.now().plusDays(2))
@@ -74,7 +75,7 @@ class CreateGatheringRequestTest {
         CreateGatheringRequest request = CreateGatheringRequest.builder()
             .name("워크숍")
             .location("홍대입구")
-            .image("some-image-url")
+            .imageUrl("some-image-url")
             .type(Type.WORKATION.getText())
             .dateTime(LocalDateTime.now().plusDays(1))
             .registrationEnd(LocalDateTime.now().plusDays(2))
@@ -95,7 +96,7 @@ class CreateGatheringRequestTest {
         CreateGatheringRequest request = CreateGatheringRequest.builder()
             .name("")
             .location("을지로3가")
-            .image("some-image-url")
+            .imageUrl("some-image-url")
             .type(Type.MINDFULNESS.getText())
             .dateTime(LocalDateTime.now().plusDays(1))
             .registrationEnd(LocalDateTime.now().plusDays(2))
@@ -116,7 +117,7 @@ class CreateGatheringRequestTest {
         CreateGatheringRequest request = CreateGatheringRequest.builder()
             .name("명상 클래스")
             .location("신림")
-            .image("some-image-url")
+            .imageUrl("some-image-url")
             .type(Type.MINDFULNESS.getText())
             .dateTime(LocalDateTime.now().plusDays(1))
             .registrationEnd(LocalDateTime.now().plusDays(1))
@@ -137,7 +138,7 @@ class CreateGatheringRequestTest {
         CreateGatheringRequest request = CreateGatheringRequest.builder()
             .name(null)
             .location("을지로3가")
-            .image("some-image-url")
+            .imageUrl("some-image-url")
             .type(Type.MINDFULNESS.getText())
             .dateTime(LocalDateTime.now().plusDays(1))
             .registrationEnd(LocalDateTime.now().plusDays(2))

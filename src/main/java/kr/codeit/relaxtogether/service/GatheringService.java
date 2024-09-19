@@ -1,11 +1,16 @@
 package kr.codeit.relaxtogether.service;
 
-import kr.codeit.relaxtogether.dto.gathering.CreateGatheringRequest;
+import kr.codeit.relaxtogether.dto.PagedResponse;
+import kr.codeit.relaxtogether.dto.gathering.request.CreateGatheringRequest;
+import kr.codeit.relaxtogether.dto.gathering.request.GatheringSearchCondition;
+import kr.codeit.relaxtogether.dto.gathering.response.SearchGatheringResponse;
 import kr.codeit.relaxtogether.entity.gathering.Gathering;
 import kr.codeit.relaxtogether.entity.gathering.UserGathering;
-import kr.codeit.relaxtogether.repository.GatheringRepository;
 import kr.codeit.relaxtogether.repository.UserGatheringRepository;
+import kr.codeit.relaxtogether.repository.gathering.GatheringRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,5 +36,15 @@ public class GatheringService {
             .gathering(gathering)
             .build();
         userGatheringRepository.save(userGathering);
+    }
+
+    public PagedResponse<SearchGatheringResponse> search(GatheringSearchCondition condition, Pageable pageable) {
+        Slice<SearchGatheringResponse> gatherings = gatheringRepository.searchGatherings(condition,
+            pageable);
+        return new PagedResponse<>(
+            gatherings.getContent(),
+            gatherings.hasNext(),
+            gatherings.getNumberOfElements()
+        );
     }
 }
