@@ -53,13 +53,13 @@ public class SecurityConfig {
             .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth ->
                 auth.requestMatchers(
-                        "/auths/check-email",
-                        "/auths/signup",
-                        "/auths/login",
+                        "/api/auths/check-email",
+                        "/api/auths/signup",
+                        "/api/auths/login",
                         "/h2-console/**",
                         "/swagger-ui/**",
                         "/v3/api-docs/**",
-                        "/gatherings").permitAll()
+                        "/api/gatherings/**").permitAll()
                     .anyRequest().authenticated()
             )
             .addFilterBefore(new JwtFilter(jwtUtil, jwtTokenRepository), LoginFilter.class)
