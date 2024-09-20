@@ -15,6 +15,7 @@ import kr.codeit.relaxtogether.dto.gathering.response.SearchGatheringResponse;
 import kr.codeit.relaxtogether.entity.gathering.Location;
 import kr.codeit.relaxtogether.entity.gathering.QGathering;
 import kr.codeit.relaxtogether.entity.gathering.QUserGathering;
+import kr.codeit.relaxtogether.entity.gathering.Status;
 import kr.codeit.relaxtogether.entity.gathering.Type;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -50,7 +51,7 @@ public class GatheringRepositoryCustomImpl implements GatheringRepositoryCustom 
             .from(gathering)
             .leftJoin(userGathering).on(userGathering.gathering.id.eq(gathering.id))
             .where(
-                isNotDeleted(),
+                isOngoing(),
                 categoryEq(condition.getType()),
                 locationEq(condition.getLocation()),
                 dateBetween(condition.getDate()),
@@ -80,8 +81,8 @@ public class GatheringRepositoryCustomImpl implements GatheringRepositoryCustom 
         return new OrderSpecifier<>(Order.ASC, gathering.registrationEnd);
     }
 
-    private BooleanExpression isNotDeleted() {
-        return QGathering.gathering.isDeleted.isFalse();
+    private BooleanExpression isOngoing() {
+        return QGathering.gathering.status.eq(Status.ONGOING);
     }
 
     private BooleanExpression categoryEq(String category) {
