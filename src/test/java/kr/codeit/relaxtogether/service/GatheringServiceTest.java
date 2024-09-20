@@ -149,6 +149,12 @@ class GatheringServiceTest {
                 .build()
         );
 
+        userGatheringRepository.save(
+            UserGathering.builder()
+                .user(user)
+                .gathering(gathering)
+                .build());
+
         // When
         GatheringDetailResponse response = gatheringService.getGatheringDetail(gathering.getId());
 
@@ -160,6 +166,7 @@ class GatheringServiceTest {
         assertThat(response.getLocation()).isEqualTo(gathering.getLocation().getText());
         assertThat(response.getType()).isEqualTo(gathering.getType().getText());
         assertThat(response.getCapacity()).isEqualTo(gathering.getCapacity());
+        assertThat(response.getParticipantCount()).isEqualTo(1);
     }
 
     @Test
