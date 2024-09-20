@@ -22,7 +22,9 @@ public class User extends BaseTimeEntity {
     @Column(name = "user_id")
     private Long id;
 
+    @Column(unique = true)
     private String email;
+
     private String password;
     private String name;
     private String companyName;
