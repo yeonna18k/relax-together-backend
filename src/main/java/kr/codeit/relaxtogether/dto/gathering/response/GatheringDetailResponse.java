@@ -17,10 +17,11 @@ public class GatheringDetailResponse {
     private LocalDateTime dateTime;
     private LocalDateTime registrationEnd;
     private int capacity;
+    private String status;
 
     @Builder
     private GatheringDetailResponse(Long id, Long createdBy, String name, String location, String imageUrl, String type,
-        LocalDateTime dateTime, LocalDateTime registrationEnd, int capacity) {
+        LocalDateTime dateTime, LocalDateTime registrationEnd, int capacity, String status) {
         this.id = id;
         this.createdBy = createdBy;
         this.name = name;
@@ -30,6 +31,7 @@ public class GatheringDetailResponse {
         this.dateTime = dateTime;
         this.registrationEnd = registrationEnd;
         this.capacity = capacity;
+        this.status = status;
     }
 
     public static GatheringDetailResponse of(Gathering gathering) {
@@ -43,6 +45,7 @@ public class GatheringDetailResponse {
             .dateTime(gathering.getDateTime())
             .registrationEnd(gathering.getRegistrationEnd())
             .capacity(gathering.getCapacity())
+            .status(gathering.getStatus().toString())
             .build();
     }
 }
