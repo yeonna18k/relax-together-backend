@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDateTime;
 import kr.codeit.relaxtogether.dto.gathering.request.CreateGatheringRequest;
+import kr.codeit.relaxtogether.dto.gathering.response.GatheringDetailResponse;
 import kr.codeit.relaxtogether.entity.User;
 import kr.codeit.relaxtogether.entity.gathering.Gathering;
 import kr.codeit.relaxtogether.entity.gathering.Location;
@@ -120,5 +121,63 @@ class GatheringServiceTest {
         assertThatThrownBy(() -> gatheringService.createGathering(request, "nonexistent@example.com"))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("유저정보를 찾을 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("모임 상세 조회를 할 수 있다")
+    void getGatheringDetail_ReturnGatheringDetail() {
+        // Given
+        User user = userRepository.save(
+            User.builder()
+                .email("test@example.com")
+                .password("password")
+                .name("Test User")
+                .companyName("Test Company")
+                .build()
+        );
+
+        Gathering gathering = gatheringRepository.save(
+            Gathering.builder()
+                .createdBy(user)
+                .name("Test Gathering")
+                .location(Location.KONDAE)
+                .type(Type.OFFICE_STRETCHING)
+                .dateTime(LocalDateTime.now().plusDays(5))
+                .registrationEnd(LocalDateTime.now().plusDays(3))
+                .capacity(10)
+                .imageUrl("https://example.com/image.png")
+                .build()
+        );
+
+        userGatheringRepository.save(
+            UserGathering.builder()
+                .user(user)
+                .gathering(gathering)
+                .build());
+
+        // When
+        GatheringDetailResponse response = gatheringService.getGatheringDetail(gathering.getId());
+
+        // Then
+        assertThat(response).isNotNull();
+        assertThat(response.getId()).isEqualTo(gathering.getId());
+        assertThat(response.getName()).isEqualTo(gathering.getName());
+        assertThat(response.getCreatedBy()).isEqualTo(user.getId());
+        assertThat(response.getLocation()).isEqualTo(gathering.getLocation().getText());
+        assertThat(response.getType()).isEqualTo(gathering.getType().getText());
+        assertThat(response.getCapacity()).isEqualTo(gathering.getCapacity());
+        assertThat(response.getParticipantCount()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 모임 상세 조회 시 예외가 발생한다")
+    void getGatheringDetail_ThrowExceptionWhenGatheringNotFound() {
+        // Given
+        Long invalidGatheringId = 999L;
+
+        // When / Then
+        assertThatThrownBy(() -> gatheringService.getGatheringDetail(invalidGatheringId))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("해당 모임을 찾을 수 없습니다.");
     }
 }

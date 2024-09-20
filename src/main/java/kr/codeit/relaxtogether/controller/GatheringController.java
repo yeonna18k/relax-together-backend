@@ -6,6 +6,7 @@ import kr.codeit.relaxtogether.auth.CustomUserDetails;
 import kr.codeit.relaxtogether.dto.PagedResponse;
 import kr.codeit.relaxtogether.dto.gathering.request.CreateGatheringRequest;
 import kr.codeit.relaxtogether.dto.gathering.request.GatheringSearchCondition;
+import kr.codeit.relaxtogether.dto.gathering.response.GatheringDetailResponse;
 import kr.codeit.relaxtogether.dto.gathering.response.SearchGatheringResponse;
 import kr.codeit.relaxtogether.service.GatheringService;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,5 +46,11 @@ public class GatheringController {
         @PageableDefault(sort = "registrationEnd", direction = Sort.Direction.ASC) Pageable pageable
     ) {
         return ResponseEntity.ok(gatheringService.search(condition, pageable));
+    }
+
+    @Operation(summary = "모임 상세 조회", description = "모임의 상세 정보를 조회합니다")
+    @GetMapping("/{gatheringId}")
+    public ResponseEntity<GatheringDetailResponse> getGatheringDetail(@PathVariable Long gatheringId) {
+        return ResponseEntity.ok(gatheringService.getGatheringDetail(gatheringId));
     }
 }

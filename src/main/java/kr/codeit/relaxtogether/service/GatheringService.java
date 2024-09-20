@@ -3,6 +3,7 @@ package kr.codeit.relaxtogether.service;
 import kr.codeit.relaxtogether.dto.PagedResponse;
 import kr.codeit.relaxtogether.dto.gathering.request.CreateGatheringRequest;
 import kr.codeit.relaxtogether.dto.gathering.request.GatheringSearchCondition;
+import kr.codeit.relaxtogether.dto.gathering.response.GatheringDetailResponse;
 import kr.codeit.relaxtogether.dto.gathering.response.SearchGatheringResponse;
 import kr.codeit.relaxtogether.entity.User;
 import kr.codeit.relaxtogether.entity.gathering.Gathering;
@@ -44,6 +45,15 @@ public class GatheringService {
             gatherings.hasNext(),
             gatherings.getNumberOfElements()
         );
+    }
+
+    public GatheringDetailResponse getGatheringDetail(Long gatheringId) {
+        Gathering gathering = gatheringRepository.findById(gatheringId)
+            .orElseThrow(() -> new IllegalArgumentException("해당 모임을 찾을 수 없습니다."));
+
+        long participantCount = userGatheringRepository.countByGatheringId(gatheringId);
+
+        return GatheringDetailResponse.from(gathering, participantCount);
     }
 
     private void saveUserGathering(User user, Gathering gathering) {
