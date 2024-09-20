@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
+import kr.codeit.relaxtogether.entity.User;
 import kr.codeit.relaxtogether.entity.gathering.Gathering;
 import kr.codeit.relaxtogether.entity.gathering.Location;
 import kr.codeit.relaxtogether.entity.gathering.Type;
@@ -59,8 +60,9 @@ public class CreateGatheringRequest {
         return enumType != Type.WORKATION || (name != null && !name.isBlank());
     }
 
-    public Gathering toEntity() {
+    public Gathering toEntity(User user) {
         return Gathering.builder()
+            .createdBy(user)
             .name(name)
             .location(Location.fromText(location))
             .imageUrl(imageUrl)

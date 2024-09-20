@@ -30,7 +30,7 @@ public class GatheringService {
         validateDateTime(request);
         User user = getUserByEmail(email);
 
-        Gathering gathering = request.toEntity();
+        Gathering gathering = request.toEntity(user);
         gatheringRepository.save(gathering);
 
         saveUserGathering(user, gathering);
@@ -59,7 +59,7 @@ public class GatheringService {
             .orElseThrow(() -> new IllegalArgumentException("유저정보를 찾을 수 없습니다."));
     }
 
-    private static void validateDateTime(CreateGatheringRequest request) {
+    private void validateDateTime(CreateGatheringRequest request) {
         if (request.getRegistrationEnd().isAfter(request.getDateTime())) {
             throw new IllegalArgumentException("모집 종료일은 모임 시작일 이전이어야 합니다.");
         }
