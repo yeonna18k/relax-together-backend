@@ -180,4 +180,155 @@ class GatheringServiceTest {
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("해당 모임을 찾을 수 없습니다.");
     }
+
+    @Test
+    @DisplayName("정상적인 모임 참여가 되어야 한다")
+    void joinGathering_Success() {
+        // Given
+        User user = userRepository.save(
+            User.builder()
+                .email("test@example.com")
+                .password("password")
+                .name("Test User")
+                .companyName("Test Company")
+                .build()
+        );
+
+        Gathering gathering = gatheringRepository.save(
+            Gathering.builder()
+                .createdBy(user)
+                .name("Test Gathering")
+                .location(Location.SINRIM)
+                .type(Type.MINDFULNESS)
+                .dateTime(LocalDateTime.now().plusDays(10))
+                .registrationEnd(LocalDateTime.now().plusDays(5))
+                .capacity(10)
+                .build()
+        );
+
+        // When
+        gatheringService.joinGathering(gathering.getId(), user.getEmail());
+
+        // Then
+        UserGathering userGathering = userGatheringRepository.findAll().get(0);
+        assertThat(userGathering).isNotNull();
+        assertThat(userGathering.getUser().getEmail()).isEqualTo(user.getEmail());
+        assertThat(userGathering.getGathering().getId()).isEqualTo(gathering.getId());
+    }
+
+    @Test
+    @DisplayName("모임 정원이 초과되었을 때 예외가 발생해야 한다")
+    void joinGathering_ThrowExceptionIfCapacityExceeded() {
+        // Given
+        User user = userRepository.save(
+            User.builder()
+                .email("test@example.com")
+                .password("password")
+                .name("Test User")
+                .companyName("Test Company")
+                .build()
+        );
+
+        Gathering gathering = gatheringRepository.save(
+            Gathering.builder()
+                .createdBy(user)
+                .name("Test Gathering")
+                .location(Location.KONDAE)
+                .type(Type.WORKATION)
+                .dateTime(LocalDateTime.now().plusDays(10))
+                .registrationEnd(LocalDateTime.now().plusDays(5))
+                .capacity(1) // 정원이 1명으로 설정됨
+                .build()
+        );
+
+        gatheringService.joinGathering(gathering.getId(), user.getEmail());
+
+        User anotherUser = userRepository.save(
+            User.builder()
+                .email("another@example.com")
+                .password("password")
+                .name("Another User")
+                .companyName("Another Company")
+                .build()
+        );
+
+        // When/Then
+        assertThatThrownBy(() -> gatheringService.joinGathering(gathering.getId(), anotherUser.getEmail()))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("해당 모임은 이미 정원이 찼습니다.");
+    }
+
+    @Test
+    @DisplayName("이미 모임에 참여한 경우 예외가 발생해야 한다")
+    void joinGathering_ThrowExceptionIfAlreadyJoined() {
+        // Given
+        User user = userRepository.save(
+            User.builder()
+                .email("test@example.com")
+                .password("password")
+                .name("Test User")
+                .companyName("Test Company")
+                .build()
+        );
+
+        Gathering gathering = gatheringRepository.save(
+            Gathering.builder()
+                .createdBy(user)
+                .name("Test Gathering")
+                .location(Location.SINRIM)
+                .type(Type.MINDFULNESS)
+                .dateTime(LocalDateTime.now().plusDays(10))
+                .registrationEnd(LocalDateTime.now().plusDays(5))
+                .capacity(10)
+                .build()
+        );
+
+        gatheringService.joinGathering(gathering.getId(), user.getEmail());
+
+        // When/Then
+        assertThatThrownBy(() -> gatheringService.joinGathering(gathering.getId(), user.getEmail()))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("이미 참여한 모임입니다.");
+    }
+
+    @Test
+    @DisplayName("유저가 존재하지 않을 경우 예외가 발생해야 한다")
+    void joinGathering_ThrowExceptionIfUserNotFound() {
+        // Given
+        Gathering gathering = gatheringRepository.save(
+            Gathering.builder()
+                .createdBy(null)
+                .name("Test Gathering")
+                .location(Location.SINRIM)
+                .type(Type.WORKATION)
+                .dateTime(LocalDateTime.now().plusDays(10))
+                .registrationEnd(LocalDateTime.now().plusDays(5))
+                .capacity(10)
+                .build()
+        );
+
+        // When/Then
+        assertThatThrownBy(() -> gatheringService.joinGathering(gathering.getId(), "nonexistent@example.com"))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("유저정보를 찾을 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("모임이 존재하지 않을 경우 예외가 발생해야 한다")
+    void joinGathering_ThrowExceptionIfGatheringNotFound() {
+        // Given
+        User user = userRepository.save(
+            User.builder()
+                .email("test@example.com")
+                .password("password")
+                .name("Test User")
+                .companyName("Test Company")
+                .build()
+        );
+
+        // When/Then
+        assertThatThrownBy(() -> gatheringService.joinGathering(999L, user.getEmail()))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("해당 모임을 찾을 수 없습니다.");
+    }
 }
