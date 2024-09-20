@@ -53,4 +53,14 @@ public class GatheringController {
     public ResponseEntity<GatheringDetailResponse> getGatheringDetail(@PathVariable Long gatheringId) {
         return ResponseEntity.ok(gatheringService.getGatheringDetail(gatheringId));
     }
+
+    @Operation(summary = "모임 참여", description = "로그인한 사용자가 모임에 참여합니다")
+    @PostMapping("/{gatheringId}/join")
+    public ResponseEntity<String> joinGathering(
+        @PathVariable Long gatheringId,
+        @AuthenticationPrincipal CustomUserDetails user
+    ) {
+        gatheringService.joinGathering(gatheringId, user.getUsername());
+        return ResponseEntity.ok("모임에 참여했습니다.");
+    }
 }
