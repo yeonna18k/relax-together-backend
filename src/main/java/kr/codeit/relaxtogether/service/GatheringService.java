@@ -51,7 +51,9 @@ public class GatheringService {
         Gathering gathering = gatheringRepository.findById(gatheringId)
             .orElseThrow(() -> new IllegalArgumentException("해당 모임을 찾을 수 없습니다."));
 
-        return GatheringDetailResponse.of(gathering);
+        long participantCount = userGatheringRepository.countByGatheringId(gatheringId);
+
+        return GatheringDetailResponse.from(gathering, participantCount);
     }
 
     private void saveUserGathering(User user, Gathering gathering) {

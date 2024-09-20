@@ -12,39 +12,42 @@ public class GatheringDetailResponse {
     private Long createdBy;
     private String name;
     private String location;
-    private String imageUrl;
     private String type;
+    private int capacity;
+    private String imageUrl;
+    private Long participantCount;
     private LocalDateTime dateTime;
     private LocalDateTime registrationEnd;
-    private int capacity;
     private String status;
 
     @Builder
-    private GatheringDetailResponse(Long id, Long createdBy, String name, String location, String imageUrl, String type,
-        LocalDateTime dateTime, LocalDateTime registrationEnd, int capacity, String status) {
+    private GatheringDetailResponse(Long id, Long createdBy, String name, String location, String type, int capacity,
+        String imageUrl, Long participantCount, LocalDateTime dateTime, LocalDateTime registrationEnd, String status) {
         this.id = id;
         this.createdBy = createdBy;
         this.name = name;
         this.location = location;
-        this.imageUrl = imageUrl;
         this.type = type;
+        this.capacity = capacity;
+        this.imageUrl = imageUrl;
+        this.participantCount = participantCount;
         this.dateTime = dateTime;
         this.registrationEnd = registrationEnd;
-        this.capacity = capacity;
         this.status = status;
     }
 
-    public static GatheringDetailResponse of(Gathering gathering) {
+    public static GatheringDetailResponse from(Gathering gathering, long participantCount) {
         return GatheringDetailResponse.builder()
             .id(gathering.getId())
             .createdBy(gathering.getCreatedBy().getId())
             .name(gathering.getName())
             .location(gathering.getLocation().getText())
-            .imageUrl(gathering.getImageUrl())
             .type(gathering.getType().getText())
+            .capacity(gathering.getCapacity())
+            .participantCount(participantCount)
+            .imageUrl(gathering.getImageUrl())
             .dateTime(gathering.getDateTime())
             .registrationEnd(gathering.getRegistrationEnd())
-            .capacity(gathering.getCapacity())
             .status(gathering.getStatus().toString())
             .build();
     }
