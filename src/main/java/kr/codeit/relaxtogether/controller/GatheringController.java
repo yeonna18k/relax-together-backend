@@ -2,6 +2,7 @@ package kr.codeit.relaxtogether.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import kr.codeit.relaxtogether.auth.CustomUserDetails;
 import kr.codeit.relaxtogether.dto.PagedResponse;
 import kr.codeit.relaxtogether.dto.gathering.request.CreateGatheringRequest;
 import kr.codeit.relaxtogether.dto.gathering.request.GatheringSearchCondition;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
-@RequestMapping("/gatherings")
+@RequestMapping("/api/gatherings")
 @RestController
 public class GatheringController {
 
@@ -27,8 +29,11 @@ public class GatheringController {
 
     @Operation(summary = "모임 생성", description = "모임 생성 API")
     @PostMapping
-    public ResponseEntity<Void> createGathering(@Valid @RequestBody CreateGatheringRequest request) {
-        gatheringService.createGathering(request);
+    public ResponseEntity<Void> createGathering(
+        @Valid @RequestBody CreateGatheringRequest request,
+        @AuthenticationPrincipal CustomUserDetails user
+    ) {
+        gatheringService.createGathering(request, user.getUsername());
         return ResponseEntity.ok().build();
     }
 
