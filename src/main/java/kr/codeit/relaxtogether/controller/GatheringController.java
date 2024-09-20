@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
-@RequestMapping("/gatherings")
+@RequestMapping("/api/gatherings")
 @RestController
 public class GatheringController {
 
