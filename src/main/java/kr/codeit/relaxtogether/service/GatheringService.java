@@ -48,12 +48,27 @@ public class GatheringService {
     }
 
     public GatheringDetailResponse getGatheringDetail(Long gatheringId) {
-        Gathering gathering = gatheringRepository.findById(gatheringId)
-            .orElseThrow(() -> new IllegalArgumentException("해당 모임을 찾을 수 없습니다."));
+        Gathering gathering = getGatheringBy(gatheringId);
 
         long participantCount = userGatheringRepository.countByGatheringId(gatheringId);
 
         return GatheringDetailResponse.from(gathering, participantCount);
+    }
+
+    @Transactional
+    public void joinGathering(Long gatheringId, String username) {
+        User user = getUserByEmail(username);
+        Gathering gathering = getGatheringBy(gatheringId);
+
+        if (userGatheringRepository.countByGatheringId(gatheringId) >= gathering.getCapacity()) {
+            throw new IllegalArgumentException("해당 모임은 이미 정원이 찼습니다.");
+        }
+
+        if (userGatheringRepository.existsByUserIdAndGatheringId(user.getId(), gathering.getId())) {
+            throw new IllegalArgumentException("이미 참여한 모임입니다.");
+        }
+
+        saveUserGathering(user, gathering);
     }
 
     private void saveUserGathering(User user, Gathering gathering) {
@@ -67,6 +82,11 @@ public class GatheringService {
     private User getUserByEmail(String userId) {
         return userRepository.findByEmail(userId)
             .orElseThrow(() -> new IllegalArgumentException("유저정보를 찾을 수 없습니다."));
+    }
+
+    private Gathering getGatheringBy(Long gatheringId) {
+        return gatheringRepository.findById(gatheringId)
+            .orElseThrow(() -> new IllegalArgumentException("해당 모임을 찾을 수 없습니다."));
     }
 
     private void validateDateTime(CreateGatheringRequest request) {
