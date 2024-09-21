@@ -1,7 +1,6 @@
 package kr.codeit.relaxtogether.config;
 
 import java.util.List;
-import kr.codeit.relaxtogether.auth.LoginFilter;
 import kr.codeit.relaxtogether.auth.jwt.JwtFilter;
 import kr.codeit.relaxtogether.auth.jwt.JwtUtil;
 import kr.codeit.relaxtogether.repository.JwtTokenRepository;
@@ -53,19 +52,16 @@ public class SecurityConfig {
             .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth ->
                 auth.requestMatchers(
-                        "/auths/check-email",
-                        "/auths/signup",
-                        "/auths/login",
+                        "/api/auths/check-email",
+                        "/api/auths/signup",
+                        "/api/auths/login",
                         "/h2-console/**",
                         "/swagger-ui/**",
                         "/v3/api-docs/**",
-                        "/gatherings").permitAll()
+                        "/api/gatherings").permitAll()
                     .anyRequest().authenticated()
             )
-            .addFilterBefore(new JwtFilter(jwtUtil, jwtTokenRepository), LoginFilter.class)
-            .addFilterAt(
-                new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, jwtTokenRepository),
-                UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(new JwtFilter(jwtUtil, jwtTokenRepository), UsernamePasswordAuthenticationFilter.class)
             .build();
     }
 
