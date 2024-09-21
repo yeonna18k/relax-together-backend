@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -76,7 +77,7 @@ public class GatheringController {
     }
 
     @Operation(summary = "모임 참여 취소", description = "사용자가 모임에서 참여 취소합니다. 이미 지난 모임은 참여 취소가 불가합니다.")
-    @PutMapping("/{gatheringId}/leave")
+    @DeleteMapping("/{gatheringId}/leave")
     public ResponseEntity<String> leaveGathering(
         @PathVariable Long gatheringId,
         @AuthenticationPrincipal CustomUserDetails user
