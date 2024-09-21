@@ -31,8 +31,8 @@ public class Gathering extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "created_by")
-    private User createdBy;
+    @JoinColumn(name = "host_user")
+    private User hostUser;
 
     private String name;
 
@@ -52,9 +52,9 @@ public class Gathering extends BaseTimeEntity {
     private Status status;
 
     @Builder
-    private Gathering(User createdBy, String name, Location location, String imageUrl, Type type,
+    private Gathering(User hostUser, String name, Location location, String imageUrl, Type type,
         LocalDateTime dateTime, LocalDateTime registrationEnd, int capacity) {
-        this.createdBy = createdBy;
+        this.hostUser = hostUser;
         this.name = name;
         this.location = location;
         this.imageUrl = imageUrl;
@@ -63,5 +63,9 @@ public class Gathering extends BaseTimeEntity {
         this.registrationEnd = registrationEnd;
         this.capacity = capacity;
         this.status = Status.ONGOING;
+    }
+
+    public void cancel() {
+        this.status = Status.CANCELLED;
     }
 }

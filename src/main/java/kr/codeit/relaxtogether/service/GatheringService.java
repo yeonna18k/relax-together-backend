@@ -71,6 +71,17 @@ public class GatheringService {
         saveUserGathering(user, gathering);
     }
 
+    @Transactional
+    public void cancelGathering(Long gatheringId, String userId) {
+        User user = getUserByEmail(userId);
+
+        Gathering gathering = gatheringRepository.findByIdAndHostUserId(gatheringId, user.getId())
+            .orElseThrow(() -> new IllegalArgumentException("해당 모임을 찾을 수 없거나, 취소 권한이 없습니다."));
+        gathering.cancel();
+
+        userGatheringRepository.deleteByUserIdAndGatheringId(user.getId(), gatheringId);
+    }
+
     private void saveUserGathering(User user, Gathering gathering) {
         UserGathering userGathering = UserGathering.builder()
             .user(user)

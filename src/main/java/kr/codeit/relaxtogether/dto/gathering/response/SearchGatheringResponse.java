@@ -18,12 +18,12 @@ public class SearchGatheringResponse {
     private Long participantCount;
     private int capacity;
     private String imageUrl;
-    private Long createdBy;
+    private Long hostUser;
 
     @QueryProjection
     public SearchGatheringResponse(Long id, Type type, String name, LocalDateTime dateTime,
         LocalDateTime registrationEnd, Location location, Long participantCount, int capacity,
-        String imageUrl, Long createdBy) {
+        String imageUrl, Long hostUser) {
         this.id = id;
         this.type = type.getText();
         this.name = name;
@@ -33,6 +33,6 @@ public class SearchGatheringResponse {
         this.participantCount = participantCount;
         this.capacity = capacity;
         this.imageUrl = imageUrl;
-        this.createdBy = createdBy;
+        this.hostUser = hostUser;
     }
 }

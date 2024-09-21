@@ -18,6 +18,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,7 +30,7 @@ public class GatheringController {
 
     private final GatheringService gatheringService;
 
-    @Operation(summary = "모임 생성", description = "모임 생성 API")
+    @Operation(summary = "모임 생성", description = "새로운 모임을 생성합니다.")
     @PostMapping
     public ResponseEntity<Void> createGathering(
         @Valid @RequestBody CreateGatheringRequest request,
@@ -39,7 +40,7 @@ public class GatheringController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "모임 목록 조회", description = "모임의 종류, 위치, 날짜 등 다양한 조건으로 모임 목록을 조회합니다")
+    @Operation(summary = "모임 목록 조회", description = "모임의 종류, 위치, 날짜 등 다양한 조건으로 모임 목록을 조회합니다.")
     @GetMapping
     public ResponseEntity<PagedResponse<SearchGatheringResponse>> searchGatherings(
         GatheringSearchCondition condition,
@@ -48,13 +49,13 @@ public class GatheringController {
         return ResponseEntity.ok(gatheringService.search(condition, pageable));
     }
 
-    @Operation(summary = "모임 상세 조회", description = "모임의 상세 정보를 조회합니다")
+    @Operation(summary = "모임 상세 조회", description = "모임의 상세 정보를 조회합니다.")
     @GetMapping("/{gatheringId}")
     public ResponseEntity<GatheringDetailResponse> getGatheringDetail(@PathVariable Long gatheringId) {
         return ResponseEntity.ok(gatheringService.getGatheringDetail(gatheringId));
     }
 
-    @Operation(summary = "모임 참여", description = "로그인한 사용자가 모임에 참여합니다")
+    @Operation(summary = "모임 참여", description = "로그인한 사용자가 모임에 참여합니다.")
     @PostMapping("/{gatheringId}/join")
     public ResponseEntity<String> joinGathering(
         @PathVariable Long gatheringId,
@@ -62,5 +63,15 @@ public class GatheringController {
     ) {
         gatheringService.joinGathering(gatheringId, user.getUsername());
         return ResponseEntity.ok("모임에 참여했습니다.");
+    }
+
+    @Operation(summary = "모임 취소", description = "모임을 취소합니다. 모임 생성자만 취소할 수 있습니다.")
+    @PutMapping("/{gatheringId}/cancel")
+    public ResponseEntity<String> cancelGathering(
+        @PathVariable Long gatheringId,
+        @AuthenticationPrincipal CustomUserDetails user
+    ) {
+        gatheringService.cancelGathering(gatheringId, user.getUsername());
+        return ResponseEntity.ok("모임을 취소했습니다.");
     }
 }

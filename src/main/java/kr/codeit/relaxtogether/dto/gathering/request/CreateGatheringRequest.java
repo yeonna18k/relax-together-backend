@@ -62,7 +62,7 @@ public class CreateGatheringRequest {
 
     public Gathering toEntity(User user) {
         return Gathering.builder()
-            .createdBy(user)
+            .hostUser(user)
             .name(name)
             .location(Location.fromText(location))
             .imageUrl(imageUrl)
