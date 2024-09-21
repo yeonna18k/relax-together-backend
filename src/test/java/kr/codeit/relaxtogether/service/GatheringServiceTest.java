@@ -418,4 +418,111 @@ class GatheringServiceTest {
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("모임을 찾을 수 없거나, 취소 권한이 없습니다.");
     }
+
+    @Test
+    @DisplayName("정상적으로 모임 참여를 취소한다")
+    void leaveGathering() {
+        // Given
+        User user = userRepository.save(User.builder()
+            .email("user@example.com")
+            .password("password")
+            .name("Test User")
+            .build());
+
+        Gathering gathering = gatheringRepository.save(Gathering.builder()
+            .hostUser(user)
+            .name("Test Gathering")
+            .location(Location.KONDAE)
+            .type(Type.OFFICE_STRETCHING)
+            .dateTime(LocalDateTime.now().plusDays(1))
+            .registrationEnd(LocalDateTime.now().plusDays(1))
+            .capacity(10)
+            .build());
+
+        userGatheringRepository.save(UserGathering.builder()
+            .user(user)
+            .gathering(gathering)
+            .build());
+
+        // When
+        gatheringService.leaveGathering(gathering.getId(), user.getEmail());
+
+        // Then
+        assertThat(userGatheringRepository.existsByUserIdAndGatheringId(user.getId(), gathering.getId())).isFalse();
+    }
+
+    @Test
+    @DisplayName("이미 지난 모임에 대한 참여 취소 시 예외 발생")
+    void leaveGathering_throwException() {
+        // Given
+        User user = userRepository.save(User.builder()
+            .email("user@example.com")
+            .password("password")
+            .name("Test User")
+            .build());
+
+        Gathering pastGathering = gatheringRepository.save(Gathering.builder()
+            .hostUser(user)
+            .name("Past Gathering")
+            .location(Location.KONDAE)
+            .type(Type.OFFICE_STRETCHING)
+            .dateTime(LocalDateTime.now().minusDays(1))
+            .registrationEnd(LocalDateTime.now().minusDays(2))
+            .capacity(10)
+            .build());
+
+        userGatheringRepository.save(UserGathering.builder()
+            .user(user)
+            .gathering(pastGathering)
+            .build());
+
+        // When / Then
+        assertThatThrownBy(() -> gatheringService.leaveGathering(pastGathering.getId(), user.getEmail()))
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessageContaining("이미 지난 모임은 참여 취소가 불가합니다.");
+    }
+
+    @Test
+    @DisplayName("참여하지 않은 모임을 취소하려는 경우 예외 발생")
+    void leaveGathering_throwExceptionIfUserDidNotJoin() {
+        // Given
+        User user = userRepository.save(User.builder()
+            .email("user@example.com")
+            .password("password")
+            .name("Test User")
+            .build());
+
+        Gathering gathering = gatheringRepository.save(Gathering.builder()
+            .hostUser(user)
+            .name("Test Gathering")
+            .location(Location.KONDAE)
+            .type(Type.OFFICE_STRETCHING)
+            .dateTime(LocalDateTime.now().plusDays(1))
+            .registrationEnd(LocalDateTime.now().plusDays(1))
+            .capacity(10)
+            .build());
+
+        // When / Then
+        assertThatThrownBy(() -> gatheringService.leaveGathering(gathering.getId(), user.getEmail()))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("참여하지 않은 모임 입니다.");
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 모임에 대한 참여 취소 시 예외 발생")
+    void leaveGathering_throwExceptionIfGatheringDoesNotExist() {
+        // Given
+        User user = userRepository.save(User.builder()
+            .email("user@example.com")
+            .password("password")
+            .name("Test User")
+            .build());
+
+        Long nonExistentGatheringId = 999L;
+
+        // When / Then
+        assertThatThrownBy(() -> gatheringService.leaveGathering(nonExistentGatheringId, user.getEmail()))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("모임을 찾을 수 없습니다.");
+    }
 }
