@@ -47,11 +47,13 @@ public class Gathering extends BaseTimeEntity {
     private LocalDateTime dateTime;
     private LocalDateTime registrationEnd;
     private int capacity;
-    private boolean isDeleted;
+
+    @Enumerated(value = EnumType.STRING)
+    private Status status;
 
     @Builder
-    private Gathering(User createdBy, String name, Location location, String imageUrl, Type type, LocalDateTime dateTime,
-        LocalDateTime registrationEnd, int capacity, boolean isDeleted) {
+    private Gathering(User createdBy, String name, Location location, String imageUrl, Type type,
+        LocalDateTime dateTime, LocalDateTime registrationEnd, int capacity) {
         this.createdBy = createdBy;
         this.name = name;
         this.location = location;
@@ -60,6 +62,6 @@ public class Gathering extends BaseTimeEntity {
         this.dateTime = dateTime;
         this.registrationEnd = registrationEnd;
         this.capacity = capacity;
-        this.isDeleted = isDeleted;
+        this.status = Status.ONGOING;
     }
 }
