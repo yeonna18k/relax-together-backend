@@ -1,5 +1,6 @@
 package kr.codeit.relaxtogether.service;
 
+import java.time.LocalDateTime;
 import kr.codeit.relaxtogether.dto.PagedResponse;
 import kr.codeit.relaxtogether.dto.gathering.request.CreateGatheringRequest;
 import kr.codeit.relaxtogether.dto.gathering.request.GatheringSearchCondition;
@@ -78,6 +79,22 @@ public class GatheringService {
         Gathering gathering = gatheringRepository.findByIdAndHostUserId(gatheringId, user.getId())
             .orElseThrow(() -> new IllegalArgumentException("해당 모임을 찾을 수 없거나, 취소 권한이 없습니다."));
         gathering.cancel();
+
+        userGatheringRepository.deleteByUserIdAndGatheringId(user.getId(), gatheringId);
+    }
+
+    @Transactional
+    public void leaveGathering(Long gatheringId, String userId) {
+        User user = getUserByEmail(userId);
+        Gathering gathering = getGatheringBy(gatheringId);
+
+        if (gathering.getDateTime().isBefore(LocalDateTime.now())) {
+            throw new IllegalStateException("이미 지난 모임은 참여 취소가 불가합니다.");
+        }
+
+        if (!userGatheringRepository.existsByUserIdAndGatheringId(user.getId(), gatheringId)) {
+            throw new IllegalArgumentException("참여하지 않은 모임 입니다.");
+        }
 
         userGatheringRepository.deleteByUserIdAndGatheringId(user.getId(), gatheringId);
     }

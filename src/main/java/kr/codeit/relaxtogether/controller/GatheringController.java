@@ -74,4 +74,14 @@ public class GatheringController {
         gatheringService.cancelGathering(gatheringId, user.getUsername());
         return ResponseEntity.ok("모임을 취소했습니다.");
     }
+
+    @Operation(summary = "모임 참여 취소", description = "사용자가 모임에서 참여 취소합니다. 이미 지난 모임은 참여 취소가 불가합니다.")
+    @PutMapping("/{gatheringId}/leave")
+    public ResponseEntity<String> leaveGathering(
+        @PathVariable Long gatheringId,
+        @AuthenticationPrincipal CustomUserDetails user
+    ) {
+        gatheringService.leaveGathering(gatheringId, user.getUsername());
+        return ResponseEntity.ok("모임 참여를 취소 합니다.");
+    }
 }
