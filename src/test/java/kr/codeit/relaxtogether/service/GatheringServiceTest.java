@@ -67,7 +67,7 @@ class GatheringServiceTest {
         Gathering savedGathering = gatheringRepository.findAll().get(0);
         assertThat(savedGathering).isNotNull();
         assertThat(savedGathering.getName()).isNull();
-        assertThat(savedGathering.getCreatedBy().getEmail()).isEqualTo(user.getEmail());
+        assertThat(savedGathering.getHostUser().getEmail()).isEqualTo(user.getEmail());
 
         UserGathering savedUserGathering = userGatheringRepository.findAll().get(0);
         assertThat(savedUserGathering).isNotNull();
@@ -139,7 +139,7 @@ class GatheringServiceTest {
 
         Gathering gathering = gatheringRepository.save(
             Gathering.builder()
-                .createdBy(user)
+                .hostUser(user)
                 .name("Test Gathering")
                 .location(Location.KONDAE)
                 .type(Type.OFFICE_STRETCHING)
@@ -163,7 +163,7 @@ class GatheringServiceTest {
         assertThat(response).isNotNull();
         assertThat(response.getId()).isEqualTo(gathering.getId());
         assertThat(response.getName()).isEqualTo(gathering.getName());
-        assertThat(response.getCreatedBy()).isEqualTo(user.getId());
+        assertThat(response.getHostUser()).isEqualTo(user.getId());
         assertThat(response.getLocation()).isEqualTo(gathering.getLocation().getText());
         assertThat(response.getType()).isEqualTo(gathering.getType().getText());
         assertThat(response.getCapacity()).isEqualTo(gathering.getCapacity());
@@ -197,7 +197,7 @@ class GatheringServiceTest {
 
         Gathering gathering = gatheringRepository.save(
             Gathering.builder()
-                .createdBy(user)
+                .hostUser(user)
                 .name("Test Gathering")
                 .location(Location.SINRIM)
                 .type(Type.MINDFULNESS)
@@ -232,7 +232,7 @@ class GatheringServiceTest {
 
         Gathering gathering = gatheringRepository.save(
             Gathering.builder()
-                .createdBy(user)
+                .hostUser(user)
                 .name("Test Gathering")
                 .location(Location.KONDAE)
                 .type(Type.WORKATION)
@@ -274,7 +274,7 @@ class GatheringServiceTest {
 
         Gathering gathering = gatheringRepository.save(
             Gathering.builder()
-                .createdBy(user)
+                .hostUser(user)
                 .name("Test Gathering")
                 .location(Location.SINRIM)
                 .type(Type.MINDFULNESS)
@@ -298,7 +298,7 @@ class GatheringServiceTest {
         // Given
         Gathering gathering = gatheringRepository.save(
             Gathering.builder()
-                .createdBy(null)
+                .hostUser(null)
                 .name("Test Gathering")
                 .location(Location.SINRIM)
                 .type(Type.WORKATION)
@@ -344,7 +344,7 @@ class GatheringServiceTest {
             .build());
 
         Gathering gathering = gatheringRepository.save(Gathering.builder()
-            .createdBy(hostUser)
+            .hostUser(hostUser)
             .name("Test Gathering")
             .location(Location.KONDAE)
             .type(Type.OFFICE_STRETCHING)
@@ -386,7 +386,7 @@ class GatheringServiceTest {
             .build());
 
         Gathering gathering = gatheringRepository.save(Gathering.builder()
-            .createdBy(hostUser)
+            .hostUser(hostUser)
             .name("Test Gathering")
             .location(Location.KONDAE)
             .type(Type.OFFICE_STRETCHING)

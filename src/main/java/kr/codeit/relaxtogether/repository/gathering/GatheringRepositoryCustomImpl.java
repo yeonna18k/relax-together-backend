@@ -46,7 +46,7 @@ public class GatheringRepositoryCustomImpl implements GatheringRepositoryCustom 
                 userGathering.id.count(),
                 gathering.capacity,
                 gathering.imageUrl,
-                gathering.createdBy.id
+                gathering.hostUser.id
             ))
             .from(gathering)
             .leftJoin(userGathering).on(userGathering.gathering.id.eq(gathering.id))
@@ -55,12 +55,12 @@ public class GatheringRepositoryCustomImpl implements GatheringRepositoryCustom 
                 categoryEq(condition.getType()),
                 locationEq(condition.getLocation()),
                 dateBetween(condition.getDate()),
-                createdByEq(condition.getCreatedBy())
+                hostUserEq(condition.getHostUser())
             )
             .groupBy(
                 gathering.id, gathering.type, gathering.name, gathering.dateTime,
                 gathering.registrationEnd, gathering.location, gathering.capacity,
-                gathering.imageUrl, gathering.createdBy.id
+                gathering.imageUrl, gathering.hostUser.id
             )
             .orderBy(applySorting(pageable.getSort(), gathering, userGathering))
             .offset(pageable.getOffset())
@@ -113,7 +113,7 @@ public class GatheringRepositoryCustomImpl implements GatheringRepositoryCustom 
         return QGathering.gathering.dateTime.between(startOfDay, endOfDay);
     }
 
-    private BooleanExpression createdByEq(Long createdBy) {
-        return createdBy == null ? null : QGathering.gathering.createdBy.id.eq(createdBy);
+    private BooleanExpression hostUserEq(Long hostUser) {
+        return hostUser == null ? null : QGathering.gathering.hostUser.id.eq(hostUser);
     }
 }

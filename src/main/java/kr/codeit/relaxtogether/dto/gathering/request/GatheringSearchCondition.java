@@ -17,5 +17,5 @@ public class GatheringSearchCondition {
     private LocalDate date;
 
     @Schema(description = "모임주최자 Id", example = "1")
-    private Long createdBy;
+    private Long hostUser;
 }

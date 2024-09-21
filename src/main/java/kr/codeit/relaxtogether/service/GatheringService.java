@@ -75,7 +75,7 @@ public class GatheringService {
     public void cancelGathering(Long gatheringId, String userId) {
         User user = getUserByEmail(userId);
 
-        Gathering gathering = gatheringRepository.findByIdAndCreatedById(gatheringId, user.getId())
+        Gathering gathering = gatheringRepository.findByIdAndHostUserId(gatheringId, user.getId())
             .orElseThrow(() -> new IllegalArgumentException("해당 모임을 찾을 수 없거나, 취소 권한이 없습니다."));
         gathering.cancel();
 

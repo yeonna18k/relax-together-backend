@@ -9,7 +9,7 @@ import lombok.Getter;
 public class GatheringDetailResponse {
 
     private Long id;
-    private Long createdBy;
+    private Long hostUser;
     private String name;
     private String location;
     private String type;
@@ -21,10 +21,10 @@ public class GatheringDetailResponse {
     private String status;
 
     @Builder
-    private GatheringDetailResponse(Long id, Long createdBy, String name, String location, String type, int capacity,
+    private GatheringDetailResponse(Long id, Long hostUser, String name, String location, String type, int capacity,
         String imageUrl, Long participantCount, LocalDateTime dateTime, LocalDateTime registrationEnd, String status) {
         this.id = id;
-        this.createdBy = createdBy;
+        this.hostUser = hostUser;
         this.name = name;
         this.location = location;
         this.type = type;
@@ -39,7 +39,7 @@ public class GatheringDetailResponse {
     public static GatheringDetailResponse from(Gathering gathering, long participantCount) {
         return GatheringDetailResponse.builder()
             .id(gathering.getId())
-            .createdBy(gathering.getCreatedBy().getId())
+            .hostUser(gathering.getHostUser().getId())
             .name(gathering.getName())
             .location(gathering.getLocation().getText())
             .type(gathering.getType().getText())
