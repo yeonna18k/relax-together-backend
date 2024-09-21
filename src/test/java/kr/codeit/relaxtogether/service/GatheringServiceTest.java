@@ -9,6 +9,7 @@ import kr.codeit.relaxtogether.dto.gathering.response.GatheringDetailResponse;
 import kr.codeit.relaxtogether.entity.User;
 import kr.codeit.relaxtogether.entity.gathering.Gathering;
 import kr.codeit.relaxtogether.entity.gathering.Location;
+import kr.codeit.relaxtogether.entity.gathering.Status;
 import kr.codeit.relaxtogether.entity.gathering.Type;
 import kr.codeit.relaxtogether.entity.gathering.UserGathering;
 import kr.codeit.relaxtogether.repository.UserGatheringRepository;
@@ -330,5 +331,91 @@ class GatheringServiceTest {
         assertThatThrownBy(() -> gatheringService.joinGathering(999L, user.getEmail()))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("해당 모임을 찾을 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("주최자가 모임을 정상적으로 취소한다")
+    void cancelGathering_cancelGatheringAndRemoveHostUserGathering() {
+        // Given
+        User hostUser = userRepository.save(User.builder()
+            .email("host@example.com")
+            .password("password")
+            .name("Host User")
+            .build());
+
+        Gathering gathering = gatheringRepository.save(Gathering.builder()
+            .createdBy(hostUser)
+            .name("Test Gathering")
+            .location(Location.KONDAE)
+            .type(Type.OFFICE_STRETCHING)
+            .dateTime(LocalDateTime.now().plusDays(1))
+            .registrationEnd(LocalDateTime.now().plusDays(1))
+            .capacity(10)
+            .build());
+
+        userGatheringRepository.save(UserGathering.builder()
+            .user(hostUser)
+            .gathering(gathering)
+            .build());
+
+        // When
+        gatheringService.cancelGathering(gathering.getId(), hostUser.getEmail());
+
+        // Then
+        Gathering cancelledGathering = gatheringRepository.findById(gathering.getId())
+            .orElseThrow(() -> new IllegalArgumentException("모임을 찾을 수 없습니다."));
+
+        assertThat(cancelledGathering.getStatus()).isEqualTo(Status.CANCELLED);
+        assertThat(userGatheringRepository.existsByUserIdAndGatheringId(hostUser.getId(), gathering.getId())).isFalse();
+    }
+
+    @Test
+    @DisplayName("비주최자가 모임을 취소하려고 하면 예외가 발생한다")
+    void cancelGathering_throwExceptionWhenNonHostUserTriesToCancel() {
+        // Given
+        User hostUser = userRepository.save(User.builder()
+            .email("host@example.com")
+            .password("password")
+            .name("Host User")
+            .build());
+
+        User nonHostUser = userRepository.save(User.builder()
+            .email("nonhost@example.com")
+            .password("password")
+            .name("Non-host User")
+            .build());
+
+        Gathering gathering = gatheringRepository.save(Gathering.builder()
+            .createdBy(hostUser)
+            .name("Test Gathering")
+            .location(Location.KONDAE)
+            .type(Type.OFFICE_STRETCHING)
+            .dateTime(LocalDateTime.now().plusDays(1))
+            .registrationEnd(LocalDateTime.now().plusDays(1))
+            .capacity(10)
+            .build());
+
+        // When / Then
+        assertThatThrownBy(() -> gatheringService.cancelGathering(gathering.getId(), nonHostUser.getEmail()))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("취소 권한이 없습니다.");
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 모임을 취소하려고 하면 예외가 발생한다")
+    void cancelGathering_throwExceptionWhenGatheringDoesNotExist() {
+        // Given
+        User hostUser = userRepository.save(User.builder()
+            .email("host@example.com")
+            .password("password")
+            .name("Host User")
+            .build());
+
+        Long invalidGatheringId = 999L;
+
+        // When / Then
+        assertThatThrownBy(() -> gatheringService.cancelGathering(invalidGatheringId, hostUser.getEmail()))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("모임을 찾을 수 없거나, 취소 권한이 없습니다.");
     }
 }
