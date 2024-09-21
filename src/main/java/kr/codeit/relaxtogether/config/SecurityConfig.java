@@ -3,7 +3,6 @@ package kr.codeit.relaxtogether.config;
 import static org.springframework.http.HttpMethod.POST;
 
 import java.util.List;
-import kr.codeit.relaxtogether.auth.LoginFilter;
 import kr.codeit.relaxtogether.auth.jwt.JwtFilter;
 import kr.codeit.relaxtogether.auth.jwt.JwtUtil;
 import kr.codeit.relaxtogether.repository.JwtTokenRepository;
@@ -65,10 +64,7 @@ public class SecurityConfig {
                     .requestMatchers(POST, "/api/gatherings/*/join").authenticated()
                     .anyRequest().authenticated()
             )
-            .addFilterBefore(new JwtFilter(jwtUtil, jwtTokenRepository), LoginFilter.class)
-            .addFilterAt(
-                new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, jwtTokenRepository),
-                UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(new JwtFilter(jwtUtil, jwtTokenRepository), UsernamePasswordAuthenticationFilter.class)
             .build();
     }
 
