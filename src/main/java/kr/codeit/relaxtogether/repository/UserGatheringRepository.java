@@ -11,4 +11,6 @@ public interface UserGatheringRepository extends JpaRepository<UserGathering, Lo
     Long countByGatheringId(@Param("gatheringId") Long gatheringId);
 
     boolean existsByUserIdAndGatheringId(@Param("userId") Long userId, @Param("gatheringId") Long gatheringId);
+
+    void deleteByUserIdAndGatheringId(Long id, Long gatheringId);
 }
