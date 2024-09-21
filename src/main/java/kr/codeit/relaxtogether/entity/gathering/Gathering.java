@@ -64,4 +64,8 @@ public class Gathering extends BaseTimeEntity {
         this.capacity = capacity;
         this.status = Status.ONGOING;
     }
+
+    public void cancel() {
+        this.status = Status.CANCELLED;
+    }
 }
