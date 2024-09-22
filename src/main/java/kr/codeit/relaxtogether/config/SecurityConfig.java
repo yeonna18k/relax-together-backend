@@ -1,6 +1,7 @@
 package kr.codeit.relaxtogether.config;
 
 import static org.springframework.http.HttpMethod.DELETE;
+import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.PUT;
 
@@ -64,6 +65,7 @@ public class SecurityConfig {
                         "/v3/api-docs/**",
                         "/api/gatherings/**").permitAll()
                     .requestMatchers(POST, "/api/gatherings").authenticated()
+                    .requestMatchers(GET, "/api/gatherings/my-hosted").authenticated()
                     .requestMatchers(POST, "/api/gatherings/*/join").authenticated()
                     .requestMatchers(PUT, "/api/gatherings/*/cancel").authenticated()
                     .requestMatchers(DELETE, "/api/gatherings/*/leave").authenticated()
