@@ -7,6 +7,7 @@ import kr.codeit.relaxtogether.dto.PagedResponse;
 import kr.codeit.relaxtogether.dto.gathering.request.CreateGatheringRequest;
 import kr.codeit.relaxtogether.dto.gathering.request.GatheringSearchCondition;
 import kr.codeit.relaxtogether.dto.gathering.response.GatheringDetailResponse;
+import kr.codeit.relaxtogether.dto.gathering.response.ParticipantsResponse;
 import kr.codeit.relaxtogether.dto.gathering.response.SearchGatheringResponse;
 import kr.codeit.relaxtogether.service.GatheringService;
 import lombok.RequiredArgsConstructor;
@@ -84,5 +85,14 @@ public class GatheringController {
     ) {
         gatheringService.leaveGathering(gatheringId, user.getUsername());
         return ResponseEntity.ok("모임 참여를 취소 합니다.");
+    }
+
+    @Operation(summary = "특정 모임의 참가자 목록 조회", description = "특정 모임의 참가자 목록을 페이지네이션하여 조회합니다.")
+    @GetMapping("/{gatheringId}/participants")
+    public ResponseEntity<ParticipantsResponse> getParticipants(
+        @PathVariable Long gatheringId,
+        @PageableDefault(size = 5, sort = "createdDate", direction = Sort.Direction.ASC) Pageable pageable
+    ) {
+        return ResponseEntity.ok(gatheringService.getParticipants(gatheringId, pageable));
     }
 }
