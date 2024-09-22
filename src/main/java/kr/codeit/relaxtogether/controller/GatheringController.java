@@ -1,8 +1,7 @@
 package kr.codeit.relaxtogether.controller;
 
-import static org.springframework.data.domain.Sort.Direction.ASC;
-
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import kr.codeit.relaxtogether.auth.CustomUserDetails;
 import kr.codeit.relaxtogether.dto.PagedResponse;
@@ -14,7 +13,10 @@ import kr.codeit.relaxtogether.dto.gathering.response.ParticipantsResponse;
 import kr.codeit.relaxtogether.dto.gathering.response.SearchGatheringResponse;
 import kr.codeit.relaxtogether.service.GatheringService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -48,8 +51,15 @@ public class GatheringController {
     @GetMapping
     public ResponseEntity<PagedResponse<SearchGatheringResponse>> searchGatherings(
         GatheringSearchCondition condition,
-        @PageableDefault(sort = "registrationEnd", direction = ASC) Pageable pageable
+        @RequestParam(value = "page", defaultValue = "0") int page,
+        @RequestParam(value = "size", defaultValue = "10") int size,
+        @Parameter(description = "정렬할 필드를 선택하세요 [registrationEnd, participantCount]")
+        @RequestParam(value = "sortBy", defaultValue = "registrationEnd") String sortBy,
+        @Parameter(description = "정렬순서를 선택하세요 [ASC, DESC]")
+        @RequestParam(value = "sortOrder", defaultValue = "ASC") String sortOrder
     ) {
+        Sort sort = Sort.by(Direction.fromString(sortOrder), sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
         return ResponseEntity.ok(gatheringService.search(condition, pageable));
     }
 
@@ -93,8 +103,10 @@ public class GatheringController {
     @GetMapping("/{gatheringId}/participants")
     public ResponseEntity<ParticipantsResponse> getParticipants(
         @PathVariable Long gatheringId,
-        @PageableDefault(size = 5, sort = "createdDate", direction = ASC) Pageable pageable
+        @RequestParam(value = "page", defaultValue = "0") int page,
+        @RequestParam(value = "size", defaultValue = "5") int size
     ) {
+        PageRequest pageable = PageRequest.of(page, size, Sort.by("createdDate").ascending());
         return ResponseEntity.ok(gatheringService.getParticipants(gatheringId, pageable));
     }
 
@@ -102,7 +114,7 @@ public class GatheringController {
     @GetMapping("/my-hosted")
     public ResponseEntity<PagedResponse<HostedGatheringResponse>> getMyHostedGatherings(
         @AuthenticationPrincipal CustomUserDetails user,
-        @PageableDefault Pageable pageable
+        @PageableDefault @Parameter(hidden = true) Pageable pageable
     ) {
         return ResponseEntity.ok(gatheringService.getMyHostedGatherings(user.getUsername(), pageable));
     }
