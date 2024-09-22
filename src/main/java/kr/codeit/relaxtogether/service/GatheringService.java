@@ -1,12 +1,10 @@
 package kr.codeit.relaxtogether.service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import kr.codeit.relaxtogether.dto.PagedResponse;
 import kr.codeit.relaxtogether.dto.gathering.request.CreateGatheringRequest;
 import kr.codeit.relaxtogether.dto.gathering.request.GatheringSearchCondition;
 import kr.codeit.relaxtogether.dto.gathering.response.GatheringDetailResponse;
-import kr.codeit.relaxtogether.dto.gathering.response.Participant;
 import kr.codeit.relaxtogether.dto.gathering.response.ParticipantsResponse;
 import kr.codeit.relaxtogether.dto.gathering.response.SearchGatheringResponse;
 import kr.codeit.relaxtogether.entity.User;
@@ -132,13 +130,6 @@ public class GatheringService {
         Page<UserGathering> participantsPage = userGatheringRepository.findWithUserByGatheringId(gathering.getId(),
             pageable);
 
-        List<Participant> participants = participantsPage.getContent().stream()
-            .map(Participant::from)
-            .toList();
-
-        return ParticipantsResponse.builder()
-            .gatheringId(gathering.getId())
-            .participants(participants)
-            .build();
+        return ParticipantsResponse.from(participantsPage, gathering.getId());
     }
 }
