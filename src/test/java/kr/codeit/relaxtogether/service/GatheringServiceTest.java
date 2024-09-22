@@ -6,6 +6,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.LocalDateTime;
 import kr.codeit.relaxtogether.dto.gathering.request.CreateGatheringRequest;
 import kr.codeit.relaxtogether.dto.gathering.response.GatheringDetailResponse;
+import kr.codeit.relaxtogether.dto.gathering.response.Participant;
+import kr.codeit.relaxtogether.dto.gathering.response.ParticipantsResponse;
 import kr.codeit.relaxtogether.entity.User;
 import kr.codeit.relaxtogether.entity.gathering.Gathering;
 import kr.codeit.relaxtogether.entity.gathering.Location;
@@ -19,6 +21,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
@@ -524,5 +528,110 @@ class GatheringServiceTest {
         assertThatThrownBy(() -> gatheringService.leaveGathering(nonExistentGatheringId, user.getEmail()))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("모임을 찾을 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("정상적인 모임 참가자 목록 조회")
+    void shouldReturnParticipants() {
+        // Given
+        User user1 = createUser("user1@example.com", "User One");
+        User user2 = createUser("user2@example.com", "User Two");
+
+        Gathering gathering = createGathering(user1, "Test Gathering");
+
+        addUserToGathering(user1, gathering);
+        addUserToGathering(user2, gathering);
+
+        // When
+        Pageable pageable = PageRequest.of(0, 10);
+        ParticipantsResponse participantsResponse = gatheringService.getParticipants(gathering.getId(), pageable);
+
+        // Then
+        assertThat(participantsResponse.getParticipants()).hasSize(2);
+        assertThat(participantsResponse.getParticipants())
+            .extracting(Participant::getName)
+            .containsExactlyInAnyOrder("User One", "User Two");
+    }
+
+    @Test
+    @DisplayName("참가자가 없는 모임 조회")
+    void shouldReturnEmptyListForNoParticipants() {
+        // Given
+        User user = createUser("host@example.com", "Host User");
+        Gathering gathering = createGathering(user, "Empty Gathering");
+
+        // When
+        Pageable pageable = PageRequest.of(0, 10);
+        ParticipantsResponse participantsResponse = gatheringService.getParticipants(gathering.getId(), pageable);
+
+        // Then
+        assertThat(participantsResponse.getParticipants()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 모임 조회 시 예외 발생")
+    void shouldThrowExceptionForNonExistentGathering() {
+        // Given
+        Long nonExistentGatheringId = 999L;
+
+        // When / Then
+        Pageable pageable = PageRequest.of(0, 10);
+        assertThatThrownBy(() -> gatheringService.getParticipants(nonExistentGatheringId, pageable))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("해당 모임을 찾을 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("페이지네이션 적용 확인")
+    void shouldApplyPagination() {
+        // Given
+        User user1 = createUser("user1@example.com", "User One");
+        User user2 = createUser("user2@example.com", "User Two");
+        User user3 = createUser("user3@example.com", "User Three");
+
+        Gathering gathering = createGathering(user1, "Paged Gathering");
+
+        addUserToGathering(user1, gathering);
+        addUserToGathering(user2, gathering);
+        addUserToGathering(user3, gathering);
+
+        // When
+        Pageable pageable = PageRequest.of(0, 2);
+        ParticipantsResponse participantsResponse = gatheringService.getParticipants(gathering.getId(), pageable);
+
+        // Then
+        assertThat(participantsResponse.getParticipants()).hasSize(2);
+        assertThat(participantsResponse.getParticipants())
+            .extracting(Participant::getName)
+            .containsExactlyInAnyOrder("User One", "User Two");
+    }
+
+    private User createUser(String email, String name) {
+        User user = User.builder()
+            .email(email)
+            .name(name)
+            .password("password")
+            .build();
+        return userRepository.save(user);
+    }
+
+    private Gathering createGathering(User host, String name) {
+        Gathering gathering = Gathering.builder()
+            .hostUser(host)
+            .name(name)
+            .location(Location.KONDAE)
+            .dateTime(LocalDateTime.now().plusDays(1))
+            .registrationEnd(LocalDateTime.now().minusDays(1))
+            .capacity(10)
+            .build();
+        return gatheringRepository.save(gathering);
+    }
+
+    private void addUserToGathering(User user, Gathering gathering) {
+        UserGathering userGathering = UserGathering.builder()
+            .user(user)
+            .gathering(gathering)
+            .build();
+        userGatheringRepository.save(userGathering);
     }
 }
