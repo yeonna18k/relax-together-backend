@@ -4,8 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDateTime;
+import kr.codeit.relaxtogether.dto.PagedResponse;
 import kr.codeit.relaxtogether.dto.gathering.request.CreateGatheringRequest;
 import kr.codeit.relaxtogether.dto.gathering.response.GatheringDetailResponse;
+import kr.codeit.relaxtogether.dto.gathering.response.HostedGatheringResponse;
 import kr.codeit.relaxtogether.dto.gathering.response.Participant;
 import kr.codeit.relaxtogether.dto.gathering.response.ParticipantsResponse;
 import kr.codeit.relaxtogether.entity.User;
@@ -23,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
@@ -608,6 +611,132 @@ class GatheringServiceTest {
         assertThat(participantsResponse.getParticipants())
             .extracting(Participant::getName)
             .containsExactlyInAnyOrder("User One", "User Two");
+    }
+
+    @Test
+    @DisplayName("정상적으로 내가 주최한 모임 목록을 조회할 수 있다")
+    void getMyHostedGatherings_Success() {
+        // Given
+        User user = userRepository.save(
+            User.builder()
+                .email("host@example.com")
+                .password("password")
+                .name("Host User")
+                .build()
+        );
+
+        gatheringRepository.save(
+            Gathering.builder()
+                .hostUser(user)
+                .name("Gathering 1")
+                .location(Location.KONDAE)
+                .type(Type.OFFICE_STRETCHING)
+                .dateTime(LocalDateTime.now().plusDays(5))
+                .registrationEnd(LocalDateTime.now().plusDays(3))
+                .capacity(10)
+                .imageUrl("https://example.com/image1.png")
+                .build()
+        );
+
+        gatheringRepository.save(
+            Gathering.builder()
+                .hostUser(user)
+                .name("Gathering 2")
+                .location(Location.HONGDAE)
+                .type(Type.MINDFULNESS)
+                .dateTime(LocalDateTime.now().plusDays(10))
+                .registrationEnd(LocalDateTime.now().plusDays(7))
+                .capacity(20)
+                .imageUrl("https://example.com/image2.png")
+                .build()
+        );
+
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("createdDate").descending());
+
+        // When
+        PagedResponse<HostedGatheringResponse> response = gatheringService.getMyHostedGatherings(user.getEmail(),
+            pageable);
+
+        // Then
+        assertThat(response.getContent()).hasSize(2);
+        assertThat(response.getContent().get(0).getName()).isEqualTo("Gathering 2");
+        assertThat(response.getContent().get(1).getName()).isEqualTo("Gathering 1");
+        assertThat(response.isHasNext()).isFalse();
+    }
+
+    @Test
+    @DisplayName("내가 주최한 모임이 없을 경우 빈 목록을 반환해야 한다")
+    void getMyHostedGatherings_EmptyList() {
+        // Given
+        User user = userRepository.save(
+            User.builder()
+                .email("host@example.com")
+                .password("password")
+                .name("Host User")
+                .build()
+        );
+
+        Pageable pageable = PageRequest.of(0, 10);
+
+        // When
+        PagedResponse<HostedGatheringResponse> response = gatheringService.getMyHostedGatherings(user.getEmail(),
+            pageable);
+
+        // Then
+        assertThat(response.getContent()).isEmpty();
+        assertThat(response.isHasNext()).isFalse();
+    }
+
+    @Test
+    @DisplayName("페이징이 적용된 내가 주최한 모임 목록을 조회할 수 있다")
+    void getMyHostedGatherings_WithPaging() {
+        // Given
+        User user = userRepository.save(
+            User.builder()
+                .email("host@example.com")
+                .password("password")
+                .name("Host User")
+                .build()
+        );
+
+        for (int i = 1; i <= 5; i++) {
+            gatheringRepository.save(
+                Gathering.builder()
+                    .hostUser(user)
+                    .name("Gathering " + i)
+                    .location(Location.HONGDAE)
+                    .type(Type.MINDFULNESS)
+                    .dateTime(LocalDateTime.now().plusDays(i))
+                    .registrationEnd(LocalDateTime.now().plusDays(i - 1))
+                    .capacity(20)
+                    .imageUrl("https://example.com/image" + i + ".png")
+                    .build()
+            );
+        }
+
+        Pageable pageable = PageRequest.of(0, 2, Sort.by("createdDate").descending());
+
+        // When
+        PagedResponse<HostedGatheringResponse> response = gatheringService.getMyHostedGatherings(user.getEmail(),
+            pageable);
+
+        // Then
+        assertThat(response.getContent()).hasSize(2);
+        assertThat(response.getContent().get(0).getName()).isEqualTo("Gathering 5");
+        assertThat(response.getContent().get(1).getName()).isEqualTo("Gathering 4");
+        assertThat(response.isHasNext()).isTrue();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 유저로 내가 주최한 모임을 조회할 경우 예외 발생")
+    void getMyHostedGatherings_UserNotFound() {
+        // Given
+        Pageable pageable = PageRequest.of(0, 10);
+
+        // When/Then
+        assertThatThrownBy(() -> gatheringService.getMyHostedGatherings("nonexistent@example.com", pageable))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("유저정보를 찾을 수 없습니다.");
     }
 
     private User createUser(String email, String name) {
