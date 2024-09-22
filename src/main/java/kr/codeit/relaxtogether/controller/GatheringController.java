@@ -1,5 +1,7 @@
 package kr.codeit.relaxtogether.controller;
 
+import static org.springframework.data.domain.Sort.Direction.ASC;
+
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import kr.codeit.relaxtogether.auth.CustomUserDetails;
@@ -7,12 +9,12 @@ import kr.codeit.relaxtogether.dto.PagedResponse;
 import kr.codeit.relaxtogether.dto.gathering.request.CreateGatheringRequest;
 import kr.codeit.relaxtogether.dto.gathering.request.GatheringSearchCondition;
 import kr.codeit.relaxtogether.dto.gathering.response.GatheringDetailResponse;
+import kr.codeit.relaxtogether.dto.gathering.response.HostedGatheringResponse;
 import kr.codeit.relaxtogether.dto.gathering.response.ParticipantsResponse;
 import kr.codeit.relaxtogether.dto.gathering.response.SearchGatheringResponse;
 import kr.codeit.relaxtogether.service.GatheringService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -46,7 +48,7 @@ public class GatheringController {
     @GetMapping
     public ResponseEntity<PagedResponse<SearchGatheringResponse>> searchGatherings(
         GatheringSearchCondition condition,
-        @PageableDefault(sort = "registrationEnd", direction = Sort.Direction.ASC) Pageable pageable
+        @PageableDefault(sort = "registrationEnd", direction = ASC) Pageable pageable
     ) {
         return ResponseEntity.ok(gatheringService.search(condition, pageable));
     }
@@ -91,8 +93,17 @@ public class GatheringController {
     @GetMapping("/{gatheringId}/participants")
     public ResponseEntity<ParticipantsResponse> getParticipants(
         @PathVariable Long gatheringId,
-        @PageableDefault(size = 5, sort = "createdDate", direction = Sort.Direction.ASC) Pageable pageable
+        @PageableDefault(size = 5, sort = "createdDate", direction = ASC) Pageable pageable
     ) {
         return ResponseEntity.ok(gatheringService.getParticipants(gatheringId, pageable));
+    }
+
+    @Operation(summary = "내가 만든 모임 목록 조회", description = "내가 만든 모임 목록을 조회합니다.(정렬 모임 생성 날짜 DESC)")
+    @GetMapping("/my-hosted")
+    public ResponseEntity<PagedResponse<HostedGatheringResponse>> getMyHostedGatherings(
+        @AuthenticationPrincipal CustomUserDetails user,
+        @PageableDefault Pageable pageable
+    ) {
+        return ResponseEntity.ok(gatheringService.getMyHostedGatherings(user.getUsername(), pageable));
     }
 }

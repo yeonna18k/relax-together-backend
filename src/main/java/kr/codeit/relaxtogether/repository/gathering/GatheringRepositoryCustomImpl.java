@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import kr.codeit.relaxtogether.dto.gathering.request.GatheringSearchCondition;
+import kr.codeit.relaxtogether.dto.gathering.response.HostedGatheringResponse;
+import kr.codeit.relaxtogether.dto.gathering.response.QHostedGatheringResponse;
 import kr.codeit.relaxtogether.dto.gathering.response.QSearchGatheringResponse;
 import kr.codeit.relaxtogether.dto.gathering.response.SearchGatheringResponse;
 import kr.codeit.relaxtogether.entity.gathering.Location;
@@ -63,6 +65,44 @@ public class GatheringRepositoryCustomImpl implements GatheringRepositoryCustom 
                 gathering.imageUrl, gathering.hostUser.id
             )
             .orderBy(applySorting(pageable.getSort(), gathering, userGathering))
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .fetch();
+
+        return new SliceImpl<>(results, pageable, results.size() == pageable.getPageSize());
+    }
+
+    @Override
+    public Slice<HostedGatheringResponse> findGatheringsWithParticipantCountByHostUserId(Long hostUserId,
+        Pageable pageable) {
+        QGathering gathering = QGathering.gathering;
+        QUserGathering userGathering = QUserGathering.userGathering;
+
+        List<HostedGatheringResponse> results = queryFactory
+            .select(new QHostedGatheringResponse(
+                gathering.id,
+                gathering.type,
+                gathering.name,
+                gathering.dateTime,
+                gathering.registrationEnd,
+                gathering.location,
+                userGathering.id.count(),
+                gathering.capacity,
+                gathering.imageUrl,
+                gathering.hostUser.id
+            ))
+            .from(gathering)
+            .leftJoin(userGathering).on(userGathering.gathering.id.eq(gathering.id))
+            .where(
+                gathering.hostUser.id.eq(hostUserId),
+                isOngoing()
+            )
+            .groupBy(
+                gathering.id, gathering.type, gathering.name, gathering.dateTime,
+                gathering.registrationEnd, gathering.location, gathering.capacity,
+                gathering.imageUrl, gathering.hostUser.id
+            )
+            .orderBy(gathering.createdDate.desc())
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();
