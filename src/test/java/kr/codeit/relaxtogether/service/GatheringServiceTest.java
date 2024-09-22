@@ -551,6 +551,10 @@ class GatheringServiceTest {
         assertThat(participantsResponse.getParticipants())
             .extracting(Participant::getName)
             .containsExactlyInAnyOrder("User One", "User Two");
+
+        assertThat(participantsResponse.getCurrentPage()).isZero();
+        assertThat(participantsResponse.getTotalPages()).isEqualTo(1);
+        assertThat(participantsResponse.getTotalElements()).isEqualTo(2);
     }
 
     @Test
