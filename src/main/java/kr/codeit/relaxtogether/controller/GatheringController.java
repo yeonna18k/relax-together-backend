@@ -87,7 +87,7 @@ public class GatheringController {
         return ResponseEntity.ok("모임 참여를 취소 합니다.");
     }
 
-    @Operation(summary = "특정 모임의 참가자 목록 조회", description = "특정 모임의 참가자 목록을 페이지네이션하여 조회합니다.")
+    @Operation(summary = "특정 모임의 참가자 목록 조회", description = "특정 모임의 참가자 목록을 페이지네이션하여 조회합니다.(기본 정렬 참여 날짜 ASC)")
     @GetMapping("/{gatheringId}/participants")
     public ResponseEntity<ParticipantsResponse> getParticipants(
         @PathVariable Long gatheringId,
