@@ -1,6 +1,8 @@
 package kr.codeit.relaxtogether.config;
 
+import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.PUT;
 
 import java.util.List;
 import kr.codeit.relaxtogether.auth.jwt.JwtFilter;
@@ -61,7 +63,10 @@ public class SecurityConfig {
                         "/swagger-ui/**",
                         "/v3/api-docs/**",
                         "/api/gatherings/**").permitAll()
+                    .requestMatchers(POST, "/api/gatherings").authenticated()
                     .requestMatchers(POST, "/api/gatherings/*/join").authenticated()
+                    .requestMatchers(PUT, "/api/gatherings/*/cancel").authenticated()
+                    .requestMatchers(DELETE, "/api/gatherings/*/leave").authenticated()
                     .anyRequest().authenticated()
             )
             .addFilterBefore(new JwtFilter(jwtUtil, jwtTokenRepository), UsernamePasswordAuthenticationFilter.class)
