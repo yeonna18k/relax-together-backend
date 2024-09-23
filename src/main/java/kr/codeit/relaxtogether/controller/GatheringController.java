@@ -51,7 +51,9 @@ public class GatheringController {
     @GetMapping
     public ResponseEntity<PagedResponse<SearchGatheringResponse>> searchGatherings(
         GatheringSearchCondition condition,
+        @Parameter(description = "조회 시작 위치 (최소 0)")
         @RequestParam(value = "page", defaultValue = "0") int page,
+        @Parameter(description = "한 번에 조회할 모임 수 (최소 1)")
         @RequestParam(value = "size", defaultValue = "10") int size,
         @Parameter(description = "정렬할 필드를 선택하세요 [registrationEnd, participantCount]")
         @RequestParam(value = "sortBy", defaultValue = "registrationEnd") String sortBy,
@@ -103,7 +105,9 @@ public class GatheringController {
     @GetMapping("/{gatheringId}/participants")
     public ResponseEntity<ParticipantsResponse> getParticipants(
         @PathVariable Long gatheringId,
+        @Parameter(description = "조회 시작 위치 (최소 0)")
         @RequestParam(value = "page", defaultValue = "0") int page,
+        @Parameter(description = "한 번에 조회할 모임 수 (최소 1)")
         @RequestParam(value = "size", defaultValue = "5") int size
     ) {
         PageRequest pageable = PageRequest.of(page, size, Sort.by("createdDate").ascending());
