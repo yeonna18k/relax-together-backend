@@ -1,21 +1,25 @@
 package kr.codeit.relaxtogether.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import kr.codeit.relaxtogether.dto.PagedResponse;
 import kr.codeit.relaxtogether.dto.gathering.request.CreateGatheringRequest;
 import kr.codeit.relaxtogether.dto.gathering.request.GatheringSearchCondition;
 import kr.codeit.relaxtogether.dto.gathering.response.GatheringDetailResponse;
 import kr.codeit.relaxtogether.dto.gathering.response.HostedGatheringResponse;
+import kr.codeit.relaxtogether.dto.gathering.response.MyGatheringResponse;
 import kr.codeit.relaxtogether.dto.gathering.response.ParticipantsResponse;
 import kr.codeit.relaxtogether.dto.gathering.response.SearchGatheringResponse;
 import kr.codeit.relaxtogether.entity.User;
 import kr.codeit.relaxtogether.entity.gathering.Gathering;
+import kr.codeit.relaxtogether.entity.gathering.Status;
 import kr.codeit.relaxtogether.entity.gathering.UserGathering;
 import kr.codeit.relaxtogether.repository.UserGatheringRepository;
 import kr.codeit.relaxtogether.repository.UserRepository;
 import kr.codeit.relaxtogether.repository.gathering.GatheringRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -120,6 +124,30 @@ public class GatheringService {
             gatherings.hasNext(),
             gatherings.getNumberOfElements()
         );
+    }
+
+    public PagedResponse<MyGatheringResponse> getMyGatherings(String userId, PageRequest pageable) {
+        User user = getUserByEmail(userId);
+
+        Slice<UserGathering> gatherings = userGatheringRepository.findGatheringsByUserId(user.getId(), pageable);
+        List<MyGatheringResponse> myGatherings = gatherings.getContent().stream()
+            .map(userGathering -> {
+                Gathering gathering = userGathering.getGathering();
+                Long participantCount = userGatheringRepository.countByGatheringId(gathering.getId());
+                return MyGatheringResponse.from(gathering, participantCount, validateComplete(gathering));
+            })
+            .toList();
+
+        return new PagedResponse<>(
+            myGatherings,
+            gatherings.hasNext(),
+            gatherings.getNumberOfElements()
+        );
+    }
+
+    private boolean validateComplete(Gathering gathering) {
+        return gathering.getStatus() != Status.CANCELLED
+            && gathering.getRegistrationEnd().isBefore(LocalDateTime.now());
     }
 
     private void saveUserGathering(User user, Gathering gathering) {

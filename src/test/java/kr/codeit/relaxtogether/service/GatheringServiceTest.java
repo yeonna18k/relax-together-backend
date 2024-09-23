@@ -8,6 +8,7 @@ import kr.codeit.relaxtogether.dto.PagedResponse;
 import kr.codeit.relaxtogether.dto.gathering.request.CreateGatheringRequest;
 import kr.codeit.relaxtogether.dto.gathering.response.GatheringDetailResponse;
 import kr.codeit.relaxtogether.dto.gathering.response.HostedGatheringResponse;
+import kr.codeit.relaxtogether.dto.gathering.response.MyGatheringResponse;
 import kr.codeit.relaxtogether.dto.gathering.response.Participant;
 import kr.codeit.relaxtogether.dto.gathering.response.ParticipantsResponse;
 import kr.codeit.relaxtogether.entity.User;
@@ -737,6 +738,99 @@ class GatheringServiceTest {
         assertThatThrownBy(() -> gatheringService.getMyHostedGatherings("nonexistent@example.com", pageable))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("유저정보를 찾을 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("모임이 이미 종료된 경우 isCompleted 값이 true로 반환된다")
+    void getMyGatherings_isCompleted() {
+        // Given
+        User user = createUser("host@example.com", "Host User");
+
+        Gathering pastGathering = gatheringRepository.save(
+            Gathering.builder()
+                .hostUser(user)
+                .name("Past Gathering")
+                .location(Location.HONGDAE)
+                .type(Type.MINDFULNESS)
+                .dateTime(LocalDateTime.now().minusDays(10))
+                .registrationEnd(LocalDateTime.now().minusDays(11))
+                .capacity(10)
+                .imageUrl("https://example.com/image.png")
+                .build());
+
+        userGatheringRepository.save(UserGathering.builder()
+            .user(user)
+            .gathering(pastGathering)
+            .build());
+
+        PageRequest pageable = PageRequest.of(0, 5);
+
+        // When
+        PagedResponse<MyGatheringResponse> response = gatheringService.getMyGatherings(user.getEmail(), pageable);
+
+        // Then
+        boolean isCompleted = response.getContent().stream()
+            .anyMatch(gathering -> gathering.getName().equals("Past Gathering") && gathering.isCompleted());
+
+        assertThat(isCompleted).isTrue();
+    }
+
+    @Test
+    @DisplayName("취소된 모임의 상태를 확인한다")
+    void getMyGatherings_ReturnCancelledIfCancelled() {
+        // Given
+        User user = createUser("test@example.com", "Test User");
+
+        Gathering ongoingGathering = gatheringRepository.save(
+            Gathering.builder()
+                .hostUser(user)
+                .name("ONGOING Gathering")
+                .location(Location.HONGDAE)
+                .type(Type.MINDFULNESS)
+                .dateTime(LocalDateTime.now().minusDays(5))
+                .registrationEnd(LocalDateTime.now().minusDays(11))
+                .capacity(10)
+                .imageUrl("https://example.com/image.png")
+                .build());
+
+        Gathering cancelledGathering = gatheringRepository.save(
+            Gathering.builder()
+                .hostUser(user)
+                .name("CANCELLED Gathering")
+                .location(Location.HONGDAE)
+                .type(Type.MINDFULNESS)
+                .dateTime(LocalDateTime.now().minusDays(10))
+                .registrationEnd(LocalDateTime.now().minusDays(11))
+                .capacity(10)
+                .imageUrl("https://example.com/image.png")
+                .build());
+        cancelledGathering.cancel();  // 모임 취소
+
+        addUserToGathering(user, ongoingGathering);
+        addUserToGathering(user, cancelledGathering);
+
+        // When
+        PageRequest pageable = PageRequest.of(0, 10);
+        PagedResponse<MyGatheringResponse> response = gatheringService.getMyGatherings(user.getEmail(), pageable);
+
+        // Then
+        assertThat(response.getContent()).hasSize(2);
+
+        MyGatheringResponse ongoingResponse = response.getContent().stream()
+            .filter(g -> g.getName().equals("ONGOING Gathering"))
+            .findFirst()
+            .orElseThrow(() -> new AssertionError("Ongoing Gathering not found"));
+
+        MyGatheringResponse cancelledResponse = response.getContent().stream()
+            .filter(g -> g.getName().equals("CANCELLED Gathering"))
+            .findFirst()
+            .orElseThrow(() -> new AssertionError("Cancelled Gathering not found"));
+
+        assertThat(ongoingResponse.getStatus()).isEqualTo(Status.ONGOING);
+        assertThat(ongoingResponse.isCompleted()).isTrue();
+
+        assertThat(cancelledResponse.getStatus()).isEqualTo(Status.CANCELLED);
+        assertThat(cancelledResponse.isCompleted()).isFalse();
     }
 
     private User createUser(String email, String name) {

@@ -9,6 +9,7 @@ import kr.codeit.relaxtogether.dto.gathering.request.CreateGatheringRequest;
 import kr.codeit.relaxtogether.dto.gathering.request.GatheringSearchCondition;
 import kr.codeit.relaxtogether.dto.gathering.response.GatheringDetailResponse;
 import kr.codeit.relaxtogether.dto.gathering.response.HostedGatheringResponse;
+import kr.codeit.relaxtogether.dto.gathering.response.MyGatheringResponse;
 import kr.codeit.relaxtogether.dto.gathering.response.ParticipantsResponse;
 import kr.codeit.relaxtogether.dto.gathering.response.SearchGatheringResponse;
 import kr.codeit.relaxtogether.service.GatheringService;
@@ -114,12 +115,25 @@ public class GatheringController {
         return ResponseEntity.ok(gatheringService.getParticipants(gatheringId, pageable));
     }
 
-    @Operation(summary = "내가 만든 모임 목록 조회", description = "내가 만든 모임 목록을 조회합니다.(정렬 모임 생성 날짜 DESC)")
+    @Operation(summary = "내가 만든 모임 목록 조회", description = "내가 만든 모임 목록을 조회합니다.(정렬기준 : createDate,DESC)")
     @GetMapping("/my-hosted")
     public ResponseEntity<PagedResponse<HostedGatheringResponse>> getMyHostedGatherings(
         @AuthenticationPrincipal CustomUserDetails user,
         @PageableDefault @Parameter(hidden = true) Pageable pageable
     ) {
         return ResponseEntity.ok(gatheringService.getMyHostedGatherings(user.getUsername(), pageable));
+    }
+
+    @Operation(summary = "로그인 된 사용자가 참석한 모임 목록 조회", description = "로그인된 사용자가 참석한 모임의 목록을 조회합니다.(STATUS = ONGOING, CANCELLED)")
+    @GetMapping("/joined")
+    public ResponseEntity<PagedResponse<MyGatheringResponse>> getMyGatherings(
+        @AuthenticationPrincipal CustomUserDetails user,
+        @Parameter(description = "조회 시작 위치 (최소 0)")
+        @RequestParam(value = "page", defaultValue = "0") int page,
+        @Parameter(description = "한 번에 조회할 모임 수 (최소 1)")
+        @RequestParam(value = "size", defaultValue = "10") int size
+    ) {
+        PageRequest pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(gatheringService.getMyGatherings(user.getUsername(), pageable));
     }
 }
