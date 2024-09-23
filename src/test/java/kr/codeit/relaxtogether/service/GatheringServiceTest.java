@@ -17,6 +17,7 @@ import kr.codeit.relaxtogether.entity.gathering.Location;
 import kr.codeit.relaxtogether.entity.gathering.Status;
 import kr.codeit.relaxtogether.entity.gathering.Type;
 import kr.codeit.relaxtogether.entity.gathering.UserGathering;
+import kr.codeit.relaxtogether.exception.ApiException;
 import kr.codeit.relaxtogether.repository.UserGatheringRepository;
 import kr.codeit.relaxtogether.repository.UserRepository;
 import kr.codeit.relaxtogether.repository.gathering.GatheringRepository;
@@ -108,7 +109,7 @@ class GatheringServiceTest {
 
         // When/Then
         assertThatThrownBy(() -> gatheringService.createGathering(request, user.getEmail()))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(ApiException.class)
             .hasMessageContaining("모집 종료일은 모임 시작일 이전이어야 합니다.");
     }
 
@@ -128,8 +129,8 @@ class GatheringServiceTest {
 
         // When/Then
         assertThatThrownBy(() -> gatheringService.createGathering(request, "nonexistent@example.com"))
-            .isInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("유저정보를 찾을 수 없습니다.");
+            .isInstanceOf(ApiException.class)
+            .hasMessageContaining("해당 유저를 찾을 수 없습니다. 로그인 정보를 확인해 주세요.");
     }
 
     @Test
@@ -186,7 +187,7 @@ class GatheringServiceTest {
 
         // When / Then
         assertThatThrownBy(() -> gatheringService.getGatheringDetail(invalidGatheringId))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(ApiException.class)
             .hasMessageContaining("해당 모임을 찾을 수 없습니다.");
     }
 
@@ -263,7 +264,7 @@ class GatheringServiceTest {
 
         // When/Then
         assertThatThrownBy(() -> gatheringService.joinGathering(gathering.getId(), anotherUser.getEmail()))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(ApiException.class)
             .hasMessageContaining("해당 모임은 이미 정원이 찼습니다.");
     }
 
@@ -296,7 +297,7 @@ class GatheringServiceTest {
 
         // When/Then
         assertThatThrownBy(() -> gatheringService.joinGathering(gathering.getId(), user.getEmail()))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(ApiException.class)
             .hasMessageContaining("이미 참여한 모임입니다.");
     }
 
@@ -318,8 +319,8 @@ class GatheringServiceTest {
 
         // When/Then
         assertThatThrownBy(() -> gatheringService.joinGathering(gathering.getId(), "nonexistent@example.com"))
-            .isInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("유저정보를 찾을 수 없습니다.");
+            .isInstanceOf(ApiException.class)
+            .hasMessageContaining("해당 유저를 찾을 수 없습니다. 로그인 정보를 확인해 주세요.");
     }
 
     @Test
@@ -337,7 +338,7 @@ class GatheringServiceTest {
 
         // When/Then
         assertThatThrownBy(() -> gatheringService.joinGathering(999L, user.getEmail()))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(ApiException.class)
             .hasMessageContaining("해당 모임을 찾을 수 없습니다.");
     }
 
@@ -405,8 +406,8 @@ class GatheringServiceTest {
 
         // When / Then
         assertThatThrownBy(() -> gatheringService.cancelGathering(gathering.getId(), nonHostUser.getEmail()))
-            .isInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("취소 권한이 없습니다.");
+            .isInstanceOf(ApiException.class)
+            .hasMessageContaining("해당 요청에 대한 권한이 없습니다.");
     }
 
     @Test
@@ -423,8 +424,8 @@ class GatheringServiceTest {
 
         // When / Then
         assertThatThrownBy(() -> gatheringService.cancelGathering(invalidGatheringId, hostUser.getEmail()))
-            .isInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("모임을 찾을 수 없거나, 취소 권한이 없습니다.");
+            .isInstanceOf(ApiException.class)
+            .hasMessageContaining("해당 요청에 대한 권한이 없습니다.");
     }
 
     @Test
@@ -486,7 +487,7 @@ class GatheringServiceTest {
 
         // When / Then
         assertThatThrownBy(() -> gatheringService.leaveGathering(pastGathering.getId(), user.getEmail()))
-            .isInstanceOf(IllegalStateException.class)
+            .isInstanceOf(ApiException.class)
             .hasMessageContaining("이미 지난 모임은 참여 취소가 불가합니다.");
     }
 
@@ -512,8 +513,8 @@ class GatheringServiceTest {
 
         // When / Then
         assertThatThrownBy(() -> gatheringService.leaveGathering(gathering.getId(), user.getEmail()))
-            .isInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("참여하지 않은 모임 입니다.");
+            .isInstanceOf(ApiException.class)
+            .hasMessageContaining("참여하지 않은 모임입니다.");
     }
 
     @Test
@@ -530,7 +531,7 @@ class GatheringServiceTest {
 
         // When / Then
         assertThatThrownBy(() -> gatheringService.leaveGathering(nonExistentGatheringId, user.getEmail()))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(ApiException.class)
             .hasMessageContaining("모임을 찾을 수 없습니다.");
     }
 
@@ -585,7 +586,7 @@ class GatheringServiceTest {
         // When / Then
         Pageable pageable = PageRequest.of(0, 10);
         assertThatThrownBy(() -> gatheringService.getParticipants(nonExistentGatheringId, pageable))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(ApiException.class)
             .hasMessageContaining("해당 모임을 찾을 수 없습니다.");
     }
 
@@ -736,8 +737,8 @@ class GatheringServiceTest {
 
         // When/Then
         assertThatThrownBy(() -> gatheringService.getMyHostedGatherings("nonexistent@example.com", pageable))
-            .isInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("유저정보를 찾을 수 없습니다.");
+            .isInstanceOf(ApiException.class)
+            .hasMessageContaining("해당 유저를 찾을 수 없습니다. 로그인 정보를 확인해 주세요.");
     }
 
     @Test
