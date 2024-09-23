@@ -63,6 +63,7 @@ public class SecurityConfig {
                         "/h2-console/**",
                         "/swagger-ui/**",
                         "/v3/api-docs/**",
+                        "/swagger.json/**",
                         "/api/gatherings/**").permitAll()
                     .requestMatchers(POST, "/api/gatherings").authenticated()
                     .requestMatchers(GET, "/api/gatherings/my-hosted").authenticated()
