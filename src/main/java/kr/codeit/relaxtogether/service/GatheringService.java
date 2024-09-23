@@ -1,5 +1,14 @@
 package kr.codeit.relaxtogether.service;
 
+import static kr.codeit.relaxtogether.exception.ErrorCode.AUTHENTICATION_FAIL;
+import static kr.codeit.relaxtogether.exception.ErrorCode.AUTHORIZATION_FAIL;
+import static kr.codeit.relaxtogether.exception.ErrorCode.GATHERING_ALREADY_JOINED;
+import static kr.codeit.relaxtogether.exception.ErrorCode.GATHERING_CAPACITY_FULL;
+import static kr.codeit.relaxtogether.exception.ErrorCode.GATHERING_DATE_VALIDATION_ERROR;
+import static kr.codeit.relaxtogether.exception.ErrorCode.GATHERING_NOT_FOUND;
+import static kr.codeit.relaxtogether.exception.ErrorCode.GATHERING_PAST_DATE;
+import static kr.codeit.relaxtogether.exception.ErrorCode.PARTICIPATION_NOT_FOUND;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import kr.codeit.relaxtogether.dto.PagedResponse;
@@ -14,6 +23,7 @@ import kr.codeit.relaxtogether.entity.User;
 import kr.codeit.relaxtogether.entity.gathering.Gathering;
 import kr.codeit.relaxtogether.entity.gathering.Status;
 import kr.codeit.relaxtogether.entity.gathering.UserGathering;
+import kr.codeit.relaxtogether.exception.ApiException;
 import kr.codeit.relaxtogether.repository.UserGatheringRepository;
 import kr.codeit.relaxtogether.repository.UserRepository;
 import kr.codeit.relaxtogether.repository.gathering.GatheringRepository;
@@ -69,11 +79,11 @@ public class GatheringService {
         Gathering gathering = getGatheringBy(gatheringId);
 
         if (userGatheringRepository.countByGatheringId(gatheringId) >= gathering.getCapacity()) {
-            throw new IllegalArgumentException("해당 모임은 이미 정원이 찼습니다.");
+            throw new ApiException(GATHERING_CAPACITY_FULL);
         }
 
         if (userGatheringRepository.existsByUserIdAndGatheringId(user.getId(), gathering.getId())) {
-            throw new IllegalArgumentException("이미 참여한 모임입니다.");
+            throw new ApiException(GATHERING_ALREADY_JOINED);
         }
 
         saveUserGathering(user, gathering);
@@ -84,7 +94,7 @@ public class GatheringService {
         User user = getUserByEmail(userId);
 
         Gathering gathering = gatheringRepository.findByIdAndHostUserId(gatheringId, user.getId())
-            .orElseThrow(() -> new IllegalArgumentException("해당 모임을 찾을 수 없거나, 취소 권한이 없습니다."));
+            .orElseThrow(() -> new ApiException(AUTHORIZATION_FAIL));
         gathering.cancel();
 
         userGatheringRepository.deleteByUserIdAndGatheringId(user.getId(), gatheringId);
@@ -96,11 +106,11 @@ public class GatheringService {
         Gathering gathering = getGatheringBy(gatheringId);
 
         if (gathering.getDateTime().isBefore(LocalDateTime.now())) {
-            throw new IllegalStateException("이미 지난 모임은 참여 취소가 불가합니다.");
+            throw new ApiException(GATHERING_PAST_DATE);
         }
 
         if (!userGatheringRepository.existsByUserIdAndGatheringId(user.getId(), gatheringId)) {
-            throw new IllegalArgumentException("참여하지 않은 모임 입니다.");
+            throw new ApiException(PARTICIPATION_NOT_FOUND);
         }
 
         userGatheringRepository.deleteByUserIdAndGatheringId(user.getId(), gatheringId);
@@ -160,17 +170,17 @@ public class GatheringService {
 
     private User getUserByEmail(String userId) {
         return userRepository.findByEmail(userId)
-            .orElseThrow(() -> new IllegalArgumentException("유저정보를 찾을 수 없습니다."));
+            .orElseThrow(() -> new ApiException(AUTHENTICATION_FAIL));
     }
 
     private Gathering getGatheringBy(Long gatheringId) {
         return gatheringRepository.findById(gatheringId)
-            .orElseThrow(() -> new IllegalArgumentException("해당 모임을 찾을 수 없습니다."));
+            .orElseThrow(() -> new ApiException(GATHERING_NOT_FOUND));
     }
 
     private void validateDateTime(CreateGatheringRequest request) {
         if (request.getRegistrationEnd().isAfter(request.getDateTime())) {
-            throw new IllegalArgumentException("모집 종료일은 모임 시작일 이전이어야 합니다.");
+            throw new ApiException(GATHERING_DATE_VALIDATION_ERROR);
         }
     }
 }
