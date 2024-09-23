@@ -8,6 +8,8 @@ import static org.springframework.http.HttpMethod.PUT;
 import java.util.List;
 import kr.codeit.relaxtogether.auth.jwt.JwtFilter;
 import kr.codeit.relaxtogether.auth.jwt.JwtUtil;
+import kr.codeit.relaxtogether.exception.security.CustomAccessDeniedHandler;
+import kr.codeit.relaxtogether.exception.security.CustomAuthenticationEntryPoint;
 import kr.codeit.relaxtogether.repository.JwtTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -49,6 +51,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity.csrf(AbstractHttpConfigurer::disable)
+            .exceptionHandling(exceptions -> exceptions
+                .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+                .accessDeniedHandler(new CustomAccessDeniedHandler()))
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .formLogin(AbstractHttpConfigurer::disable)
             .httpBasic(AbstractHttpConfigurer::disable)
