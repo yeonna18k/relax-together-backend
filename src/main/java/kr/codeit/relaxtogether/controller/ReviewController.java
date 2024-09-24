@@ -54,7 +54,7 @@ public class ReviewController {
             .body(loginUserReviews);
     }
 
-    @Operation(summary = "리뷰 목록 조회", description = "해당 모임에 작성된 리뷰 목록을 조회합니다.")
+    @Operation(summary = "모임 리뷰 목록 조회", description = "해당 모임에 작성된 리뷰 목록을 조회합니다.")
     @GetMapping("/{gatheringId}")
     public ResponseEntity<List<ReviewDetailsResponse>> getReviewsByGatheringId(
         @PathVariable Long gatheringId,
