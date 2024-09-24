@@ -1,10 +1,13 @@
 package kr.codeit.relaxtogether.service;
 
+import static kr.codeit.relaxtogether.exception.ErrorCode.EMAIL_ALREADY_EXISTS;
+
 import kr.codeit.relaxtogether.dto.user.request.EmailCheckRequest;
 import kr.codeit.relaxtogether.dto.user.request.JoinUserRequest;
 import kr.codeit.relaxtogether.dto.user.request.UpdateUserRequest;
 import kr.codeit.relaxtogether.dto.user.response.UserDetailsResponse;
 import kr.codeit.relaxtogether.entity.User;
+import kr.codeit.relaxtogether.exception.ApiException;
 import kr.codeit.relaxtogether.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,7 +23,10 @@ public class UserService {
     private final BCryptPasswordEncoder passwordEncoder;
 
     public boolean checkEmail(EmailCheckRequest emailCheckRequest) {
-        return userRepository.existsByEmail(emailCheckRequest.getEmail());
+        if (userRepository.existsByEmail(emailCheckRequest.getEmail())) {
+            throw new ApiException(EMAIL_ALREADY_EXISTS);
+        }
+        return true;
     }
 
     public UserDetailsResponse getUserDetails(String email) {
