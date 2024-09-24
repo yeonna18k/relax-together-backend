@@ -432,20 +432,31 @@ class GatheringServiceTest {
     @DisplayName("정상적으로 모임 참여를 취소한다")
     void leaveGathering() {
         // Given
-        User user = userRepository.save(User.builder()
+        User hostUser = userRepository.save(User.builder()
             .email("user@example.com")
+            .password("password")
+            .name("Host User")
+            .build());
+
+        User user = userRepository.save(User.builder()
+            .email("user1@example.com")
             .password("password")
             .name("Test User")
             .build());
 
         Gathering gathering = gatheringRepository.save(Gathering.builder()
-            .hostUser(user)
+            .hostUser(hostUser)
             .name("Test Gathering")
             .location(Location.KONDAE)
             .type(Type.OFFICE_STRETCHING)
             .dateTime(LocalDateTime.now().plusDays(1))
             .registrationEnd(LocalDateTime.now().plusDays(1))
             .capacity(10)
+            .build());
+
+        userGatheringRepository.save(UserGathering.builder()
+            .user(hostUser)
+            .gathering(gathering)
             .build());
 
         userGatheringRepository.save(UserGathering.builder()
@@ -488,21 +499,27 @@ class GatheringServiceTest {
         // When / Then
         assertThatThrownBy(() -> gatheringService.leaveGathering(pastGathering.getId(), user.getEmail()))
             .isInstanceOf(ApiException.class)
-            .hasMessageContaining("이미 지난 모임은 참여 취소가 불가합니다.");
+            .hasMessageContaining("주최자는 모임 참여 취소가 불가능합니다.");
     }
 
     @Test
     @DisplayName("참여하지 않은 모임을 취소하려는 경우 예외 발생")
     void leaveGathering_throwExceptionIfUserDidNotJoin() {
         // Given
-        User user = userRepository.save(User.builder()
+        User hostUser = userRepository.save(User.builder()
             .email("user@example.com")
+            .password("password")
+            .name("Host User")
+            .build());
+
+        User user = userRepository.save(User.builder()
+            .email("user1@example.com")
             .password("password")
             .name("Test User")
             .build());
 
         Gathering gathering = gatheringRepository.save(Gathering.builder()
-            .hostUser(user)
+            .hostUser(hostUser)
             .name("Test Gathering")
             .location(Location.KONDAE)
             .type(Type.OFFICE_STRETCHING)
