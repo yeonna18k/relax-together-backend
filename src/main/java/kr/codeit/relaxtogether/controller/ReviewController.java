@@ -37,10 +37,18 @@ public class ReviewController {
             .body("success");
     }
 
+    @Operation(summary = "내가 작성한 리뷰 목록 조회", description = "내가 작성한 리뷰 목록을 조회합니다.")
     @GetMapping("/me")
     public ResponseEntity<List<ReviewDetailsResponse>> loginUserReviews(
-        @AuthenticationPrincipal CustomUserDetails userDetails) {
-        List<ReviewDetailsResponse> loginUserReviews = reviewService.getLoginUserReviews(userDetails.getUsername());
+        @AuthenticationPrincipal CustomUserDetails userDetails,
+        @Parameter(description = "조회 시작 위치 (최소 0)")
+        @RequestParam(value = "page", defaultValue = "0") int page,
+        @Parameter(description = "한 번에 조회할 리뷰 수 (최소 1)")
+        @RequestParam(value = "size", defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        List<ReviewDetailsResponse> loginUserReviews = reviewService.getLoginUserReviews(userDetails.getUsername(),
+            pageable);
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(loginUserReviews);
