@@ -1,12 +1,14 @@
 package kr.codeit.relaxtogether.service;
 
+import java.util.List;
 import kr.codeit.relaxtogether.dto.review.request.WriteReviewRequest;
+import kr.codeit.relaxtogether.dto.review.response.ReviewDetailsResponse;
 import kr.codeit.relaxtogether.entity.Review;
 import kr.codeit.relaxtogether.entity.User;
 import kr.codeit.relaxtogether.entity.gathering.Gathering;
-import kr.codeit.relaxtogether.repository.ReviewRepository;
 import kr.codeit.relaxtogether.repository.UserRepository;
 import kr.codeit.relaxtogether.repository.gathering.GatheringRepository;
+import kr.codeit.relaxtogether.repository.review.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,5 +30,11 @@ public class ReviewService {
             .orElseThrow(RuntimeException::new);
         Review review = writeReviewRequest.toEntity(user, gathering);
         reviewRepository.save(review);
+    }
+
+    public List<ReviewDetailsResponse> getLoginUserReviews(String loginEmail) {
+        User user = userRepository.findByEmail(loginEmail)
+            .orElseThrow(RuntimeException::new);
+        return reviewRepository.findReviewsByUserId(user.getId());
     }
 }

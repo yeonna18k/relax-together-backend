@@ -4,7 +4,6 @@ import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -19,18 +18,16 @@ import kr.codeit.relaxtogether.entity.gathering.QGathering;
 import kr.codeit.relaxtogether.entity.gathering.QUserGathering;
 import kr.codeit.relaxtogether.entity.gathering.Status;
 import kr.codeit.relaxtogether.entity.gathering.Type;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.domain.Sort;
 
+@RequiredArgsConstructor
 public class GatheringRepositoryCustomImpl implements GatheringRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
-
-    public GatheringRepositoryCustomImpl(EntityManager em) {
-        this.queryFactory = new JPAQueryFactory(em);
-    }
 
     @Override
     public Slice<SearchGatheringResponse> searchGatherings(GatheringSearchCondition condition, Pageable pageable) {
