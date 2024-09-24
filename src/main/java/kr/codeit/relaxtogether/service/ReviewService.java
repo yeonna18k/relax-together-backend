@@ -10,6 +10,7 @@ import kr.codeit.relaxtogether.repository.UserRepository;
 import kr.codeit.relaxtogether.repository.gathering.GatheringRepository;
 import kr.codeit.relaxtogether.repository.review.ReviewRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,5 +37,9 @@ public class ReviewService {
         User user = userRepository.findByEmail(loginEmail)
             .orElseThrow(RuntimeException::new);
         return reviewRepository.findReviewsByUserId(user.getId());
+    }
+
+    public List<ReviewDetailsResponse> getReviewsByGatheringId(Long gatheringId, Pageable pageable) {
+        return reviewRepository.findReviewsByGatheringId(gatheringId, pageable);
     }
 }
