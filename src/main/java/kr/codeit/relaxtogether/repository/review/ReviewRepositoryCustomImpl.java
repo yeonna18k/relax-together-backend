@@ -39,7 +39,7 @@ public class ReviewRepositoryCustomImpl implements ReviewRepositoryCustom {
             .where(review.user.id.eq(userId))
             .orderBy(review.createdDate.desc())
             .offset(pageable.getOffset())
-            .limit(pageSize + 1)
+            .limit(pageSize + 1L)
             .fetch();
 
         boolean hasNext = false;
