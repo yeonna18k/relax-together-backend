@@ -23,6 +23,9 @@ public enum ErrorCode {
     GATHERING_CANCELLED(FORBIDDEN, "GATH004", "해당 모임은 취소되었습니다."),
     GATHERING_PAST_DATE(FORBIDDEN, "GATH005", "이미 지난 모임은 참여 취소가 불가합니다."),
 
+    LOCATION_NOT_FOUND(BAD_REQUEST, "LOC001", "장소 이름을 확인해 주세요. [건대입구, 홍대입구, 을지로3가, 신림]"),
+    TYPE_NOT_FOUND(BAD_REQUEST, "TYPE001", "타입 형식이 올바르지 않습니다. [오피스 스트레칭, 마인드풀니스, 워케이션]"),
+
     PARTICIPATION_NOT_FOUND(BAD_REQUEST, "PART001", "참여하지 않은 모임입니다.");
 
     private final HttpStatus httpStatus;
