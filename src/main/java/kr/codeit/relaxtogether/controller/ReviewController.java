@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import java.util.List;
 import kr.codeit.relaxtogether.auth.CustomUserDetails;
+import kr.codeit.relaxtogether.dto.PagedResponse;
 import kr.codeit.relaxtogether.dto.review.request.WriteReviewRequest;
 import kr.codeit.relaxtogether.dto.review.response.ReviewDetailsResponse;
 import kr.codeit.relaxtogether.service.ReviewService;
@@ -39,7 +40,7 @@ public class ReviewController {
 
     @Operation(summary = "내가 작성한 리뷰 목록 조회", description = "내가 작성한 리뷰 목록을 조회합니다.")
     @GetMapping("/me")
-    public ResponseEntity<List<ReviewDetailsResponse>> loginUserReviews(
+    public ResponseEntity<PagedResponse<ReviewDetailsResponse>> loginUserReviews(
         @AuthenticationPrincipal CustomUserDetails userDetails,
         @Parameter(description = "조회 시작 위치 (최소 0)")
         @RequestParam(value = "page", defaultValue = "0") int page,
@@ -47,8 +48,8 @@ public class ReviewController {
         @RequestParam(value = "size", defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<ReviewDetailsResponse> loginUserReviews = reviewService.getLoginUserReviews(userDetails.getUsername(),
-            pageable);
+        PagedResponse<ReviewDetailsResponse> loginUserReviews = reviewService.getLoginUserReviews(
+            userDetails.getUsername(), pageable);
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(loginUserReviews);
