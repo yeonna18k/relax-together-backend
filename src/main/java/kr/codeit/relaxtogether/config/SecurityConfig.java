@@ -72,6 +72,7 @@ public class SecurityConfig {
                         "/api/gatherings/**").permitAll()
                     .requestMatchers(POST, "/api/gatherings").authenticated()
                     .requestMatchers(GET, "/api/gatherings/my-hosted").authenticated()
+                    .requestMatchers(GET, "/api/gatherings/joined").authenticated()
                     .requestMatchers(POST, "/api/gatherings/*/join").authenticated()
                     .requestMatchers(PUT, "/api/gatherings/*/cancel").authenticated()
                     .requestMatchers(DELETE, "/api/gatherings/*/leave").authenticated()
