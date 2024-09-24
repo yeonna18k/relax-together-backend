@@ -1,6 +1,10 @@
 package kr.codeit.relaxtogether.entity.gathering;
 
+import static kr.codeit.relaxtogether.exception.ErrorCode.*;
+
 import java.util.Arrays;
+import kr.codeit.relaxtogether.exception.ApiException;
+import kr.codeit.relaxtogether.exception.ErrorCode;
 import lombok.Getter;
 
 @Getter
@@ -20,6 +24,6 @@ public enum Location {
         return Arrays.stream(Location.values())
             .filter(location -> location.getText().equalsIgnoreCase(text))
             .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("장소 이름을 확인해 주세요.: " + text));
+            .orElseThrow(() -> new ApiException(LOCATION_NOT_FOUND));
     }
 }

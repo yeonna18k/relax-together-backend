@@ -1,9 +1,13 @@
 package kr.codeit.relaxtogether.entity.gathering;
 
+import static kr.codeit.relaxtogether.exception.ErrorCode.*;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import kr.codeit.relaxtogether.exception.ApiException;
+import kr.codeit.relaxtogether.exception.ErrorCode;
 
 public enum Type {
     OFFICE_STRETCHING("오피스 스트레칭", "달램핏"),
@@ -31,6 +35,6 @@ public enum Type {
         return Arrays.stream(Type.values())
             .filter(type -> type.getText().equalsIgnoreCase(text))
             .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("타입 형식이 올바르지 않습니다.: " + text));
+            .orElseThrow(() -> new ApiException(TYPE_NOT_FOUND));
     }
 }
