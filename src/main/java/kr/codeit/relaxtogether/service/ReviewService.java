@@ -1,6 +1,7 @@
 package kr.codeit.relaxtogether.service;
 
 import java.util.List;
+import kr.codeit.relaxtogether.dto.PagedResponse;
 import kr.codeit.relaxtogether.dto.review.request.WriteReviewRequest;
 import kr.codeit.relaxtogether.dto.review.response.ReviewDetailsResponse;
 import kr.codeit.relaxtogether.entity.Review;
@@ -11,6 +12,7 @@ import kr.codeit.relaxtogether.repository.gathering.GatheringRepository;
 import kr.codeit.relaxtogether.repository.review.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,10 +35,15 @@ public class ReviewService {
         reviewRepository.save(review);
     }
 
-    public List<ReviewDetailsResponse> getLoginUserReviews(String loginEmail) {
+    public PagedResponse<ReviewDetailsResponse> getLoginUserReviews(String loginEmail, Pageable pageable) {
         User user = userRepository.findByEmail(loginEmail)
             .orElseThrow(RuntimeException::new);
-        return reviewRepository.findReviewsByUserId(user.getId());
+        Slice<ReviewDetailsResponse> reviewsByUserId = reviewRepository.findReviewsByUserId(user.getId(), pageable);
+        return new PagedResponse<>(
+            reviewsByUserId.getContent(),
+            reviewsByUserId.hasNext(),
+            reviewsByUserId.getNumberOfElements()
+        );
     }
 
     public List<ReviewDetailsResponse> getReviewsByGatheringId(Long gatheringId, Pageable pageable) {
