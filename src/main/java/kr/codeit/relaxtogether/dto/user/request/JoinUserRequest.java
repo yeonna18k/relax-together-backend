@@ -5,8 +5,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import kr.codeit.relaxtogether.entity.User;
 import lombok.Builder;
+import lombok.Getter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+@Getter
 public class JoinUserRequest {
 
     @NotBlank
