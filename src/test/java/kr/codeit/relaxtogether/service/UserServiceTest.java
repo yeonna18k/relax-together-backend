@@ -1,6 +1,7 @@
 package kr.codeit.relaxtogether.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
 
 import kr.codeit.relaxtogether.dto.user.request.EmailCheckRequest;
@@ -8,6 +9,7 @@ import kr.codeit.relaxtogether.dto.user.request.JoinUserRequest;
 import kr.codeit.relaxtogether.dto.user.request.UpdateUserRequest;
 import kr.codeit.relaxtogether.dto.user.response.UserDetailsResponse;
 import kr.codeit.relaxtogether.entity.User;
+import kr.codeit.relaxtogether.exception.ApiException;
 import kr.codeit.relaxtogether.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,7 +31,7 @@ public class UserServiceTest {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-    @DisplayName("해당 이메일을 갖고 있는 유저가 존재할 경우 true를 반환합니다.")
+    @DisplayName("해당 이메일을 갖고 있는 유저가 존재할 경우 ApiException이 발생합니다.")
     @Test
     void successCheckEmail() {
         // given
@@ -44,14 +46,13 @@ public class UserServiceTest {
             .email(email)
             .build();
 
-        // when
-        boolean result = userService.checkEmail(request);
-
-        // then
-        assertThat(result).isTrue();
+        // when // then
+        assertThatThrownBy(() -> userService.checkEmail(request))
+            .isInstanceOf(ApiException.class)
+            .hasMessage("이미 존재하는 이메일입니다.");
     }
 
-    @DisplayName("해당 이메일을 갖고 있는 유저가 존재하지 않을 경우 false를 반환합니다.")
+    @DisplayName("해당 이메일을 갖고 있는 유저가 존재하지 않을 경우 true를 반환합니다.")
     @Test
     void failCheckEmail() {
         // given
@@ -71,7 +72,7 @@ public class UserServiceTest {
         boolean result = userService.checkEmail(request);
 
         // then
-        assertThat(result).isFalse();
+        assertThat(result).isTrue();
     }
 
     @DisplayName("회원가입 시 유저 정보가 DB에 저장됩니다.")
