@@ -5,6 +5,7 @@ import static kr.codeit.relaxtogether.exception.ErrorCode.AUTHORIZATION_FAIL;
 import static kr.codeit.relaxtogether.exception.ErrorCode.GATHERING_ALREADY_JOINED;
 import static kr.codeit.relaxtogether.exception.ErrorCode.GATHERING_CAPACITY_FULL;
 import static kr.codeit.relaxtogether.exception.ErrorCode.GATHERING_DATE_VALIDATION_ERROR;
+import static kr.codeit.relaxtogether.exception.ErrorCode.GATHERING_HOST_CANNOT_LEAVE;
 import static kr.codeit.relaxtogether.exception.ErrorCode.GATHERING_NOT_FOUND;
 import static kr.codeit.relaxtogether.exception.ErrorCode.GATHERING_PAST_DATE;
 import static kr.codeit.relaxtogether.exception.ErrorCode.PARTICIPATION_NOT_FOUND;
@@ -105,7 +106,11 @@ public class GatheringService {
         User user = getUserByEmail(userId);
         Gathering gathering = getGatheringBy(gatheringId);
 
-        if (gathering.getDateTime().isBefore(LocalDateTime.now())) {
+        if (gathering.isHost(user)) {
+            throw new ApiException(GATHERING_HOST_CANNOT_LEAVE);
+        }
+
+        if (gathering.hasEnded()) {
             throw new ApiException(GATHERING_PAST_DATE);
         }
 

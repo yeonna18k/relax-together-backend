@@ -68,4 +68,12 @@ public class Gathering extends BaseTimeEntity {
     public void cancel() {
         this.status = Status.CANCELLED;
     }
+
+    public boolean hasEnded() {
+        return this.dateTime.isBefore(LocalDateTime.now());
+    }
+
+    public boolean isHost(User user) {
+        return this.hostUser.getId().equals(user.getId());
+    }
 }
