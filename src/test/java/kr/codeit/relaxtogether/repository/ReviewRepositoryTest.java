@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -32,7 +33,7 @@ public class ReviewRepositoryTest {
     @Autowired
     private GatheringRepository gatheringRepository;
 
-    @DisplayName("유저 id를 이용해서 해당 유저가 작성한 리뷰들을 조회합니다.")
+    @DisplayName("유저 id와 페이징 처리를 이용해서 해당 유저가 작성한 리뷰들을 조회하고, 다음 리뷰가 있는지 확인합니다.")
     @Test
     void findReviewsByUserId() {
         // given
@@ -62,18 +63,20 @@ public class ReviewRepositoryTest {
         reviewRepository.save(reviewC1);
 
         // when
-        List<ReviewDetailsResponse> reviews = reviewRepository.findReviewsByUserId(testId);
+        Slice<ReviewDetailsResponse> reviews = reviewRepository.findReviewsByUserId(testId,
+            PageRequest.of(0, 2));
 
         // then
-        assertThat(reviews).hasSize(2)
+        assertThat(reviews.getContent()).hasSize(2)
             .extracting(
                 "gatheringType", "gatheringLocation", "userProfileImage",
                 "userName", "score", "comment"
             )
-            .containsExactlyInAnyOrder(
-                tuple("달램핏 마인드풀니스", "홍대입구", null, "userA", 5, "good"),
-                tuple("달램핏 오피스 스트레칭", "건대입구", null, "userA", 4, "so-so")
+            .containsExactly(
+                tuple("달램핏 오피스 스트레칭", "건대입구", null, "userA", 4, "so-so"),
+                tuple("달램핏 마인드풀니스", "홍대입구", null, "userA", 5, "good")
             );
+        assertThat(reviews.hasNext()).isFalse();
     }
 
     @DisplayName("모임 id와 페이징 처리를 이용해서 해당 모임에 작성된 리뷰들을 조회합니다.")
