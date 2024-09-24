@@ -5,8 +5,10 @@ import kr.codeit.relaxtogether.entity.gathering.Location;
 import kr.codeit.relaxtogether.entity.gathering.Type;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ReviewDetailsResponse {
 
