@@ -20,6 +20,6 @@ public interface UserGatheringRepository extends JpaRepository<UserGathering, Lo
     @Query("SELECT ug FROM UserGathering ug JOIN FETCH ug.user WHERE ug.gathering.id = :gatheringId")
     Page<UserGathering> findWithUserByGatheringId(@Param("gatheringId") Long gatheringId, Pageable pageable);
 
-    @Query("SELECT ug FROM UserGathering ug JOIN FETCH ug.gathering g WHERE ug.user.id = :userId ORDER BY g.registrationEnd DESC")
-    Slice<UserGathering> findGatheringsByUserId(@Param("userId") Long userId, Pageable pageable);
+    @Query("SELECT ug FROM UserGathering ug JOIN FETCH ug.gathering g WHERE ug.user.id = :userId AND g.hostUser.id != :userId")
+    Slice<UserGathering> findNonHostGatheringsByUserIdWithGathering(@Param("userId") Long userId, Pageable pageable);
 }
