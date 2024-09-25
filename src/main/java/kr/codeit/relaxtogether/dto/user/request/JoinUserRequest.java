@@ -21,6 +21,7 @@ public class JoinUserRequest {
 
     private String name;
     private String companyName;
+    private String profileImage = "https://firebasestorage.googleapis.com/v0/b/relax-together.appspot.com/o/images%2Fprofile.svg?alt=media&token=45e21601-a6c5-46de-bbe4-d04f4e411122";
 
     @Builder
     public JoinUserRequest(String email, String password, String name, String companyName) {
@@ -36,6 +37,7 @@ public class JoinUserRequest {
             .password(passwordEncoder.encode(password))
             .name(name)
             .companyName(companyName)
+            .profileImage(profileImage)
             .build();
     }
 }
