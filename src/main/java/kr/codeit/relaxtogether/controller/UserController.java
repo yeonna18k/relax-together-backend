@@ -1,5 +1,6 @@
 package kr.codeit.relaxtogether.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import kr.codeit.relaxtogether.auth.CustomUserDetails;
@@ -37,11 +38,13 @@ public class UserController {
     private final JwtTokenRepository jwtTokenRepository;
     private final AuthenticationManager authenticationManager;
 
+    @Operation(summary = "이메일 중복 확인", description = "해당 이메일을 가진 기존 유저가 있는지 확인합니다.")
     @PostMapping("/check-email")
     public ResponseEntity<Boolean> checkEmail(@Valid @RequestBody EmailCheckRequest emailCheckRequest) {
         return ResponseEntity.ok(userService.checkEmail(emailCheckRequest));
     }
 
+    @Operation(summary = "회원가입", description = "회원가입을 진행합니다.")
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@Valid @RequestBody JoinUserRequest joinUserRequest) {
         userService.signup(joinUserRequest);
@@ -50,6 +53,7 @@ public class UserController {
             .body("success");
     }
 
+    @Operation(summary = "로그인 사용자의 정보 조회", description = "로그인 사용자의 정보를 조회합니다.")
     @GetMapping("/me")
     public ResponseEntity<UserDetailsResponse> loginUserDetails(
         @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -59,6 +63,7 @@ public class UserController {
             .body(userDetailsResponse);
     }
 
+    @Operation(summary = "로그인 사용자의 정보 수정", description = "로그인 사용자의 정보를 수정합니다.")
     @PutMapping("/me")
     public ResponseEntity<String> update(@Valid @RequestBody UpdateUserRequest updateUserRequest,
         @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -68,6 +73,7 @@ public class UserController {
             .body("success");
     }
 
+    @Operation(summary = "로그인", description = "로그인을 진행합니다.")
     @PostMapping("/login")
     public ResponseEntity<String> login(@Valid @RequestBody LoginRequest loginRequest) {
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
@@ -90,6 +96,7 @@ public class UserController {
         }
     }
 
+    @Operation(summary = "로그아웃", description = "로그아웃을 진행합니다.")
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request) {
         String authorization = request.getHeader("Authorization");

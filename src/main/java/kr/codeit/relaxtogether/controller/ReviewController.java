@@ -31,6 +31,7 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
+    @Operation(summary = "리뷰 작성", description = "리뷰를 작성합니다.")
     @PostMapping
     public ResponseEntity<String> writeReview(@RequestBody WriteReviewRequest writeReviewRequest,
         @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -73,6 +74,7 @@ public class ReviewController {
             .body(reviewsByGatheringId);
     }
 
+    @Operation(summary = "리뷰 목록 조회", description = "필터링과 정렬 조건에 따른 리뷰 목록을 조회합니다.")
     @GetMapping
     public ResponseEntity<PagedResponse<ReviewDetailsResponse>> getReviewsByConditions(
         ReviewSearchCondition reviewSearchCondition,
