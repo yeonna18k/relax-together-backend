@@ -28,9 +28,9 @@ import kr.codeit.relaxtogether.exception.ApiException;
 import kr.codeit.relaxtogether.repository.UserGatheringRepository;
 import kr.codeit.relaxtogether.repository.UserRepository;
 import kr.codeit.relaxtogether.repository.gathering.GatheringRepository;
+import kr.codeit.relaxtogether.repository.review.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -44,6 +44,7 @@ public class GatheringService {
     private final UserRepository userRepository;
     private final GatheringRepository gatheringRepository;
     private final UserGatheringRepository userGatheringRepository;
+    private final ReviewRepository reviewRepository;
 
     @Transactional
     public void createGathering(CreateGatheringRequest request, String email) {
@@ -141,15 +142,16 @@ public class GatheringService {
         );
     }
 
-    public PagedResponse<MyGatheringResponse> getMyGatherings(String userId, PageRequest pageable) {
+    public PagedResponse<MyGatheringResponse> getMyGatherings(String userId, Pageable pageable) {
         User user = getUserByEmail(userId);
 
-        Slice<UserGathering> gatherings = userGatheringRepository.findGatheringsByUserId(user.getId(), pageable);
+        Slice<UserGathering> gatherings = userGatheringRepository.findNonHostGatheringsByUserIdWithGathering(user.getId(), pageable);
         List<MyGatheringResponse> myGatherings = gatherings.getContent().stream()
             .map(userGathering -> {
                 Gathering gathering = userGathering.getGathering();
                 Long participantCount = userGatheringRepository.countByGatheringId(gathering.getId());
-                return MyGatheringResponse.from(gathering, participantCount, validateComplete(gathering));
+                boolean isReviewed = reviewRepository.existsByUserIdAndGatheringId(user.getId(), gathering.getId());
+                return MyGatheringResponse.from(gathering, participantCount, validateComplete(gathering), isReviewed);
             })
             .toList();
 

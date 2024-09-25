@@ -16,6 +16,8 @@ import lombok.Getter;
 @Getter
 public class CreateGatheringRequest {
 
+    public static final String DEFAULT_IMAGE_URL = "https://firebasestorage.googleapis.com/v0/b/relax-together.appspot.com/o/images%2Fdefault-gatherings.png?alt=media&token=c54e4d89-b842-42e8-a2ee-b9414943b389";
+
     @Schema(description = "모임 이름", example = "건강한 몸 만들기")
     private String name;
 
@@ -47,7 +49,7 @@ public class CreateGatheringRequest {
         LocalDateTime registrationEnd, int capacity) {
         this.name = name;
         this.location = location;
-        this.imageUrl = imageUrl;
+        this.imageUrl = (imageUrl == null || imageUrl.isBlank()) ? DEFAULT_IMAGE_URL : imageUrl;
         this.type = type;
         this.dateTime = dateTime;
         this.registrationEnd = registrationEnd;

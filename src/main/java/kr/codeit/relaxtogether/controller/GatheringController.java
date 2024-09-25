@@ -18,7 +18,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -102,7 +101,7 @@ public class GatheringController {
         return ResponseEntity.ok("모임 참여를 취소 합니다.");
     }
 
-    @Operation(summary = "특정 모임의 참가자 목록 조회", description = "특정 모임의 참가자 목록을 페이지네이션하여 조회합니다.(기본 정렬 참여 날짜 ASC)")
+    @Operation(summary = "특정 모임의 참가자 목록 조회", description = "특정 모임의 참가자 목록을 페이지네이션하여 조회합니다. (정렬기준 : createDate,ASC)")
     @GetMapping("/{gatheringId}/participants")
     public ResponseEntity<ParticipantsResponse> getParticipants(
         @PathVariable Long gatheringId,
@@ -119,12 +118,16 @@ public class GatheringController {
     @GetMapping("/my-hosted")
     public ResponseEntity<PagedResponse<HostedGatheringResponse>> getMyHostedGatherings(
         @AuthenticationPrincipal CustomUserDetails user,
-        @PageableDefault @Parameter(hidden = true) Pageable pageable
+        @Parameter(description = "조회 시작 위치 (최소 0)")
+        @RequestParam(value = "page", defaultValue = "0") int page,
+        @Parameter(description = "한 번에 조회할 모임 수 (최소 1)")
+        @RequestParam(value = "size", defaultValue = "10") int size
     ) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
         return ResponseEntity.ok(gatheringService.getMyHostedGatherings(user.getUsername(), pageable));
     }
 
-    @Operation(summary = "로그인 된 사용자가 참석한 모임 목록 조회", description = "로그인된 사용자가 참석한 모임의 목록을 조회합니다.(STATUS = ONGOING, CANCELLED)")
+    @Operation(summary = "로그인 된 사용자가 참석한 모임 목록 조회", description = "로그인된 사용자가 참석한 모임의 목록을 조회합니다.(STATUS : ONGOING, CANCELLED, 정렬기준 : createDate,DESC)")
     @GetMapping("/joined")
     public ResponseEntity<PagedResponse<MyGatheringResponse>> getMyGatherings(
         @AuthenticationPrincipal CustomUserDetails user,
@@ -133,7 +136,7 @@ public class GatheringController {
         @Parameter(description = "한 번에 조회할 모임 수 (최소 1)")
         @RequestParam(value = "size", defaultValue = "10") int size
     ) {
-        PageRequest pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
         return ResponseEntity.ok(gatheringService.getMyGatherings(user.getUsername(), pageable));
     }
 }
