@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import kr.codeit.relaxtogether.auth.CustomUserDetails;
 import kr.codeit.relaxtogether.dto.PagedResponse;
+import kr.codeit.relaxtogether.dto.review.request.ReviewSearchCondition;
 import kr.codeit.relaxtogether.dto.review.request.WriteReviewRequest;
 import kr.codeit.relaxtogether.dto.review.response.GatheringReviewsResponse;
 import kr.codeit.relaxtogether.dto.review.response.ReviewDetailsResponse;
@@ -11,6 +12,7 @@ import kr.codeit.relaxtogether.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -69,5 +71,24 @@ public class ReviewController {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(reviewsByGatheringId);
+    }
+
+    @GetMapping
+    public ResponseEntity<PagedResponse<ReviewDetailsResponse>> getReviewsByConditions(
+        ReviewSearchCondition reviewSearchCondition,
+        @Parameter(description = "정렬조건을 선택하세요 [createdDate, score, participantCount]")
+        @RequestParam String sortBy,
+        @Parameter(description = "조회 시작 위치 (최소 0)")
+        @RequestParam int page,
+        @Parameter(description = "한 번에 조회할 모임 수 (최소 1)")
+        @RequestParam int size
+    ) {
+        Sort sort = Sort.by(sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+        PagedResponse<ReviewDetailsResponse> reviewsByConditions = reviewService.getReviewsByConditions(
+            reviewSearchCondition, pageable);
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(reviewsByConditions);
     }
 }

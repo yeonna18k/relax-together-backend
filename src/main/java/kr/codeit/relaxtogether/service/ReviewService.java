@@ -1,6 +1,7 @@
 package kr.codeit.relaxtogether.service;
 
 import kr.codeit.relaxtogether.dto.PagedResponse;
+import kr.codeit.relaxtogether.dto.review.request.ReviewSearchCondition;
 import kr.codeit.relaxtogether.dto.review.request.WriteReviewRequest;
 import kr.codeit.relaxtogether.dto.review.response.GatheringReviewsResponse;
 import kr.codeit.relaxtogether.dto.review.response.ReviewDetailsResponse;
@@ -48,5 +49,16 @@ public class ReviewService {
 
     public GatheringReviewsResponse getReviewsByGatheringId(Long gatheringId, Pageable pageable) {
         return reviewRepository.findReviewsByGatheringId(gatheringId, pageable);
+    }
+
+    public PagedResponse<ReviewDetailsResponse> getReviewsByConditions(ReviewSearchCondition reviewSearchCondition,
+        Pageable pageable) {
+        Slice<ReviewDetailsResponse> reviewsByConditions = reviewRepository.findReviewsByConditions(
+            reviewSearchCondition, pageable);
+        return new PagedResponse<>(
+            reviewsByConditions.getContent(),
+            reviewsByConditions.hasNext(),
+            reviewsByConditions.getNumberOfElements()
+        );
     }
 }
