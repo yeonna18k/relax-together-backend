@@ -145,9 +145,8 @@ public class GatheringService {
     public PagedResponse<MyGatheringResponse> getMyGatherings(String userId, Pageable pageable) {
         User user = getUserByEmail(userId);
 
-        Slice<UserGathering> gatherings = userGatheringRepository.findGatheringsByUserId(user.getId(), pageable);
+        Slice<UserGathering> gatherings = userGatheringRepository.findNonHostGatheringsByUserIdWithGathering(user.getId(), pageable);
         List<MyGatheringResponse> myGatherings = gatherings.getContent().stream()
-            .filter(userGathering -> !userGathering.getGathering().isHost(user))
             .map(userGathering -> {
                 Gathering gathering = userGathering.getGathering();
                 Long participantCount = userGatheringRepository.countByGatheringId(gathering.getId());
