@@ -109,7 +109,8 @@ public class ReviewRepositoryTest {
         reviewRepository.save(reviewC1);
 
         // when
-        List<ReviewDetailsResponse> reviews = reviewRepository.findReviewsByGatheringId(testId, PageRequest.of(0, 3));
+        List<ReviewDetailsResponse> reviews = reviewRepository.findReviewsByGatheringId(testId, PageRequest.of(0, 3))
+            .getReviews();
 
         // then
         assertThat(reviews).hasSize(3)
