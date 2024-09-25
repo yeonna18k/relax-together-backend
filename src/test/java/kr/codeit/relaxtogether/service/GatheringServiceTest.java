@@ -11,6 +11,7 @@ import kr.codeit.relaxtogether.dto.gathering.response.HostedGatheringResponse;
 import kr.codeit.relaxtogether.dto.gathering.response.MyGatheringResponse;
 import kr.codeit.relaxtogether.dto.gathering.response.Participant;
 import kr.codeit.relaxtogether.dto.gathering.response.ParticipantsResponse;
+import kr.codeit.relaxtogether.entity.Review;
 import kr.codeit.relaxtogether.entity.User;
 import kr.codeit.relaxtogether.entity.gathering.Gathering;
 import kr.codeit.relaxtogether.entity.gathering.Location;
@@ -21,6 +22,7 @@ import kr.codeit.relaxtogether.exception.ApiException;
 import kr.codeit.relaxtogether.repository.UserGatheringRepository;
 import kr.codeit.relaxtogether.repository.UserRepository;
 import kr.codeit.relaxtogether.repository.gathering.GatheringRepository;
+import kr.codeit.relaxtogether.repository.review.ReviewRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +47,9 @@ class GatheringServiceTest {
 
     @Autowired
     private UserGatheringRepository userGatheringRepository;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
 
     @Test
     @DisplayName("정상적인 모임과 사용자 모임이 생성되어야 한다")
@@ -762,11 +767,12 @@ class GatheringServiceTest {
     @DisplayName("모임이 이미 종료된 경우 isCompleted 값이 true로 반환된다")
     void getMyGatherings_isCompleted() {
         // Given
-        User user = createUser("host@example.com", "Host User");
+        User user1 = createUser("user@example.com", "User");
+        User user2 = createUser("host@example.com", "Host User");
 
         Gathering pastGathering = gatheringRepository.save(
             Gathering.builder()
-                .hostUser(user)
+                .hostUser(user2)
                 .name("Past Gathering")
                 .location(Location.HONGDAE)
                 .type(Type.MINDFULNESS)
@@ -777,14 +783,19 @@ class GatheringServiceTest {
                 .build());
 
         userGatheringRepository.save(UserGathering.builder()
-            .user(user)
+            .user(user1)
+            .gathering(pastGathering)
+            .build());
+
+        userGatheringRepository.save(UserGathering.builder()
+            .user(user2)
             .gathering(pastGathering)
             .build());
 
         PageRequest pageable = PageRequest.of(0, 5);
 
         // When
-        PagedResponse<MyGatheringResponse> response = gatheringService.getMyGatherings(user.getEmail(), pageable);
+        PagedResponse<MyGatheringResponse> response = gatheringService.getMyGatherings(user1.getEmail(), pageable);
 
         // Then
         boolean isCompleted = response.getContent().stream()
@@ -797,11 +808,12 @@ class GatheringServiceTest {
     @DisplayName("취소된 모임의 상태를 확인한다")
     void getMyGatherings_ReturnCancelledIfCancelled() {
         // Given
-        User user = createUser("test@example.com", "Test User");
+        User user1 = createUser("test1@example.com", "Test User1");
+        User user2 = createUser("test2@example.com", "Test User2");
 
         Gathering ongoingGathering = gatheringRepository.save(
             Gathering.builder()
-                .hostUser(user)
+                .hostUser(user2)
                 .name("ONGOING Gathering")
                 .location(Location.HONGDAE)
                 .type(Type.MINDFULNESS)
@@ -813,7 +825,7 @@ class GatheringServiceTest {
 
         Gathering cancelledGathering = gatheringRepository.save(
             Gathering.builder()
-                .hostUser(user)
+                .hostUser(user2)
                 .name("CANCELLED Gathering")
                 .location(Location.HONGDAE)
                 .type(Type.MINDFULNESS)
@@ -822,14 +834,16 @@ class GatheringServiceTest {
                 .capacity(10)
                 .imageUrl("https://example.com/image.png")
                 .build());
-        cancelledGathering.cancel();  // 모임 취소
+        cancelledGathering.cancel();
 
-        addUserToGathering(user, ongoingGathering);
-        addUserToGathering(user, cancelledGathering);
+        addUserToGathering(user2, ongoingGathering);
+        addUserToGathering(user2, cancelledGathering);
+        addUserToGathering(user1, ongoingGathering);
+        addUserToGathering(user1, cancelledGathering);
 
         // When
         PageRequest pageable = PageRequest.of(0, 10);
-        PagedResponse<MyGatheringResponse> response = gatheringService.getMyGatherings(user.getEmail(), pageable);
+        PagedResponse<MyGatheringResponse> response = gatheringService.getMyGatherings(user1.getEmail(), pageable);
 
         // Then
         assertThat(response.getContent()).hasSize(2);
@@ -849,6 +863,142 @@ class GatheringServiceTest {
 
         assertThat(cancelledResponse.getStatus()).isEqualTo(Status.CANCELLED);
         assertThat(cancelledResponse.isCompleted()).isFalse();
+    }
+
+    @Test
+    @DisplayName("참여한 모임 중 주최한 모임은 제외하고 조회")
+    void getMyGatherings_excludeHostedGatherings() {
+        // Given
+        User user = userRepository.save(User.builder()
+            .email("user@example.com")
+            .password("password")
+            .name("Test User")
+            .build());
+
+        User hostUser = userRepository.save(User.builder()
+            .email("host@example.com")
+            .password("password")
+            .name("Host User")
+            .build());
+
+        Gathering gathering1 = gatheringRepository.save(Gathering.builder()
+            .hostUser(hostUser) // 다른 사용자가 주최한 모임
+            .name("Other Gathering")
+            .location(Location.KONDAE)
+            .type(Type.OFFICE_STRETCHING)
+            .dateTime(LocalDateTime.now().plusDays(1))
+            .registrationEnd(LocalDateTime.now().plusDays(1))
+            .capacity(10)
+            .build());
+
+        Gathering gathering2 = gatheringRepository.save(Gathering.builder()
+            .hostUser(user) // 자신이 주최한 모임
+            .name("Hosted Gathering")
+            .location(Location.HONGDAE)
+            .type(Type.MINDFULNESS)
+            .dateTime(LocalDateTime.now().plusDays(2))
+            .registrationEnd(LocalDateTime.now().plusDays(1))
+            .capacity(5)
+            .build());
+
+        // 자신이 참여한 모임 등록
+        userGatheringRepository.save(UserGathering.builder()
+            .user(user)
+            .gathering(gathering1)
+            .build());
+
+        // 자신이 주최한 모임도 추가 (조회에서 제외되어야 함)
+        userGatheringRepository.save(UserGathering.builder()
+            .user(user)
+            .gathering(gathering2)
+            .build());
+
+        // When
+        Pageable pageable = PageRequest.of(0, 10);
+        PagedResponse<MyGatheringResponse> response = gatheringService.getMyGatherings(user.getEmail(), pageable);
+
+        // Then
+        assertThat(response.getContent()).hasSize(1); // 주최한 모임은 제외되므로 1개만 반환
+        assertThat(response.getContent()).extracting("name").containsExactly("Other Gathering");
+    }
+
+    @Test
+    @DisplayName("참여한 모임 중 리뷰가 작성된 경우 조회")
+    void getMyGatherings_includeReviewStatus() {
+        // Given
+        User user1 = createUser("testuser1@test.com", "user1");
+        User user2 = createUser("testuser2@test.com", "user2");
+
+        Gathering gathering = gatheringRepository.save(Gathering.builder()
+            .hostUser(user2)
+            .name("Reviewed Gathering")
+            .location(Location.SINRIM)
+            .type(Type.WORKATION)
+            .dateTime(LocalDateTime.now().plusDays(2))
+            .registrationEnd(LocalDateTime.now().plusDays(1))
+            .capacity(5)
+            .build());
+
+        userGatheringRepository.save(UserGathering.builder()
+            .user(user1)
+            .gathering(gathering)
+            .build());
+
+        userGatheringRepository.save(UserGathering.builder()
+            .user(user2)
+            .gathering(gathering)
+            .build());
+
+        reviewRepository.save(Review.builder()
+            .user(user1)
+            .gathering(gathering)
+            .comment("Great gathering!")
+            .score(5)
+            .build());
+
+        // When
+        Pageable pageable = PageRequest.of(0, 10);
+        PagedResponse<MyGatheringResponse> response = gatheringService.getMyGatherings(user1.getEmail(), pageable);
+
+        // Then
+        assertThat(response.getContent()).hasSize(1);
+        assertThat(response.getContent().get(0).isReviewed()).isTrue();
+    }
+
+    @Test
+    @DisplayName("참여한 모임 중 리뷰가 작성되지 않은 경우 조회")
+    void getMyGatherings_noReviewStatus() {
+        // Given
+        User user1 = createUser("testuser1@test.com", "user1");
+        User user2 = createUser("testuser2@test.com", "user2");
+
+        Gathering gathering = gatheringRepository.save(Gathering.builder()
+            .hostUser(user2)
+            .name("Non-Reviewed Gathering")
+            .location(Location.EULJIRO3GA)
+            .type(Type.OFFICE_STRETCHING)
+            .dateTime(LocalDateTime.now().plusDays(2))
+            .registrationEnd(LocalDateTime.now().plusDays(1))
+            .capacity(5)
+            .build());
+
+        userGatheringRepository.save(UserGathering.builder()
+            .user(user2)
+            .gathering(gathering)
+            .build());
+
+        userGatheringRepository.save(UserGathering.builder()
+            .user(user1)
+            .gathering(gathering)
+            .build());
+
+        // When
+        Pageable pageable = PageRequest.of(0, 10);
+        PagedResponse<MyGatheringResponse> response = gatheringService.getMyGatherings(user1.getEmail(), pageable);
+
+        // Then
+        assertThat(response.getContent()).hasSize(1);
+        assertThat(response.getContent().get(0).isReviewed()).isFalse();
     }
 
     private User createUser(String email, String name) {

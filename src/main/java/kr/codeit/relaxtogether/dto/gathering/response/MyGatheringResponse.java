@@ -22,8 +22,10 @@ public class MyGatheringResponse {
     private Long hostUser;
     private Status status;
     private boolean isCompleted;
+    private boolean isReviewed;
 
-    public static MyGatheringResponse from(Gathering gathering, long participantCount, boolean isCompleted) {
+    public static MyGatheringResponse from(Gathering gathering, long participantCount, boolean isCompleted,
+        boolean isReviewed) {
         return MyGatheringResponse.builder()
             .id(gathering.getId())
             .type(gathering.getType().getText())
@@ -37,6 +39,7 @@ public class MyGatheringResponse {
             .hostUser(gathering.getHostUser().getId())
             .status(gathering.getStatus())
             .isCompleted(isCompleted)
+            .isReviewed(isReviewed)
             .build();
     }
 }

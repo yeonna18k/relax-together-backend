@@ -133,7 +133,7 @@ public class GatheringController {
         @Parameter(description = "한 번에 조회할 모임 수 (최소 1)")
         @RequestParam(value = "size", defaultValue = "10") int size
     ) {
-        PageRequest pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(gatheringService.getMyGatherings(user.getUsername(), pageable));
     }
 }
