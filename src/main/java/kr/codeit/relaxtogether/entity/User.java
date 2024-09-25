@@ -32,13 +32,14 @@ public class User extends BaseTimeEntity {
     private boolean isDeleted;
 
     @Builder
-    public User(String email, String password, String name, String companyName) {
+    public User(String email, String password, String name, String companyName, String profileImage) {
         this.email = email;
         this.password = password;
         this.name = name;
         this.companyName = companyName;
+        this.profileImage = profileImage;
     }
-
+    
     public void update(String companyName, String profileImage) {
         this.companyName = companyName;
         this.profileImage = profileImage;
