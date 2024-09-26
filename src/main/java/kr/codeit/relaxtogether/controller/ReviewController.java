@@ -95,6 +95,7 @@ public class ReviewController {
             .body(reviewsByConditions);
     }
 
+    @Operation(summary = "평점별 리뷰 개수 확인", description = "조건에 따라 리뷰를 필터링하고 해당 리뷰에서 평점별로 개수를 확인합니다.")
     @GetMapping("/scores")
     public ResponseEntity<ReviewScoreCountResponse> getReviewScoreCounts(
         @Parameter(description = "모임 타입을 선택하세요 [달램핏, 워케이션]", example = "워케이션")
