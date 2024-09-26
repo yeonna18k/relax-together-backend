@@ -120,11 +120,11 @@ public class ReviewRepositoryCustomImpl implements ReviewRepositoryCustom {
                     gathering.id,
                     user.name
                 )
-                .orderBy(userGathering.count().desc());
+                .orderBy(userGathering.count().desc(), review.createdDate.desc());
         } else if (sortBy.equals("createdDate")) {
             query.orderBy(review.createdDate.desc());
         } else if (sortBy.equals("score")) {
-            query.orderBy(review.score.desc());
+            query.orderBy(review.score.desc(), review.createdDate.desc());
         }
 
         List<ReviewDetailsResponse> results = query.offset(pageable.getOffset())
