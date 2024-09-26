@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 import kr.codeit.relaxtogether.dto.review.request.ReviewSearchCondition;
 import kr.codeit.relaxtogether.dto.review.response.ReviewDetailsResponse;
+import kr.codeit.relaxtogether.dto.review.response.ReviewScoreCountResponse;
 import kr.codeit.relaxtogether.entity.Review;
 import kr.codeit.relaxtogether.entity.User;
 import kr.codeit.relaxtogether.entity.gathering.Gathering;
@@ -133,7 +134,7 @@ public class ReviewRepositoryTest {
             );
     }
 
-    @DisplayName("필터링 조건(모임 타입, 타입 상세, 지역, 리뷰 날짜)과 정렬 조건(최신순, 평점 높은순, 참가자 많은 모임 순)으로 리뷰들을 조회합니다. ")
+    @DisplayName("필터링 조건(모임 타입, 타입 상세, 지역, 리뷰 날짜)과 정렬 조건(최신순, 평점 높은순, 참가자 많은 모임 순)으로 리뷰들을 조회합니다.")
     @Test
     void findReviewsByConditions() {
         // given
@@ -158,6 +159,27 @@ public class ReviewRepositoryTest {
                 tuple("달램핏 오피스 스트레칭", "건대입구", null, "userB", 3, "not bad"),
                 tuple("달램핏 오피스 스트레칭", "건대입구", null, "userC", 4, "good")
             );
+    }
+
+    @DisplayName("필터링 조건(모임 타입, 타입 상세)에 해당하는 모임에 대한 리뷰들의 평점별 개수를 조회합니다.")
+    @Test
+    void findReviewScoreCounts() {
+        // given
+        dataSettings();
+        String type = "달램핏";
+        String typeDetail = null;
+
+        // when
+        ReviewScoreCountResponse reviewScoreCounts = reviewRepository.findReviewScoreCounts(type, typeDetail);
+
+        // then
+        assertThat(reviewScoreCounts).extracting(
+            ReviewScoreCountResponse::getFivePoints,
+            ReviewScoreCountResponse::getFourPoints,
+            ReviewScoreCountResponse::getThreePoints,
+            ReviewScoreCountResponse::getTwoPoints,
+            ReviewScoreCountResponse::getOnePoints
+        ).containsExactly(1, 2, 2, 0, 1);
     }
 
     private void dataSettings() {
