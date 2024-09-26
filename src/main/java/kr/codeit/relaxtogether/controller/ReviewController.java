@@ -26,14 +26,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
-@RequestMapping("/api/reviews")
+@RequestMapping("/api")
 @RestController
 public class ReviewController {
 
     private final ReviewService reviewService;
 
     @Operation(summary = "리뷰 작성", description = "리뷰를 작성합니다.")
-    @PostMapping
+    @PostMapping("/reviews")
     public ResponseEntity<String> writeReview(@RequestBody WriteReviewRequest writeReviewRequest,
         @AuthenticationPrincipal CustomUserDetails userDetails) {
         reviewService.writeReview(writeReviewRequest, userDetails.getUsername());
@@ -43,7 +43,7 @@ public class ReviewController {
     }
 
     @Operation(summary = "내가 작성한 리뷰 목록 조회", description = "내가 작성한 리뷰 목록을 조회합니다.")
-    @GetMapping("/me")
+    @GetMapping("/reviews/me")
     public ResponseEntity<PagedResponse<ReviewDetailsResponse>> loginUserReviews(
         @AuthenticationPrincipal CustomUserDetails userDetails,
         @Parameter(description = "조회 시작 위치 (최소 0)")
@@ -60,7 +60,7 @@ public class ReviewController {
     }
 
     @Operation(summary = "모임 리뷰 목록 조회", description = "해당 모임에 작성된 리뷰 목록을 조회합니다.")
-    @GetMapping("/{gatheringId}")
+    @GetMapping("/gatherings/{gatheringId}/reviews")
     public ResponseEntity<GatheringReviewsResponse> getReviewsByGatheringId(
         @PathVariable Long gatheringId,
         @Parameter(description = "조회 시작 위치 (최소 0)")
@@ -76,7 +76,7 @@ public class ReviewController {
     }
 
     @Operation(summary = "리뷰 목록 조회", description = "필터링과 정렬 조건에 따른 리뷰 목록을 조회합니다.")
-    @GetMapping
+    @GetMapping("/reviews")
     public ResponseEntity<PagedResponse<ReviewDetailsResponse>> getReviewsByConditions(
         ReviewSearchCondition reviewSearchCondition,
         @Parameter(description = "정렬조건을 선택하세요 [createdDate, score, participantCount]")
@@ -96,7 +96,7 @@ public class ReviewController {
     }
 
     @Operation(summary = "평점별 리뷰 개수 확인", description = "조건에 따라 리뷰를 필터링하고 해당 리뷰에서 평점별로 개수를 확인합니다.")
-    @GetMapping("/scores")
+    @GetMapping("/reviews/scores")
     public ResponseEntity<ReviewScoreCountResponse> getReviewScoreCounts(
         @Parameter(description = "모임 타입을 선택하세요 [달램핏, 워케이션]", example = "워케이션")
         @RequestParam String type,
