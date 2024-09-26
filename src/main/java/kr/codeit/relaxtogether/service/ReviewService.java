@@ -5,6 +5,7 @@ import kr.codeit.relaxtogether.dto.review.request.ReviewSearchCondition;
 import kr.codeit.relaxtogether.dto.review.request.WriteReviewRequest;
 import kr.codeit.relaxtogether.dto.review.response.GatheringReviewsResponse;
 import kr.codeit.relaxtogether.dto.review.response.ReviewDetailsResponse;
+import kr.codeit.relaxtogether.dto.review.response.ReviewScoreCountResponse;
 import kr.codeit.relaxtogether.entity.Review;
 import kr.codeit.relaxtogether.entity.User;
 import kr.codeit.relaxtogether.entity.gathering.Gathering;
@@ -60,5 +61,9 @@ public class ReviewService {
             reviewsByConditions.hasNext(),
             reviewsByConditions.getNumberOfElements()
         );
+    }
+
+    public ReviewScoreCountResponse getReviewScoreCounts(String type, String typeDetail) {
+        return reviewRepository.findReviewScoreCounts(type, typeDetail);
     }
 }

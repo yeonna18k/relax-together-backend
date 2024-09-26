@@ -15,6 +15,8 @@ import java.util.List;
 import kr.codeit.relaxtogether.dto.review.request.ReviewSearchCondition;
 import kr.codeit.relaxtogether.dto.review.response.GatheringReviewsResponse;
 import kr.codeit.relaxtogether.dto.review.response.ReviewDetailsResponse;
+import kr.codeit.relaxtogether.dto.review.response.ReviewScoreCountResponse;
+import kr.codeit.relaxtogether.entity.Review;
 import kr.codeit.relaxtogether.entity.gathering.Location;
 import kr.codeit.relaxtogether.entity.gathering.Type;
 import lombok.RequiredArgsConstructor;
@@ -103,7 +105,7 @@ public class ReviewRepositoryCustomImpl implements ReviewRepositoryCustom {
     public Slice<ReviewDetailsResponse> findReviewsByConditions(ReviewSearchCondition reviewSearchCondition,
         Pageable pageable) {
         int pageSize = pageable.getPageSize();
-        JPAQuery<ReviewDetailsResponse> query = createBaseQuery(pageable);
+        JPAQuery<ReviewDetailsResponse> query = createBaseQuery();
         query.where(
             gatheringTypeEq(reviewSearchCondition.getType(), reviewSearchCondition.getTypeDetail()),
             locationEq(reviewSearchCondition.getLocation()),
@@ -137,7 +139,22 @@ public class ReviewRepositoryCustomImpl implements ReviewRepositoryCustom {
         return new SliceImpl<>(results, pageable, hasNext);
     }
 
-    private JPAQuery<ReviewDetailsResponse> createBaseQuery(Pageable pageable) {
+    @Override
+    public ReviewScoreCountResponse findReviewScoreCounts(String type, String typeDetail) {
+        List<Review> reviews = queryFactory.selectFrom(review)
+            .join(review.gathering).fetchJoin()
+            .where(gatheringTypeEq(type, typeDetail))
+            .fetch();
+        return ReviewScoreCountResponse.builder()
+            .fivePoints(getScoreCount(reviews, 5))
+            .fourPoints(getScoreCount(reviews, 4))
+            .threePoints(getScoreCount(reviews, 3))
+            .twoPoints(getScoreCount(reviews, 2))
+            .onePoints(getScoreCount(reviews, 1))
+            .build();
+    }
+
+    private JPAQuery<ReviewDetailsResponse> createBaseQuery() {
         return queryFactory.select(
                 Projections.constructor(
                     ReviewDetailsResponse.class,
@@ -188,5 +205,11 @@ public class ReviewRepositoryCustomImpl implements ReviewRepositoryCustom {
         LocalDateTime startDateTime = date.atStartOfDay(); // 해당 날짜의 시작
         LocalDateTime endDateTime = date.plusDays(1).atStartOfDay(); // 다음날의 시작
         return review.createdDate.goe(startDateTime).and(review.createdDate.lt(endDateTime));
+    }
+
+    private int getScoreCount(List<Review> reviews, int score) {
+        return (int) reviews.stream()
+            .filter(r -> r.getScore() == score)
+            .count();
     }
 }
