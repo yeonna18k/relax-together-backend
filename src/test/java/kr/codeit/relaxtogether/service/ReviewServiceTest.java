@@ -41,10 +41,12 @@ public class ReviewServiceTest {
     @Test
     void writeReview() {
         // given
-        User user = createUser("test@test.com", null);
-        Gathering gathering = createGathering("gathering", null, null);
+        User userA = createUser("test@test.com", null);
+        User userB = createUser("test1@test.com", null);
+        Gathering gathering = createGathering("gathering", null, null, userB);
 
-        userRepository.save(user);
+        userRepository.save(userA);
+        userRepository.save(userB);
         Long gatheringId = gatheringRepository.save(gathering).getId();
 
         WriteReviewRequest request = WriteReviewRequest.builder()
@@ -60,7 +62,7 @@ public class ReviewServiceTest {
         assertThat(reviewRepository.findAll()).hasSize(1)
             .extracting("user", "gathering", "score", "comment")
             .containsExactlyInAnyOrder(
-                tuple(user, gathering, 5, "comment")
+                tuple(userA, gathering, 5, "comment")
             );
     }
 
@@ -72,8 +74,8 @@ public class ReviewServiceTest {
         User userB = createUser("test1@test.com", "userB");
         User userC = createUser("test2@test.com", "userC");
 
-        Gathering gatheringA = createGathering("A", Type.MINDFULNESS, Location.HONGDAE);
-        Gathering gatheringB = createGathering("B", Type.OFFICE_STRETCHING, Location.KONDAE);
+        Gathering gatheringA = createGathering("A", Type.MINDFULNESS, Location.HONGDAE, null);
+        Gathering gatheringB = createGathering("B", Type.OFFICE_STRETCHING, Location.KONDAE, null);
 
         userRepository.save(userA).getId();
         userRepository.save(userB);
@@ -117,9 +119,10 @@ public class ReviewServiceTest {
             .build();
     }
 
-    private Gathering createGathering(String name, Type type, Location location) {
+    private Gathering createGathering(String name, Type type, Location location, User user) {
         return Gathering.builder()
             .name(name)
+            .hostUser(user)
             .type(type)
             .location(location)
             .build();
