@@ -152,12 +152,12 @@ public class ReviewRepositoryTest {
             .extracting("gatheringType", "gatheringLocation", "userProfileImage",
                 "userName", "score", "comment")
             .containsExactly(
-                tuple("달램핏 마인드풀니스", "홍대입구", null, "userA", 5, "good"),
-                tuple("달램핏 마인드풀니스", "홍대입구", null, "userB", 1, "good"),
                 tuple("달램핏 마인드풀니스", "홍대입구", null, "userC", 3, "bad"),
-                tuple("달램핏 오피스 스트레칭", "건대입구", null, "userA", 4, "so-so"),
+                tuple("달램핏 마인드풀니스", "홍대입구", null, "userB", 1, "good"),
+                tuple("달램핏 마인드풀니스", "홍대입구", null, "userA", 5, "good"),
+                tuple("달램핏 오피스 스트레칭", "건대입구", null, "userC", 4, "good"),
                 tuple("달램핏 오피스 스트레칭", "건대입구", null, "userB", 3, "not bad"),
-                tuple("달램핏 오피스 스트레칭", "건대입구", null, "userC", 4, "good")
+                tuple("달램핏 오피스 스트레칭", "건대입구", null, "userA", 4, "so-so")
             );
     }
 
