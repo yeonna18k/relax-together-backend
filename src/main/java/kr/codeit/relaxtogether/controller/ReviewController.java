@@ -8,6 +8,7 @@ import kr.codeit.relaxtogether.dto.review.request.ReviewSearchCondition;
 import kr.codeit.relaxtogether.dto.review.request.WriteReviewRequest;
 import kr.codeit.relaxtogether.dto.review.response.GatheringReviewsResponse;
 import kr.codeit.relaxtogether.dto.review.response.ReviewDetailsResponse;
+import kr.codeit.relaxtogether.dto.review.response.ReviewScoreCountResponse;
 import kr.codeit.relaxtogether.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -92,5 +93,17 @@ public class ReviewController {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(reviewsByConditions);
+    }
+
+    @GetMapping("/scores")
+    public ResponseEntity<ReviewScoreCountResponse> getReviewScoreCounts(
+        @Parameter(description = "모임 타입을 선택하세요 [달램핏, 워케이션]", example = "워케이션")
+        @RequestParam String type,
+        @Parameter(description = "모임 타입의 상세 내용을 선택하세요 [마인드풀니스, 오피스 스트레칭]", example = "null")
+        @RequestParam String typeDetail
+    ) {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(reviewService.getReviewScoreCounts(type, typeDetail));
     }
 }
