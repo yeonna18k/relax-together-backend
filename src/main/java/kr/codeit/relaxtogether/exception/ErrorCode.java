@@ -19,6 +19,7 @@ public enum ErrorCode {
     INVALID_INPUT_VALUE(BAD_REQUEST, "INPUT001", "유효하지 않은 입력값입니다."),
 
     EMAIL_ALREADY_EXISTS(CONFLICT, "USER001", "이미 존재하는 이메일입니다."),
+    USER_NOT_FOUND(NOT_FOUND, "USER002", "존재하지 않는 유저입니다."),
 
     AUTHENTICATION_FAIL(UNAUTHORIZED, "AUTH001", "해당 유저를 찾을 수 없습니다. 로그인 정보를 확인해 주세요."),
     AUTHORIZATION_FAIL(FORBIDDEN, "AUTH002", "해당 요청에 대한 권한이 없습니다."),
@@ -34,7 +35,9 @@ public enum ErrorCode {
     LOCATION_NOT_FOUND(BAD_REQUEST, "LOC001", "장소 이름을 확인해 주세요. [건대입구, 홍대입구, 을지로3가, 신림]"),
     TYPE_NOT_FOUND(BAD_REQUEST, "TYPE001", "타입 형식이 올바르지 않습니다. [오피스 스트레칭, 마인드풀니스, 워케이션]"),
 
-    PARTICIPATION_NOT_FOUND(BAD_REQUEST, "PART001", "참여하지 않은 모임입니다.");
+    PARTICIPATION_NOT_FOUND(BAD_REQUEST, "PART001", "참여하지 않은 모임입니다."),
+
+    CANNOT_WRITE_REVIEW_AS_ORGANIZER(BAD_REQUEST, "REVIEW001", "모임 주최자는 해당 모임의 리뷰를 작성할 수 없습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
