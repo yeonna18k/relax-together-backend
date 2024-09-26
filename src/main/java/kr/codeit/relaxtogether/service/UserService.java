@@ -1,6 +1,7 @@
 package kr.codeit.relaxtogether.service;
 
 import static kr.codeit.relaxtogether.exception.ErrorCode.EMAIL_ALREADY_EXISTS;
+import static kr.codeit.relaxtogether.exception.ErrorCode.USER_NOT_FOUND;
 
 import kr.codeit.relaxtogether.dto.user.request.EmailCheckRequest;
 import kr.codeit.relaxtogether.dto.user.request.JoinUserRequest;
@@ -31,7 +32,7 @@ public class UserService {
 
     public UserDetailsResponse getUserDetails(String email) {
         User user = userRepository.findByEmail(email)
-            .orElseThrow(RuntimeException::new);
+            .orElseThrow(() -> new ApiException(USER_NOT_FOUND));
         return UserDetailsResponse.of(user);
     }
 
@@ -43,7 +44,7 @@ public class UserService {
     @Transactional
     public void update(UpdateUserRequest updateUserRequest, String email) {
         User user = userRepository.findByEmail(email)
-            .orElseThrow(RuntimeException::new);
+            .orElseThrow(() -> new ApiException(USER_NOT_FOUND));
         user.update(updateUserRequest.getCompanyName(), updateUserRequest.getProfileImage());
     }
 }
