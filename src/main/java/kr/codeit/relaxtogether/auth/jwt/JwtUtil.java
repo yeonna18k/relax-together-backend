@@ -12,7 +12,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtUtil {
 
-    private static final int EXPIRATION_TIME = 60 * 60 * 1000;
+    private static final int ACCESS_TOKEN_EXPIRATION_TIME = 60 * 60 * 1000;
+    private static final int REFRESH_TOKEN_EXPIRATION_TIME = 24 * 60 * 60 * 1000;
 
     private SecretKey secretKey;
 
@@ -21,6 +22,15 @@ public class JwtUtil {
             secret.getBytes(StandardCharsets.UTF_8),
             SIG.HS256.key().build().getAlgorithm()
         );
+    }
+
+    public String getType(String token) {
+        return Jwts.parser()
+            .verifyWith(secretKey)
+            .build()
+            .parseSignedClaims(token)
+            .getPayload()
+            .get("type", String.class);
     }
 
     public String getEmail(String token) {
@@ -42,11 +52,42 @@ public class JwtUtil {
             .before(new Date());
     }
 
-    public String createJwt(String email) {
+    public String createAccessToken(String email) {
         return Jwts.builder()
+            .claim("type", "access")
             .claim("email", email)
             .issuedAt(new Date(System.currentTimeMillis()))
-            .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+            .expiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION_TIME))
+            .signWith(secretKey)
+            .compact();
+    }
+
+    public String createRefreshToken(String email) {
+        return Jwts.builder()
+            .claim("type", "refresh")
+            .claim("email", email)
+            .issuedAt(new Date(System.currentTimeMillis()))
+            .expiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION_TIME))
+            .signWith(secretKey)
+            .compact();
+    }
+
+    public String createNewAccessToken(String refreshToken) {
+        return Jwts.builder()
+            .claim("type", "access")
+            .claim("email", getEmail(refreshToken))
+            .issuedAt(new Date(System.currentTimeMillis()))
+            .expiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION_TIME))
+            .signWith(secretKey)
+            .compact();
+    }
+
+    public String createNewRefreshToken(String refreshToken) {
+        return Jwts.builder()
+            .claim("type", "refresh")
+            .claim("email", getEmail(refreshToken))
+            .issuedAt(new Date(System.currentTimeMillis()))
+            .expiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION_TIME))
             .signWith(secretKey)
             .compact();
     }
