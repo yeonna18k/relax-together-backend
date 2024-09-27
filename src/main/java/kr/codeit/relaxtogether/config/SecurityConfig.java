@@ -65,11 +65,13 @@ public class SecurityConfig {
                         "/api/auths/check-email",
                         "/api/auths/signup",
                         "/api/auths/login",
+                        "/api/auths/reissue-token",
                         "/h2-console/**",
                         "/swagger-ui/**",
                         "/v3/api-docs/**",
                         "/swagger.json/**",
                         "/api/gatherings/**").permitAll()
+                    .requestMatchers(GET, "/api/reviews").permitAll()
                     .requestMatchers(POST, "/api/gatherings").authenticated()
                     .requestMatchers(GET, "/api/gatherings/my-hosted").authenticated()
                     .requestMatchers(GET, "/api/gatherings/joined").authenticated()
