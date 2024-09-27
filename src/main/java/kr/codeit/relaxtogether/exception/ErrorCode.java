@@ -23,6 +23,7 @@ public enum ErrorCode {
 
     AUTHENTICATION_FAIL(UNAUTHORIZED, "AUTH001", "해당 유저를 찾을 수 없습니다. 로그인 정보를 확인해 주세요."),
     AUTHORIZATION_FAIL(FORBIDDEN, "AUTH002", "해당 요청에 대한 권한이 없습니다."),
+    TOKEN_EXPIRED(UNAUTHORIZED, "AUTH003", "토큰이 만료되었습니다."),
 
     GATHERING_DATE_VALIDATION_ERROR(BAD_REQUEST, "VALID001", "모집 종료일은 모임 시작일 이전이어야 합니다."),
     GATHERING_NOT_FOUND(NOT_FOUND, "GATH001", "해당 모임을 찾을 수 없습니다."),
