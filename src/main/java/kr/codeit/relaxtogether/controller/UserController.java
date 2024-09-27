@@ -1,6 +1,9 @@
 package kr.codeit.relaxtogether.controller;
 
+import static kr.codeit.relaxtogether.exception.ErrorCode.AUTHENTICATION_FAIL;
+
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import kr.codeit.relaxtogether.auth.CustomUserDetails;
@@ -11,6 +14,7 @@ import kr.codeit.relaxtogether.dto.user.request.LoginRequest;
 import kr.codeit.relaxtogether.dto.user.request.UpdateUserRequest;
 import kr.codeit.relaxtogether.dto.user.response.UserDetailsResponse;
 import kr.codeit.relaxtogether.entity.JwtToken;
+import kr.codeit.relaxtogether.exception.ApiException;
 import kr.codeit.relaxtogether.repository.JwtTokenRepository;
 import kr.codeit.relaxtogether.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -78,17 +82,19 @@ public class UserController {
     public ResponseEntity<String> login(@Valid @RequestBody LoginRequest loginRequest) {
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
             loginRequest.getEmail(), loginRequest.getPassword(), null);
-
         try {
             Authentication authenticate = authenticationManager.authenticate(token);
             CustomUserDetails userDetails = (CustomUserDetails) authenticate.getPrincipal();
-            String jwt = jwtUtil.createJwt(userDetails.getUsername());
-            jwtTokenRepository.save(JwtToken.builder()
-                .token(jwt)
-                .build());
+            String accessToken = jwtUtil.createAccessToken(userDetails.getUsername());
+            String refreshToken = jwtUtil.createRefreshToken(userDetails.getUsername());
+            jwtTokenRepository.save(createJwtToken(accessToken));
+            jwtTokenRepository.save(createJwtToken(refreshToken));
             return ResponseEntity
                 .status(HttpStatus.OK)
-                .body("{\"token\":\"" + jwt + "\"}");
+                .body("{\n"
+                    + "\"AccessToken\": \"" + accessToken + "\"\n"
+                    + "\"RefreshToken\": \"" + refreshToken + "\"\n"
+                    + "}");
         } catch (AuthenticationException e) {
             return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
@@ -100,10 +106,51 @@ public class UserController {
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request) {
         String authorization = request.getHeader("Authorization");
-        String token = authorization.split(" ")[1];
-        jwtTokenRepository.deleteByToken(token);
+        String accessToken = authorization.split(" ")[1];
+        jwtTokenRepository.deleteByToken(accessToken);
         return ResponseEntity
             .status(HttpStatus.OK)
             .body("success");
+    }
+
+    @GetMapping("/reissue-token")
+    public ResponseEntity<String> reissueToken(HttpServletRequest request) {
+        // Refresh 토큰 검증
+        String refreshToken = getRefreshToken(request.getCookies());
+        if (refreshToken == null
+            || !jwtTokenRepository.existsByToken(refreshToken)
+            || !jwtUtil.getType(refreshToken).equals("refresh")) {
+            throw new ApiException(AUTHENTICATION_FAIL);
+        }
+
+        // Refresh 토큰 삭제
+        jwtTokenRepository.deleteByToken(refreshToken);
+
+        // 새 토큰들 생성 및 저장
+        String newAccessToken = jwtUtil.createNewAccessToken(refreshToken);
+        String newRefreshToken = jwtUtil.createNewRefreshToken(refreshToken);
+        jwtTokenRepository.save(createJwtToken(newAccessToken));
+        jwtTokenRepository.save(createJwtToken(newRefreshToken));
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body("{\n"
+                + "\"AccessToken\": \"" + newAccessToken + "\"\n"
+                + "\"RefreshToken\": \"" + newRefreshToken + "\"\n"
+                + "}");
+    }
+
+    private JwtToken createJwtToken(String token) {
+        return JwtToken.builder()
+            .token(token)
+            .build();
+    }
+
+    private String getRefreshToken(Cookie[] cookies) {
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("refreshToken")) {
+                return cookie.getValue();
+            }
+        }
+        return null;
     }
 }
