@@ -115,7 +115,7 @@ public class UserController {
             .body("success");
     }
 
-    @GetMapping("/reissue-token")
+    @GetMapping("/refresh-token")
     public ResponseEntity<JwtResponse> reissueToken(HttpServletRequest request, HttpServletResponse response) {
         // Refresh 토큰 검증
         String refreshToken = getRefreshToken(request.getCookies());
