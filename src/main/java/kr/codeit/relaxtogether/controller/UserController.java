@@ -115,6 +115,7 @@ public class UserController {
             .body("success");
     }
 
+    @Operation(summary = "토큰 재발급", description = "기존 Refresh 토큰을 통해 Access 토큰과 Refresh 토큰을 새로 발급합니다.")
     @GetMapping("/refresh-token")
     public ResponseEntity<JwtResponse> reissueToken(HttpServletRequest request, HttpServletResponse response) {
         // Refresh 토큰 검증
