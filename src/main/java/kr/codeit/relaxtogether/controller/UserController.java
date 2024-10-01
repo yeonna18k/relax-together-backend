@@ -5,6 +5,7 @@ import static kr.codeit.relaxtogether.exception.ErrorCode.AUTHENTICATION_FAIL;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import kr.codeit.relaxtogether.auth.CustomUserDetails;
 import kr.codeit.relaxtogether.auth.jwt.JwtUtil;
@@ -12,6 +13,7 @@ import kr.codeit.relaxtogether.dto.user.request.EmailCheckRequest;
 import kr.codeit.relaxtogether.dto.user.request.JoinUserRequest;
 import kr.codeit.relaxtogether.dto.user.request.LoginRequest;
 import kr.codeit.relaxtogether.dto.user.request.UpdateUserRequest;
+import kr.codeit.relaxtogether.dto.user.response.JwtResponse;
 import kr.codeit.relaxtogether.dto.user.response.UserDetailsResponse;
 import kr.codeit.relaxtogether.entity.JwtToken;
 import kr.codeit.relaxtogether.exception.ApiException;
@@ -79,7 +81,7 @@ public class UserController {
 
     @Operation(summary = "로그인", description = "로그인을 진행합니다.")
     @PostMapping("/login")
-    public ResponseEntity<String> login(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
             loginRequest.getEmail(), loginRequest.getPassword(), null);
         try {
@@ -89,12 +91,12 @@ public class UserController {
             String refreshToken = jwtUtil.createRefreshToken(userDetails.getUsername());
             jwtTokenRepository.save(createJwtToken(accessToken));
             jwtTokenRepository.save(createJwtToken(refreshToken));
+            response.addCookie(createCookie(refreshToken));
             return ResponseEntity
                 .status(HttpStatus.OK)
-                .body("{\n"
-                    + "\"AccessToken\": \"" + accessToken + "\"\n"
-                    + "\"RefreshToken\": \"" + refreshToken + "\"\n"
-                    + "}");
+                .body(JwtResponse.builder()
+                    .accessToken(accessToken)
+                    .build());
         } catch (AuthenticationException e) {
             return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
@@ -114,7 +116,7 @@ public class UserController {
     }
 
     @GetMapping("/reissue-token")
-    public ResponseEntity<String> reissueToken(HttpServletRequest request) {
+    public ResponseEntity<JwtResponse> reissueToken(HttpServletRequest request, HttpServletResponse response) {
         // Refresh 토큰 검증
         String refreshToken = getRefreshToken(request.getCookies());
         if (refreshToken == null
@@ -131,12 +133,12 @@ public class UserController {
         String newRefreshToken = jwtUtil.createNewRefreshToken(refreshToken);
         jwtTokenRepository.save(createJwtToken(newAccessToken));
         jwtTokenRepository.save(createJwtToken(newRefreshToken));
+        response.addCookie(createCookie(newRefreshToken));
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body("{\n"
-                + "\"AccessToken\": \"" + newAccessToken + "\"\n"
-                + "\"RefreshToken\": \"" + newRefreshToken + "\"\n"
-                + "}");
+            .body(JwtResponse.builder()
+                .accessToken(newAccessToken)
+                .build());
     }
 
     private JwtToken createJwtToken(String token) {
@@ -152,5 +154,14 @@ public class UserController {
             }
         }
         return null;
+    }
+
+    private Cookie createCookie(String refreshToken) {
+        Cookie cookie = new Cookie("refreshToken", refreshToken);
+        cookie.setMaxAge(24 * 60 * 60);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        return cookie;
     }
 }
