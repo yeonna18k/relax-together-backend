@@ -9,12 +9,12 @@ import lombok.Getter;
 @Builder
 public class Participant {
 
-    Long userId;
-    String name;
-    String email;
-    String companyName;
-    String profileImage;
-    LocalDateTime joinedAt;
+    private Long userId;
+    private String name;
+    private String email;
+    private String companyName;
+    private String profileImage;
+    private LocalDateTime joinedAt;
 
     public static Participant from(UserGathering userGathering) {
         return Participant.builder()
