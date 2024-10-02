@@ -91,7 +91,8 @@ public class UserController {
             String refreshToken = jwtUtil.createRefreshToken(userDetails.getUsername());
             jwtTokenRepository.save(createJwtToken(accessToken));
             jwtTokenRepository.save(createJwtToken(refreshToken));
-            response.addCookie(createCookie(refreshToken));
+            response.addCookie(createCookieForRefreshToken(refreshToken));
+            response.addCookie(createCookieForIsLoginUser("true"));
             return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(JwtResponse.builder()
@@ -106,10 +107,12 @@ public class UserController {
 
     @Operation(summary = "로그아웃", description = "로그아웃을 진행합니다.")
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(HttpServletRequest request) {
+    public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
         String authorization = request.getHeader("Authorization");
         String accessToken = authorization.split(" ")[1];
         jwtTokenRepository.deleteByToken(accessToken);
+        response.addCookie(createCookieForDeleteRefreshToken());
+        response.addCookie(createCookieForIsLoginUser("false"));
         return ResponseEntity
             .status(HttpStatus.OK)
             .body("success");
@@ -134,7 +137,7 @@ public class UserController {
         String newRefreshToken = jwtUtil.createNewRefreshToken(refreshToken);
         jwtTokenRepository.save(createJwtToken(newAccessToken));
         jwtTokenRepository.save(createJwtToken(newRefreshToken));
-        response.addCookie(createCookie(newRefreshToken));
+        response.addCookie(createCookieForRefreshToken(newRefreshToken));
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(JwtResponse.builder()
@@ -157,9 +160,27 @@ public class UserController {
         return null;
     }
 
-    private Cookie createCookie(String refreshToken) {
+    private Cookie createCookieForRefreshToken(String refreshToken) {
         Cookie cookie = new Cookie("refreshToken", refreshToken);
         cookie.setMaxAge(24 * 60 * 60);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        return cookie;
+    }
+
+    private Cookie createCookieForDeleteRefreshToken() {
+        Cookie cookie = new Cookie("refreshToken", null);
+        cookie.setMaxAge(0);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        return cookie;
+    }
+
+    private Cookie createCookieForIsLoginUser(String isLoginUser) {
+        Cookie cookie = new Cookie("isLoginUser", isLoginUser);
+        cookie.setMaxAge(60 * 60);
         cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
