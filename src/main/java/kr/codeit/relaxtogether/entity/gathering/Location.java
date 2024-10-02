@@ -1,10 +1,9 @@
 package kr.codeit.relaxtogether.entity.gathering;
 
-import static kr.codeit.relaxtogether.exception.ErrorCode.*;
+import static kr.codeit.relaxtogether.exception.ErrorCode.LOCATION_NOT_FOUND;
 
 import java.util.Arrays;
 import kr.codeit.relaxtogether.exception.ApiException;
-import kr.codeit.relaxtogether.exception.ErrorCode;
 import lombok.Getter;
 
 @Getter
