@@ -1,6 +1,6 @@
 package kr.codeit.relaxtogether.dto.gathering.response;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import kr.codeit.relaxtogether.entity.gathering.UserGathering;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,7 +14,7 @@ public class Participant {
     private String email;
     private String companyName;
     private String profileImage;
-    private LocalDateTime joinedAt;
+    private ZonedDateTime joinedAt;
 
     public static Participant from(UserGathering userGathering) {
         return Participant.builder()

@@ -10,7 +10,7 @@ import static kr.codeit.relaxtogether.exception.ErrorCode.GATHERING_NOT_FOUND;
 import static kr.codeit.relaxtogether.exception.ErrorCode.GATHERING_PAST_DATE;
 import static kr.codeit.relaxtogether.exception.ErrorCode.PARTICIPATION_NOT_FOUND;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import kr.codeit.relaxtogether.dto.PagedResponse;
 import kr.codeit.relaxtogether.dto.gathering.request.CreateGatheringRequest;
@@ -164,7 +164,7 @@ public class GatheringService {
 
     private boolean validateComplete(Gathering gathering) {
         return gathering.getStatus() != Status.CANCELLED
-            && gathering.getRegistrationEnd().isBefore(LocalDateTime.now());
+            && gathering.getRegistrationEnd().isBefore(ZonedDateTime.now());
     }
 
     private void saveUserGathering(User user, Gathering gathering) {

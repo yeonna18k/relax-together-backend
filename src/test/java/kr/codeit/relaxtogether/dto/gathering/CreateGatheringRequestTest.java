@@ -6,7 +6,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Set;
 import kr.codeit.relaxtogether.dto.gathering.request.CreateGatheringRequest;
 import kr.codeit.relaxtogether.entity.gathering.Type;
@@ -33,8 +33,8 @@ class CreateGatheringRequestTest {
             .location("건대입구")
             .imageUrl("some-image-url")
             .type(Type.WORKATION.getText())
-            .dateTime(LocalDateTime.now().plusDays(1))
-            .registrationEnd(LocalDateTime.now().plusDays(2))
+            .dateTime(ZonedDateTime.now().plusDays(1))
+            .registrationEnd(ZonedDateTime.now().plusDays(2))
             .capacity(10)
             .build();
 
@@ -55,8 +55,8 @@ class CreateGatheringRequestTest {
             .location("건대입구")
             .imageUrl("some-image-url")
             .type(Type.WORKATION.getText())
-            .dateTime(LocalDateTime.now().plusDays(1))
-            .registrationEnd(LocalDateTime.now().plusDays(2))
+            .dateTime(ZonedDateTime.now().plusDays(1))
+            .registrationEnd(ZonedDateTime.now().plusDays(2))
             .capacity(10)
             .build();
 
@@ -77,8 +77,8 @@ class CreateGatheringRequestTest {
             .location("홍대입구")
             .imageUrl("some-image-url")
             .type(Type.WORKATION.getText())
-            .dateTime(LocalDateTime.now().plusDays(1))
-            .registrationEnd(LocalDateTime.now().plusDays(2))
+            .dateTime(ZonedDateTime.now().plusDays(1))
+            .registrationEnd(ZonedDateTime.now().plusDays(2))
             .capacity(10)
             .build();
 
@@ -98,8 +98,8 @@ class CreateGatheringRequestTest {
             .location("을지로3가")
             .imageUrl("some-image-url")
             .type(Type.MINDFULNESS.getText())
-            .dateTime(LocalDateTime.now().plusDays(1))
-            .registrationEnd(LocalDateTime.now().plusDays(2))
+            .dateTime(ZonedDateTime.now().plusDays(1))
+            .registrationEnd(ZonedDateTime.now().plusDays(2))
             .capacity(10)
             .build();
 
@@ -119,8 +119,8 @@ class CreateGatheringRequestTest {
             .location("신림")
             .imageUrl("some-image-url")
             .type(Type.MINDFULNESS.getText())
-            .dateTime(LocalDateTime.now().plusDays(1))
-            .registrationEnd(LocalDateTime.now().plusDays(1))
+            .dateTime(ZonedDateTime.now().plusDays(1))
+            .registrationEnd(ZonedDateTime.now().plusDays(1))
             .capacity(10)
             .build();
 
@@ -140,8 +140,8 @@ class CreateGatheringRequestTest {
             .location("을지로3가")
             .imageUrl("some-image-url")
             .type(Type.MINDFULNESS.getText())
-            .dateTime(LocalDateTime.now().plusDays(1))
-            .registrationEnd(LocalDateTime.now().plusDays(2))
+            .dateTime(ZonedDateTime.now().plusDays(1))
+            .registrationEnd(ZonedDateTime.now().plusDays(2))
             .capacity(10)
             .build();
 

@@ -3,7 +3,7 @@ package kr.codeit.relaxtogether.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import kr.codeit.relaxtogether.dto.PagedResponse;
 import kr.codeit.relaxtogether.dto.gathering.request.CreateGatheringRequest;
 import kr.codeit.relaxtogether.dto.gathering.response.GatheringDetailResponse;
@@ -59,8 +59,8 @@ class GatheringServiceTest {
             .name(null)
             .location(Location.HONGDAE.getText())
             .type(Type.MINDFULNESS.getText())
-            .dateTime(LocalDateTime.now().plusDays(10))
-            .registrationEnd(LocalDateTime.now().plusDays(5))
+            .dateTime(ZonedDateTime.now().plusDays(10))
+            .registrationEnd(ZonedDateTime.now().plusDays(5))
             .capacity(10)
             .imageUrl("https://example.com/image.png")
             .build();
@@ -97,8 +97,8 @@ class GatheringServiceTest {
             .name("Test Gathering")
             .location(Location.KONDAE.getText())
             .type(Type.WORKATION.getText())
-            .dateTime(LocalDateTime.now().plusDays(5))
-            .registrationEnd(LocalDateTime.now().plusDays(10))
+            .dateTime(ZonedDateTime.now().plusDays(5))
+            .registrationEnd(ZonedDateTime.now().plusDays(10))
             .capacity(10)
             .imageUrl("https://example.com/image.png")
             .build();
@@ -126,8 +126,8 @@ class GatheringServiceTest {
             .name("Test Gathering")
             .location(Location.SINRIM.getText())
             .type(Type.WORKATION.getText())
-            .dateTime(LocalDateTime.now().plusDays(10))
-            .registrationEnd(LocalDateTime.now().plusDays(5))
+            .dateTime(ZonedDateTime.now().plusDays(10))
+            .registrationEnd(ZonedDateTime.now().plusDays(5))
             .capacity(10)
             .imageUrl("https://example.com/image.png")
             .build();
@@ -157,8 +157,8 @@ class GatheringServiceTest {
                 .name("Test Gathering")
                 .location(Location.KONDAE)
                 .type(Type.OFFICE_STRETCHING)
-                .dateTime(LocalDateTime.now().plusDays(5))
-                .registrationEnd(LocalDateTime.now().plusDays(3))
+                .dateTime(ZonedDateTime.now().plusDays(5))
+                .registrationEnd(ZonedDateTime.now().plusDays(3))
                 .capacity(10)
                 .imageUrl("https://example.com/image.png")
                 .build()
@@ -215,8 +215,8 @@ class GatheringServiceTest {
                 .name("Test Gathering")
                 .location(Location.SINRIM)
                 .type(Type.MINDFULNESS)
-                .dateTime(LocalDateTime.now().plusDays(10))
-                .registrationEnd(LocalDateTime.now().plusDays(5))
+                .dateTime(ZonedDateTime.now().plusDays(10))
+                .registrationEnd(ZonedDateTime.now().plusDays(5))
                 .capacity(10)
                 .build()
         );
@@ -250,8 +250,8 @@ class GatheringServiceTest {
                 .name("Test Gathering")
                 .location(Location.KONDAE)
                 .type(Type.WORKATION)
-                .dateTime(LocalDateTime.now().plusDays(10))
-                .registrationEnd(LocalDateTime.now().plusDays(5))
+                .dateTime(ZonedDateTime.now().plusDays(10))
+                .registrationEnd(ZonedDateTime.now().plusDays(5))
                 .capacity(1) // 정원이 1명으로 설정됨
                 .build()
         );
@@ -292,8 +292,8 @@ class GatheringServiceTest {
                 .name("Test Gathering")
                 .location(Location.SINRIM)
                 .type(Type.MINDFULNESS)
-                .dateTime(LocalDateTime.now().plusDays(10))
-                .registrationEnd(LocalDateTime.now().plusDays(5))
+                .dateTime(ZonedDateTime.now().plusDays(10))
+                .registrationEnd(ZonedDateTime.now().plusDays(5))
                 .capacity(10)
                 .build()
         );
@@ -316,8 +316,8 @@ class GatheringServiceTest {
                 .name("Test Gathering")
                 .location(Location.SINRIM)
                 .type(Type.WORKATION)
-                .dateTime(LocalDateTime.now().plusDays(10))
-                .registrationEnd(LocalDateTime.now().plusDays(5))
+                .dateTime(ZonedDateTime.now().plusDays(10))
+                .registrationEnd(ZonedDateTime.now().plusDays(5))
                 .capacity(10)
                 .build()
         );
@@ -362,8 +362,8 @@ class GatheringServiceTest {
             .name("Test Gathering")
             .location(Location.KONDAE)
             .type(Type.OFFICE_STRETCHING)
-            .dateTime(LocalDateTime.now().plusDays(1))
-            .registrationEnd(LocalDateTime.now().plusDays(1))
+            .dateTime(ZonedDateTime.now().plusDays(1))
+            .registrationEnd(ZonedDateTime.now().plusDays(1))
             .capacity(10)
             .build());
 
@@ -404,8 +404,8 @@ class GatheringServiceTest {
             .name("Test Gathering")
             .location(Location.KONDAE)
             .type(Type.OFFICE_STRETCHING)
-            .dateTime(LocalDateTime.now().plusDays(1))
-            .registrationEnd(LocalDateTime.now().plusDays(1))
+            .dateTime(ZonedDateTime.now().plusDays(1))
+            .registrationEnd(ZonedDateTime.now().plusDays(1))
             .capacity(10)
             .build());
 
@@ -454,8 +454,8 @@ class GatheringServiceTest {
             .name("Test Gathering")
             .location(Location.KONDAE)
             .type(Type.OFFICE_STRETCHING)
-            .dateTime(LocalDateTime.now().plusDays(1))
-            .registrationEnd(LocalDateTime.now().plusDays(1))
+            .dateTime(ZonedDateTime.now().plusDays(1))
+            .registrationEnd(ZonedDateTime.now().plusDays(1))
             .capacity(10)
             .build());
 
@@ -491,8 +491,8 @@ class GatheringServiceTest {
             .name("Past Gathering")
             .location(Location.KONDAE)
             .type(Type.OFFICE_STRETCHING)
-            .dateTime(LocalDateTime.now().minusDays(1))
-            .registrationEnd(LocalDateTime.now().minusDays(2))
+            .dateTime(ZonedDateTime.now().minusDays(1))
+            .registrationEnd(ZonedDateTime.now().minusDays(2))
             .capacity(10)
             .build());
 
@@ -528,8 +528,8 @@ class GatheringServiceTest {
             .name("Test Gathering")
             .location(Location.KONDAE)
             .type(Type.OFFICE_STRETCHING)
-            .dateTime(LocalDateTime.now().plusDays(1))
-            .registrationEnd(LocalDateTime.now().plusDays(1))
+            .dateTime(ZonedDateTime.now().plusDays(1))
+            .registrationEnd(ZonedDateTime.now().plusDays(1))
             .capacity(10)
             .build());
 
@@ -655,8 +655,8 @@ class GatheringServiceTest {
                 .name("Gathering 1")
                 .location(Location.KONDAE)
                 .type(Type.OFFICE_STRETCHING)
-                .dateTime(LocalDateTime.now().plusDays(5))
-                .registrationEnd(LocalDateTime.now().plusDays(3))
+                .dateTime(ZonedDateTime.now().plusDays(5))
+                .registrationEnd(ZonedDateTime.now().plusDays(3))
                 .capacity(10)
                 .imageUrl("https://example.com/image1.png")
                 .build()
@@ -668,8 +668,8 @@ class GatheringServiceTest {
                 .name("Gathering 2")
                 .location(Location.HONGDAE)
                 .type(Type.MINDFULNESS)
-                .dateTime(LocalDateTime.now().plusDays(10))
-                .registrationEnd(LocalDateTime.now().plusDays(7))
+                .dateTime(ZonedDateTime.now().plusDays(10))
+                .registrationEnd(ZonedDateTime.now().plusDays(7))
                 .capacity(20)
                 .imageUrl("https://example.com/image2.png")
                 .build()
@@ -730,8 +730,8 @@ class GatheringServiceTest {
                     .name("Gathering " + i)
                     .location(Location.HONGDAE)
                     .type(Type.MINDFULNESS)
-                    .dateTime(LocalDateTime.now().plusDays(i))
-                    .registrationEnd(LocalDateTime.now().plusDays(i - 1))
+                    .dateTime(ZonedDateTime.now().plusDays(i))
+                    .registrationEnd(ZonedDateTime.now().plusDays(i - 1))
                     .capacity(20)
                     .imageUrl("https://example.com/image" + i + ".png")
                     .build()
@@ -776,8 +776,8 @@ class GatheringServiceTest {
                 .name("Past Gathering")
                 .location(Location.HONGDAE)
                 .type(Type.MINDFULNESS)
-                .dateTime(LocalDateTime.now().minusDays(10))
-                .registrationEnd(LocalDateTime.now().minusDays(11))
+                .dateTime(ZonedDateTime.now().minusDays(10))
+                .registrationEnd(ZonedDateTime.now().minusDays(11))
                 .capacity(10)
                 .imageUrl("https://example.com/image.png")
                 .build());
@@ -817,8 +817,8 @@ class GatheringServiceTest {
                 .name("ONGOING Gathering")
                 .location(Location.HONGDAE)
                 .type(Type.MINDFULNESS)
-                .dateTime(LocalDateTime.now().minusDays(5))
-                .registrationEnd(LocalDateTime.now().minusDays(11))
+                .dateTime(ZonedDateTime.now().minusDays(5))
+                .registrationEnd(ZonedDateTime.now().minusDays(11))
                 .capacity(10)
                 .imageUrl("https://example.com/image.png")
                 .build());
@@ -829,8 +829,8 @@ class GatheringServiceTest {
                 .name("CANCELLED Gathering")
                 .location(Location.HONGDAE)
                 .type(Type.MINDFULNESS)
-                .dateTime(LocalDateTime.now().minusDays(10))
-                .registrationEnd(LocalDateTime.now().minusDays(11))
+                .dateTime(ZonedDateTime.now().minusDays(10))
+                .registrationEnd(ZonedDateTime.now().minusDays(11))
                 .capacity(10)
                 .imageUrl("https://example.com/image.png")
                 .build());
@@ -886,8 +886,8 @@ class GatheringServiceTest {
             .name("Other Gathering")
             .location(Location.KONDAE)
             .type(Type.OFFICE_STRETCHING)
-            .dateTime(LocalDateTime.now().plusDays(1))
-            .registrationEnd(LocalDateTime.now().plusDays(1))
+            .dateTime(ZonedDateTime.now().plusDays(1))
+            .registrationEnd(ZonedDateTime.now().plusDays(1))
             .capacity(10)
             .build());
 
@@ -896,8 +896,8 @@ class GatheringServiceTest {
             .name("Hosted Gathering")
             .location(Location.HONGDAE)
             .type(Type.MINDFULNESS)
-            .dateTime(LocalDateTime.now().plusDays(2))
-            .registrationEnd(LocalDateTime.now().plusDays(1))
+            .dateTime(ZonedDateTime.now().plusDays(2))
+            .registrationEnd(ZonedDateTime.now().plusDays(1))
             .capacity(5)
             .build());
 
@@ -934,8 +934,8 @@ class GatheringServiceTest {
             .name("Reviewed Gathering")
             .location(Location.SINRIM)
             .type(Type.WORKATION)
-            .dateTime(LocalDateTime.now().plusDays(2))
-            .registrationEnd(LocalDateTime.now().plusDays(1))
+            .dateTime(ZonedDateTime.now().plusDays(2))
+            .registrationEnd(ZonedDateTime.now().plusDays(1))
             .capacity(5)
             .build());
 
@@ -977,8 +977,8 @@ class GatheringServiceTest {
             .name("Non-Reviewed Gathering")
             .location(Location.EULJIRO3GA)
             .type(Type.OFFICE_STRETCHING)
-            .dateTime(LocalDateTime.now().plusDays(2))
-            .registrationEnd(LocalDateTime.now().plusDays(1))
+            .dateTime(ZonedDateTime.now().plusDays(2))
+            .registrationEnd(ZonedDateTime.now().plusDays(1))
             .capacity(5)
             .build());
 
@@ -1015,8 +1015,8 @@ class GatheringServiceTest {
             .hostUser(host)
             .name(name)
             .location(Location.KONDAE)
-            .dateTime(LocalDateTime.now().plusDays(1))
-            .registrationEnd(LocalDateTime.now().minusDays(1))
+            .dateTime(ZonedDateTime.now().plusDays(1))
+            .registrationEnd(ZonedDateTime.now().minusDays(1))
             .capacity(10)
             .build();
         return gatheringRepository.save(gathering);

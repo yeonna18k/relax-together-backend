@@ -1,7 +1,7 @@
 package kr.codeit.relaxtogether.dto.gathering.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import lombok.Data;
 
 @Data
@@ -14,7 +14,7 @@ public class GatheringSearchCondition {
     private String location;
 
     @Schema(description = "모임 날짜 (YYYY-MM-DD)")
-    private LocalDate date;
+    private ZonedDateTime date;
 
     @Schema(description = "모임주최자 Id", example = "1")
     private Long hostUser;

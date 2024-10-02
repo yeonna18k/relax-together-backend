@@ -2,7 +2,7 @@ package kr.codeit.relaxtogether.entity.gathering;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import kr.codeit.relaxtogether.entity.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,8 +25,8 @@ class GatheringTest {
             .location(Location.HONGDAE)
             .imageUrl("test_image_url")
             .type(Type.WORKATION)
-            .dateTime(LocalDateTime.now().plusDays(1))
-            .registrationEnd(LocalDateTime.now().plusDays(1))
+            .dateTime(ZonedDateTime.now().plusDays(1))
+            .registrationEnd(ZonedDateTime.now().plusDays(1))
             .capacity(10)
             .build();
 

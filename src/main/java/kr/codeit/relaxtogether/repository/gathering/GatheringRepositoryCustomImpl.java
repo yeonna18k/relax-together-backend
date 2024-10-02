@@ -4,9 +4,7 @@ import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import kr.codeit.relaxtogether.dto.gathering.request.GatheringSearchCondition;
 import kr.codeit.relaxtogether.dto.gathering.response.HostedGatheringResponse;
@@ -141,12 +139,12 @@ public class GatheringRepositoryCustomImpl implements GatheringRepositoryCustom 
         }
     }
 
-    private BooleanExpression dateBetween(LocalDate date) {
+    private BooleanExpression dateBetween(ZonedDateTime date) {
         if (date == null) {
             return null;
         }
-        LocalDateTime startOfDay = date.atStartOfDay();
-        LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
+        ZonedDateTime startOfDay = date.toLocalDate().atStartOfDay(date.getZone());
+        ZonedDateTime endOfDay = date.plusDays(1);
         return QGathering.gathering.dateTime.between(startOfDay, endOfDay);
     }
 
