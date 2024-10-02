@@ -1,6 +1,6 @@
 package kr.codeit.relaxtogether.dto.gathering.response;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import kr.codeit.relaxtogether.entity.gathering.Gathering;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,13 +16,13 @@ public class GatheringDetailResponse {
     private int capacity;
     private String imageUrl;
     private Long participantCount;
-    private LocalDateTime dateTime;
-    private LocalDateTime registrationEnd;
+    private ZonedDateTime dateTime;
+    private ZonedDateTime registrationEnd;
     private String status;
 
     @Builder
     private GatheringDetailResponse(Long id, Long hostUser, String name, String location, String type, int capacity,
-        String imageUrl, Long participantCount, LocalDateTime dateTime, LocalDateTime registrationEnd, String status) {
+        String imageUrl, Long participantCount, ZonedDateTime dateTime, ZonedDateTime registrationEnd, String status) {
         this.id = id;
         this.hostUser = hostUser;
         this.name = name;

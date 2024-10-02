@@ -1,13 +1,10 @@
 package kr.codeit.relaxtogether.entity.gathering;
 
-import static kr.codeit.relaxtogether.exception.ErrorCode.*;
+import static kr.codeit.relaxtogether.exception.ErrorCode.TYPE_NOT_FOUND;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 import kr.codeit.relaxtogether.exception.ApiException;
-import kr.codeit.relaxtogether.exception.ErrorCode;
 
 public enum Type {
     OFFICE_STRETCHING("오피스 스트레칭", "달램핏"),

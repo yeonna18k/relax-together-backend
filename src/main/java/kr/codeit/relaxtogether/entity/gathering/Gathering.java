@@ -11,7 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import kr.codeit.relaxtogether.entity.BaseTimeEntity;
 import kr.codeit.relaxtogether.entity.User;
 import lombok.AccessLevel;
@@ -44,8 +44,8 @@ public class Gathering extends BaseTimeEntity {
     @Enumerated(value = EnumType.STRING)
     private Type type;
 
-    private LocalDateTime dateTime;
-    private LocalDateTime registrationEnd;
+    private ZonedDateTime dateTime;
+    private ZonedDateTime registrationEnd;
     private int capacity;
 
     @Enumerated(value = EnumType.STRING)
@@ -53,7 +53,7 @@ public class Gathering extends BaseTimeEntity {
 
     @Builder
     private Gathering(User hostUser, String name, Location location, String imageUrl, Type type,
-        LocalDateTime dateTime, LocalDateTime registrationEnd, int capacity) {
+        ZonedDateTime dateTime, ZonedDateTime registrationEnd, int capacity) {
         this.hostUser = hostUser;
         this.name = name;
         this.location = location;
@@ -70,7 +70,7 @@ public class Gathering extends BaseTimeEntity {
     }
 
     public boolean hasEnded() {
-        return this.dateTime.isBefore(LocalDateTime.now());
+        return this.dateTime.isBefore(ZonedDateTime.now());
     }
 
     public boolean isHost(User user) {

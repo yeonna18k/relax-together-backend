@@ -3,7 +3,7 @@ package kr.codeit.relaxtogether.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.List;
 import kr.codeit.relaxtogether.dto.review.request.ReviewSearchCondition;
 import kr.codeit.relaxtogether.dto.review.response.ReviewDetailsResponse;
@@ -263,7 +263,7 @@ public class ReviewRepositoryTest {
     }
 
     private ReviewSearchCondition createReviewSearchCondition(String type, String typeDetail, String location,
-        LocalDate date) {
+        ZonedDateTime date) {
         return ReviewSearchCondition.builder()
             .type(type)
             .typeDetail(typeDetail)

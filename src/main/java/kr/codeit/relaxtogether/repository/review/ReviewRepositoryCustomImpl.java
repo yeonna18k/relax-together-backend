@@ -9,8 +9,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import kr.codeit.relaxtogether.dto.review.request.ReviewSearchCondition;
 import kr.codeit.relaxtogether.dto.review.response.GatheringReviewsResponse;
@@ -198,12 +197,12 @@ public class ReviewRepositoryCustomImpl implements ReviewRepositoryCustom {
         return location != null ? gathering.location.eq(Location.fromText(location)) : null;
     }
 
-    private BooleanExpression dateEq(LocalDate date) {
+    private BooleanExpression dateEq(ZonedDateTime date) {
         if (date == null) {
             return null;
         }
-        LocalDateTime startDateTime = date.atStartOfDay(); // 해당 날짜의 시작
-        LocalDateTime endDateTime = date.plusDays(1).atStartOfDay(); // 다음날의 시작
+        ZonedDateTime startDateTime = date.toLocalDate().atStartOfDay(date.getZone());
+        ZonedDateTime endDateTime = startDateTime.plusDays(1);
         return review.createdDate.goe(startDateTime).and(review.createdDate.lt(endDateTime));
     }
 

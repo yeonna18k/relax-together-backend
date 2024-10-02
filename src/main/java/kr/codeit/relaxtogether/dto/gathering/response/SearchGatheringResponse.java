@@ -1,7 +1,7 @@
 package kr.codeit.relaxtogether.dto.gathering.response;
 
 import com.querydsl.core.annotations.QueryProjection;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import kr.codeit.relaxtogether.entity.gathering.Location;
 import kr.codeit.relaxtogether.entity.gathering.Type;
 import lombok.Getter;
@@ -12,8 +12,8 @@ public class SearchGatheringResponse {
     private Long id;
     private String type;
     private String name;
-    private LocalDateTime dateTime;
-    private LocalDateTime registrationEnd;
+    private ZonedDateTime dateTime;
+    private ZonedDateTime registrationEnd;
     private String location;
     private Long participantCount;
     private int capacity;
@@ -21,8 +21,8 @@ public class SearchGatheringResponse {
     private Long hostUser;
 
     @QueryProjection
-    public SearchGatheringResponse(Long id, Type type, String name, LocalDateTime dateTime,
-        LocalDateTime registrationEnd, Location location, Long participantCount, int capacity,
+    public SearchGatheringResponse(Long id, Type type, String name, ZonedDateTime dateTime,
+        ZonedDateTime registrationEnd, Location location, Long participantCount, int capacity,
         String imageUrl, Long hostUser) {
         this.id = id;
         this.type = type.getText();

@@ -1,6 +1,5 @@
 package kr.codeit.relaxtogether.dto.gathering.response;
 
-import java.util.ArrayList;
 import java.util.List;
 import kr.codeit.relaxtogether.entity.gathering.UserGathering;
 import lombok.Builder;
@@ -11,8 +10,8 @@ import org.springframework.data.domain.Page;
 @Builder
 public class ParticipantsResponse {
 
-    Long gatheringId;
-    List<Participant> participants;
+    private Long gatheringId;
+    private List<Participant> participants;
     private int currentPage;
     private int totalPages;
     private long totalElements;

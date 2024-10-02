@@ -5,7 +5,7 @@ import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import kr.codeit.relaxtogether.entity.User;
 import kr.codeit.relaxtogether.entity.gathering.Gathering;
 import kr.codeit.relaxtogether.entity.gathering.Location;
@@ -32,21 +32,21 @@ public class CreateGatheringRequest {
     @NotBlank(message = "서비스 타입은 필수입니다.")
     private String type;
 
-    @Schema(description = "모임 날짜 및 시간 (YYYY-MM-DDTHH:MM:SS)")
+    @Schema(description = "모임 날짜 및 시간 (yyyy-MM-dd'T'HH:mm:ss.SSS'Z')")
     @Future(message = "모임 시작일은 현재 시간 이후여야 합니다.")
-    private LocalDateTime dateTime;
+    private ZonedDateTime dateTime;
 
-    @Schema(description = "모집 마감 날짜 및 시간 (선택 사항, YYYY-MM-DDTHH:MM:SS)")
+    @Schema(description = "모집 마감 날짜 및 시간 (선택 사항, yyyy-MM-dd'T'HH:mm:ss.SSS'Z')")
     @Future(message = "모집 종료일은 현재 시간 이후여야 합니다.")
-    private LocalDateTime registrationEnd;
+    private ZonedDateTime registrationEnd;
 
     @Schema(description = "모집 정원 (최소 5명 이상)", example = "10")
     @Min(value = 5, message = "모집 정원은 최소 5명 이상이어야 합니다.")
     private int capacity;
 
     @Builder
-    private CreateGatheringRequest(String name, String location, String imageUrl, String type, LocalDateTime dateTime,
-        LocalDateTime registrationEnd, int capacity) {
+    private CreateGatheringRequest(String name, String location, String imageUrl, String type, ZonedDateTime dateTime,
+        ZonedDateTime registrationEnd, int capacity) {
         this.name = name;
         this.location = location;
         this.imageUrl = (imageUrl == null || imageUrl.isBlank()) ? DEFAULT_IMAGE_URL : imageUrl;

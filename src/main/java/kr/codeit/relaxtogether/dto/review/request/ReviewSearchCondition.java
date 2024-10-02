@@ -1,7 +1,7 @@
 package kr.codeit.relaxtogether.dto.review.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -17,10 +17,10 @@ public class ReviewSearchCondition {
     @Schema(example = "홍대입구")
     private String location;
 
-    private LocalDate date;
+    private ZonedDateTime date;
 
     @Builder
-    public ReviewSearchCondition(String type, String typeDetail, String location, LocalDate date) {
+    public ReviewSearchCondition(String type, String typeDetail, String location, ZonedDateTime date) {
         this.type = type;
         this.typeDetail = typeDetail;
         this.location = location;
