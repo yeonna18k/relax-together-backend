@@ -1,23 +1,29 @@
 package kr.codeit.relaxtogether.entity;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
-import java.time.LocalDateTime;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import java.time.ZonedDateTime;
 import lombok.Getter;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public class BaseTimeEntity {
+public abstract class BaseTimeEntity {
 
-    @CreatedDate
-    @Column(updatable = false)
-    private LocalDateTime createdDate;
+    private ZonedDateTime createdDate;
+    private ZonedDateTime lastModifiedDate;
 
-    @LastModifiedDate
-    private LocalDateTime lastModifiedDate;
+    @PrePersist
+    public void prePersist() {
+        this.createdDate = ZonedDateTime.now();
+        this.lastModifiedDate = ZonedDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.lastModifiedDate = ZonedDateTime.now();
+    }
 }
