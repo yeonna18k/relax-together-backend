@@ -7,13 +7,15 @@ import lombok.Getter;
 @Getter
 public class UserDetailsResponse {
 
+    private Long id;
     private String email;
     private String name;
     private String companyName;
     private String profileImage;
 
     @Builder
-    private UserDetailsResponse(String email, String name, String companyName, String profileImage) {
+    public UserDetailsResponse(Long id, String email, String name, String companyName, String profileImage) {
+        this.id = id;
         this.email = email;
         this.name = name;
         this.companyName = companyName;
@@ -22,6 +24,7 @@ public class UserDetailsResponse {
 
     public static UserDetailsResponse of(User user) {
         return UserDetailsResponse.builder()
+            .id(user.getId())
             .email(user.getEmail())
             .name(user.getName())
             .companyName(user.getCompanyName())
