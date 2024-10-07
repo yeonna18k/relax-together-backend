@@ -1076,8 +1076,8 @@ class GatheringServiceTest {
         assertThat(response.getContent().get(0).getName()).isEqualTo("Ongoing Gathering 1");
         assertThat(response.getContent().get(1).getName()).isEqualTo("Ongoing Gathering 2");
 
-        assertThat(response.getContent().get(2).getName()).isEqualTo("Past Gathering 2");
-        assertThat(response.getContent().get(3).getName()).isEqualTo("Past Gathering 1");
+        assertThat(response.getContent().get(2).getName()).isEqualTo("Past Gathering 1");
+        assertThat(response.getContent().get(3).getName()).isEqualTo("Past Gathering 2");
     }
 
     private User createUser(String email, String name) {
