@@ -52,6 +52,7 @@ public class JwtFilter extends OncePerRequestFilter {
         User user = User.builder()
             .email(jwtUtil.getEmail(accessToken))
             .build();
+        System.out.println(user.getEmail());
         Authentication authToken = new UsernamePasswordAuthenticationToken(new CustomUserDetails(user), null,
             Collections.emptyList());
         SecurityContextHolder.getContext().setAuthentication(authToken);
@@ -65,6 +66,9 @@ public class JwtFilter extends OncePerRequestFilter {
         if (uri.equals("/api/gatherings") && method.equals("GET")) {
             return true;
         }
+        if (uri.equals("/api/gatherings/my-hosted")) {
+            return false;
+        }
 
         PathPatternParser parser = new PathPatternParser();
         List<PathPattern> publicPatterns = List.of(
@@ -74,6 +78,7 @@ public class JwtFilter extends OncePerRequestFilter {
             parser.parse("/api/gatherings/{gatheringId}"),
             parser.parse("/api/gatherings/{gatheringId}/participants"),
             parser.parse("/api/auths/refresh-token"),
+            parser.parse("/api/reviews/scores"),
             parser.parse("/h2-console/**"),
             parser.parse("/swagger-ui/**"),
             parser.parse("/v3/api-docs/**"),
