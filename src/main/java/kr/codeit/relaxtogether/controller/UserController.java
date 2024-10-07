@@ -162,7 +162,7 @@ public class UserController {
 
     private Cookie createCookieForRefreshToken(String refreshToken) {
         Cookie cookie = new Cookie("refreshToken", refreshToken);
-        cookie.setMaxAge(24 * 60 * 60);
+        cookie.setMaxAge(5 * 60);
         cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
@@ -180,7 +180,7 @@ public class UserController {
 
     private Cookie createCookieForIsLoginUser(String isLoginUser) {
         Cookie cookie = new Cookie("isLoginUser", isLoginUser);
-        cookie.setMaxAge(60 * 60);
+        cookie.setMaxAge(60);
         cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
