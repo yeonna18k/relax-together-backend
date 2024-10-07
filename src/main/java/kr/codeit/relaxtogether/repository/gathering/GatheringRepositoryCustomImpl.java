@@ -5,6 +5,7 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
 import kr.codeit.relaxtogether.dto.gathering.request.GatheringSearchCondition;
@@ -32,7 +33,7 @@ public class GatheringRepositoryCustomImpl implements GatheringRepositoryCustom 
     public Slice<SearchGatheringResponse> searchGatherings(GatheringSearchCondition condition, Pageable pageable) {
         QGathering gathering = QGathering.gathering;
         QUserGathering userGathering = QUserGathering.userGathering;
-        ZonedDateTime now = ZonedDateTime.now();
+        ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
 
         List<SearchGatheringResponse> results = queryFactory
             .select(new QSearchGatheringResponse(
@@ -114,7 +115,6 @@ public class GatheringRepositoryCustomImpl implements GatheringRepositoryCustom 
 
     private OrderSpecifier<?> applySorting(Sort sort, QGathering gathering, QUserGathering userGathering) {
         for (Sort.Order order : sort) {
-            System.out.println("Requested sort property: " + order.getProperty());
             if (order.getProperty().equals("registrationEnd")) {
                 return new OrderSpecifier<>(order.isAscending() ? Order.ASC : Order.DESC, gathering.registrationEnd);
             } else if (order.getProperty().equals("participantCount")) {
