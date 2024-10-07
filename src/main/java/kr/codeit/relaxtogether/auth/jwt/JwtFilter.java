@@ -31,8 +31,12 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
         throws ServletException, IOException {
-        String authorization = request.getHeader("Authorization");
+        if (isPublicPattern(request.getRequestURI(), request.getMethod())) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
+        String authorization = request.getHeader("Authorization");
         if (authorization == null || !authorization.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
@@ -43,11 +47,7 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
         if (jwtUtil.ieExpired(accessToken)) {
-            if (!isPublicPattern(request.getRequestURI(), request.getMethod())) {
-                throw new ApiException(TOKEN_EXPIRED);
-            }
-            filterChain.doFilter(request, response);
-            return;
+            throw new ApiException(TOKEN_EXPIRED);
         }
 
         User user = User.builder()
@@ -61,7 +61,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private boolean isPublicPattern(String uri, String method) {
         if (uri.equals("/api/reviews") && !method.equals("GET")) {
-            return false;
+            return true;
         }
 
         PathPatternParser parser = new PathPatternParser();
@@ -71,7 +71,7 @@ public class JwtFilter extends OncePerRequestFilter {
             parser.parse("/api/auths/login"),
             parser.parse("/api/gatherings/{gatheringId}"),
             parser.parse("/api/gatherings/{gatheringId}/participants"),
-            parser.parse("/api/reviews"),
+            parser.parse("/api/auths/refresh-token"),
             parser.parse("/h2-console/**"),
             parser.parse("/swagger-ui/**"),
             parser.parse("/v3/api-docs/**"),
