@@ -1,6 +1,5 @@
 package kr.codeit.relaxtogether.service;
 
-import static java.util.Comparator.comparing;
 import static kr.codeit.relaxtogether.exception.ErrorCode.AUTHENTICATION_FAIL;
 import static kr.codeit.relaxtogether.exception.ErrorCode.AUTHORIZATION_FAIL;
 import static kr.codeit.relaxtogether.exception.ErrorCode.GATHERING_ALREADY_JOINED;
@@ -62,15 +61,8 @@ public class GatheringService {
         Slice<SearchGatheringResponse> gatherings = gatheringRepository.searchGatherings(condition,
             pageable);
 
-        List<SearchGatheringResponse> sortedGatherings = gatherings.getContent().stream()
-            .sorted(
-                comparing(SearchGatheringResponse::isEnded)
-                    .thenComparing(SearchGatheringResponse::getDateTime)
-            )
-            .toList();
-
         return new PagedResponse<>(
-            sortedGatherings,
+            gatherings.getContent(),
             gatherings.hasNext(),
             gatherings.getNumberOfElements()
         );
