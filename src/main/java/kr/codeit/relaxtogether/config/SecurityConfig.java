@@ -66,6 +66,7 @@ public class SecurityConfig {
                         "/api/auths/signup",
                         "/api/auths/login",
                         "/api/auths/refresh-token",
+                        "/api/reviews/scores",
                         "/h2-console/**",
                         "/swagger-ui/**",
                         "/v3/api-docs/**",

@@ -80,11 +80,11 @@ public class ReviewController {
     public ResponseEntity<PagedResponse<ReviewDetailsResponse>> getReviewsByConditions(
         ReviewSearchCondition reviewSearchCondition,
         @Parameter(description = "정렬조건을 선택하세요 [createdDate, score, participantCount]")
-        @RequestParam String sortBy,
+        @RequestParam(value = "sortBy", defaultValue = "createdDate") String sortBy,
         @Parameter(description = "조회 시작 위치 (최소 0)")
-        @RequestParam int page,
+        @RequestParam(value = "page", defaultValue = "0") int page,
         @Parameter(description = "한 번에 조회할 모임 수 (최소 1)")
-        @RequestParam int size
+        @RequestParam(value = "size", defaultValue = "10") int size
     ) {
         Sort sort = Sort.by(sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);

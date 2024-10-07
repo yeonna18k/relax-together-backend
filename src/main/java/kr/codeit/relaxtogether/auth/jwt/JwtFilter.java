@@ -1,5 +1,6 @@
 package kr.codeit.relaxtogether.auth.jwt;
 
+import static kr.codeit.relaxtogether.exception.ErrorCode.AUTHENTICATION_FAIL;
 import static kr.codeit.relaxtogether.exception.ErrorCode.TOKEN_EXPIRED;
 
 import jakarta.servlet.FilterChain;
@@ -38,13 +39,11 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String authorization = request.getHeader("Authorization");
         if (authorization == null || !authorization.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response);
-            return;
+            throw new ApiException(AUTHENTICATION_FAIL);
         }
         String accessToken = authorization.split(" ")[1];
         if (!jwtTokenRepository.existsByToken(accessToken)) {
-            filterChain.doFilter(request, response);
-            return;
+            throw new ApiException(AUTHENTICATION_FAIL);
         }
         if (jwtUtil.ieExpired(accessToken)) {
             throw new ApiException(TOKEN_EXPIRED);
@@ -53,6 +52,7 @@ public class JwtFilter extends OncePerRequestFilter {
         User user = User.builder()
             .email(jwtUtil.getEmail(accessToken))
             .build();
+        System.out.println(user.getEmail());
         Authentication authToken = new UsernamePasswordAuthenticationToken(new CustomUserDetails(user), null,
             Collections.emptyList());
         SecurityContextHolder.getContext().setAuthentication(authToken);
@@ -60,8 +60,14 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     private boolean isPublicPattern(String uri, String method) {
-        if (uri.equals("/api/reviews") && !method.equals("GET")) {
+        if (uri.equals("/api/reviews") && method.equals("GET")) {
             return true;
+        }
+        if (uri.equals("/api/gatherings") && method.equals("GET")) {
+            return true;
+        }
+        if (uri.equals("/api/gatherings/my-hosted")) {
+            return false;
         }
 
         PathPatternParser parser = new PathPatternParser();
@@ -72,6 +78,7 @@ public class JwtFilter extends OncePerRequestFilter {
             parser.parse("/api/gatherings/{gatheringId}"),
             parser.parse("/api/gatherings/{gatheringId}/participants"),
             parser.parse("/api/auths/refresh-token"),
+            parser.parse("/api/reviews/scores"),
             parser.parse("/h2-console/**"),
             parser.parse("/swagger-ui/**"),
             parser.parse("/v3/api-docs/**"),
