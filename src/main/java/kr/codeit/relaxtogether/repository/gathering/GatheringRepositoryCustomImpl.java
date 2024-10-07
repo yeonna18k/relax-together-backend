@@ -3,6 +3,7 @@ package kr.codeit.relaxtogether.repository.gathering;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -31,6 +32,7 @@ public class GatheringRepositoryCustomImpl implements GatheringRepositoryCustom 
     public Slice<SearchGatheringResponse> searchGatherings(GatheringSearchCondition condition, Pageable pageable) {
         QGathering gathering = QGathering.gathering;
         QUserGathering userGathering = QUserGathering.userGathering;
+        ZonedDateTime now = ZonedDateTime.now();
 
         List<SearchGatheringResponse> results = queryFactory
             .select(new QSearchGatheringResponse(
@@ -59,7 +61,12 @@ public class GatheringRepositoryCustomImpl implements GatheringRepositoryCustom 
                 gathering.registrationEnd, gathering.location, gathering.capacity,
                 gathering.imageUrl, gathering.hostUser.id
             )
-            .orderBy(applySorting(pageable.getSort(), gathering, userGathering))
+            .orderBy(
+                new CaseBuilder()
+                    .when(gathering.dateTime.before(now)).then(1)
+                    .otherwise(0).asc(),
+                applySorting(pageable.getSort(), gathering, userGathering),
+                gathering.dateTime.asc())
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();
@@ -107,6 +114,7 @@ public class GatheringRepositoryCustomImpl implements GatheringRepositoryCustom 
 
     private OrderSpecifier<?> applySorting(Sort sort, QGathering gathering, QUserGathering userGathering) {
         for (Sort.Order order : sort) {
+            System.out.println("Requested sort property: " + order.getProperty());
             if (order.getProperty().equals("registrationEnd")) {
                 return new OrderSpecifier<>(order.isAscending() ? Order.ASC : Order.DESC, gathering.registrationEnd);
             } else if (order.getProperty().equals("participantCount")) {
