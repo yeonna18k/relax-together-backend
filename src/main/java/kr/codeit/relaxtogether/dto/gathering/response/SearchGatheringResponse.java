@@ -35,4 +35,8 @@ public class SearchGatheringResponse {
         this.imageUrl = imageUrl;
         this.hostUser = hostUser;
     }
+
+    public boolean isEnded() {
+        return this.dateTime.isBefore(ZonedDateTime.now());
+    }
 }

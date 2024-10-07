@@ -1,5 +1,6 @@
 package kr.codeit.relaxtogether.service;
 
+import static java.util.Comparator.comparing;
 import static kr.codeit.relaxtogether.exception.ErrorCode.AUTHENTICATION_FAIL;
 import static kr.codeit.relaxtogether.exception.ErrorCode.AUTHORIZATION_FAIL;
 import static kr.codeit.relaxtogether.exception.ErrorCode.GATHERING_ALREADY_JOINED;
@@ -60,8 +61,16 @@ public class GatheringService {
     public PagedResponse<SearchGatheringResponse> search(GatheringSearchCondition condition, Pageable pageable) {
         Slice<SearchGatheringResponse> gatherings = gatheringRepository.searchGatherings(condition,
             pageable);
+
+        List<SearchGatheringResponse> sortedGatherings = gatherings.getContent().stream()
+            .sorted(
+                comparing(SearchGatheringResponse::isEnded)
+                    .thenComparing(SearchGatheringResponse::getDateTime)
+            )
+            .toList();
+
         return new PagedResponse<>(
-            gatherings.getContent(),
+            sortedGatherings,
             gatherings.hasNext(),
             gatherings.getNumberOfElements()
         );
@@ -145,7 +154,8 @@ public class GatheringService {
     public PagedResponse<MyGatheringResponse> getMyGatherings(String userId, Pageable pageable) {
         User user = getUserByEmail(userId);
 
-        Slice<UserGathering> gatherings = userGatheringRepository.findNonHostGatheringsByUserIdWithGathering(user.getId(), pageable);
+        Slice<UserGathering> gatherings = userGatheringRepository.findNonHostGatheringsByUserIdWithGathering(
+            user.getId(), pageable);
         List<MyGatheringResponse> myGatherings = gatherings.getContent().stream()
             .map(userGathering -> {
                 Gathering gathering = userGathering.getGathering();
@@ -191,3 +201,4 @@ public class GatheringService {
         }
     }
 }
+

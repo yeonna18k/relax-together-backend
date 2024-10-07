@@ -6,11 +6,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.ZonedDateTime;
 import kr.codeit.relaxtogether.dto.PagedResponse;
 import kr.codeit.relaxtogether.dto.gathering.request.CreateGatheringRequest;
+import kr.codeit.relaxtogether.dto.gathering.request.GatheringSearchCondition;
 import kr.codeit.relaxtogether.dto.gathering.response.GatheringDetailResponse;
 import kr.codeit.relaxtogether.dto.gathering.response.HostedGatheringResponse;
 import kr.codeit.relaxtogether.dto.gathering.response.MyGatheringResponse;
 import kr.codeit.relaxtogether.dto.gathering.response.Participant;
 import kr.codeit.relaxtogether.dto.gathering.response.ParticipantsResponse;
+import kr.codeit.relaxtogether.dto.gathering.response.SearchGatheringResponse;
 import kr.codeit.relaxtogether.entity.Review;
 import kr.codeit.relaxtogether.entity.User;
 import kr.codeit.relaxtogether.entity.gathering.Gathering;
@@ -999,6 +1001,83 @@ class GatheringServiceTest {
         // Then
         assertThat(response.getContent()).hasSize(1);
         assertThat(response.getContent().get(0).isReviewed()).isFalse();
+    }
+
+    @Test
+    @DisplayName("모임을 마감임박 순으로 정렬하여 조회한다")
+    void shouldSortGatheringsByRegistrationEnd() {
+        // Given
+        User user = userRepository.save(
+            User.builder()
+                .email("testuser@example.com")
+                .password("password")
+                .name("Test User")
+                .build()
+        );
+
+        gatheringRepository.save(
+            Gathering.builder()
+                .hostUser(user)
+                .name("Ongoing Gathering 1")
+                .location(Location.HONGDAE)
+                .type(Type.OFFICE_STRETCHING)
+                .dateTime(ZonedDateTime.now().plusDays(5))
+                .registrationEnd(ZonedDateTime.now().plusDays(3))
+                .capacity(10)
+                .build()
+        );
+
+        gatheringRepository.save(
+            Gathering.builder()
+                .hostUser(user)
+                .name("Ongoing Gathering 2")
+                .location(Location.KONDAE)
+                .type(Type.MINDFULNESS)
+                .dateTime(ZonedDateTime.now().plusDays(7))
+                .registrationEnd(ZonedDateTime.now().plusDays(4))
+                .capacity(20)
+                .build()
+        );
+
+        gatheringRepository.save(
+            Gathering.builder()
+                .hostUser(user)
+                .name("Past Gathering 1")
+                .location(Location.SINRIM)
+                .type(Type.WORKATION)
+                .dateTime(ZonedDateTime.now().minusDays(1))
+                .registrationEnd(ZonedDateTime.now().minusDays(5))
+                .capacity(10)
+                .build()
+        );
+
+        gatheringRepository.save(
+            Gathering.builder()
+                .hostUser(user)
+                .name("Past Gathering 2")
+                .location(Location.EULJIRO3GA)
+                .type(Type.MINDFULNESS)
+                .dateTime(ZonedDateTime.now().minusDays(3))
+                .registrationEnd(ZonedDateTime.now().minusDays(2))
+                .capacity(15)
+                .build()
+        );
+
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.asc("registrationEnd")));
+
+        // When
+        PagedResponse<SearchGatheringResponse> response = gatheringService.search(
+            new GatheringSearchCondition(), pageable
+        );
+
+        // Then
+        assertThat(response.getContent()).hasSize(4);
+
+        assertThat(response.getContent().get(0).getName()).isEqualTo("Ongoing Gathering 1");
+        assertThat(response.getContent().get(1).getName()).isEqualTo("Ongoing Gathering 2");
+
+        assertThat(response.getContent().get(2).getName()).isEqualTo("Past Gathering 2");
+        assertThat(response.getContent().get(3).getName()).isEqualTo("Past Gathering 1");
     }
 
     private User createUser(String email, String name) {
