@@ -176,11 +176,11 @@ public class ReviewRepositoryCustomImpl implements ReviewRepositoryCustom {
         Type mindfulness = Type.fromText("마인드풀니스");
         Type worcation = Type.fromText("워케이션");
 
-        if (typeCategory == null) {
+        if (typeCategory == null || typeCategory.isEmpty()) {
             return null;
         }
         if (typeCategory.equals("달램핏")) {
-            if (typeDetail == null) {
+            if (typeDetail == null || typeDetail.isEmpty()) {
                 return gathering.type.eq(officeStretching).or(gathering.type.eq(mindfulness));
             }
             if (typeDetail.equals("오피스 스트레칭")) {
@@ -194,7 +194,7 @@ public class ReviewRepositoryCustomImpl implements ReviewRepositoryCustom {
     }
 
     private BooleanExpression locationEq(String location) {
-        return location != null ? gathering.location.eq(Location.fromText(location)) : null;
+        return location != null && !location.isEmpty() ? gathering.location.eq(Location.fromText(location)) : null;
     }
 
     private BooleanExpression dateEq(ZonedDateTime date) {
