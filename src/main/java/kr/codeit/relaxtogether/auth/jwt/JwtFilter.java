@@ -3,7 +3,6 @@ package kr.codeit.relaxtogether.auth.jwt;
 import static kr.codeit.relaxtogether.exception.ErrorCode.AUTHENTICATION_FAIL;
 import static kr.codeit.relaxtogether.exception.ErrorCode.TOKEN_EXPIRED;
 
-import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,7 +15,6 @@ import kr.codeit.relaxtogether.entity.User;
 import kr.codeit.relaxtogether.exception.ApiException;
 import kr.codeit.relaxtogether.repository.JwtTokenRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.server.PathContainer;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -47,15 +45,8 @@ public class JwtFilter extends OncePerRequestFilter {
         if (!jwtTokenRepository.existsByToken(accessToken)) {
             throw new ApiException(AUTHENTICATION_FAIL);
         }
-        try {
-            if (jwtUtil.ieExpired(accessToken)) {
-                throw new ApiException(TOKEN_EXPIRED);
-            }
-        } catch (ExpiredJwtException e) {
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().write("{\"error\": \"TOKEN_EXPIRED\", \"message\": \"토큰이 만료되었습니다.\"}");
-            return;
+        if (jwtUtil.ieExpired(accessToken)) {
+            throw new ApiException(TOKEN_EXPIRED);
         }
 
         User user = User.builder()
@@ -80,6 +71,7 @@ public class JwtFilter extends OncePerRequestFilter {
             parser.parse("/api/auths/check-email"),
             parser.parse("/api/auths/signup"),
             parser.parse("/api/auths/login"),
+            parser.parse("/api/auths/logout"),
             parser.parse("/api/gatherings/{gatheringId:\\d+}"),
             parser.parse("/api/gatherings/{gatheringId:\\d+}/participants"),
             parser.parse("/api/auths/refresh-token"),
