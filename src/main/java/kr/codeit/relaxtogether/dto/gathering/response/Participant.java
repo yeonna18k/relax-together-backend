@@ -18,7 +18,7 @@ public class Participant {
 
     public static Participant from(UserGathering userGathering) {
         return Participant.builder()
-            .userId(userGathering.getId())
+            .userId(userGathering.getUser().getId())
             .name(userGathering.getUser().getName())
             .email(userGathering.getUser().getEmail())
             .companyName(userGathering.getUser().getCompanyName())
