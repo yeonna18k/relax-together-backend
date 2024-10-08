@@ -71,7 +71,7 @@ public class ReviewService {
         );
     }
 
-    public ReviewScoreCountResponse getReviewScoreCounts(String type, String typeDetail) {
-        return reviewRepository.findReviewScoreCounts(type, typeDetail);
+    public ReviewScoreCountResponse getReviewScoreCounts(String type) {
+        return reviewRepository.findReviewScoreCounts(type);
     }
 }

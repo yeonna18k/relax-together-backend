@@ -98,13 +98,11 @@ public class ReviewController {
     @Operation(summary = "평점별 리뷰 개수 확인", description = "조건에 따라 리뷰를 필터링하고 해당 리뷰에서 평점별로 개수를 확인합니다.")
     @GetMapping("/reviews/scores")
     public ResponseEntity<ReviewScoreCountResponse> getReviewScoreCounts(
-        @Parameter(description = "모임 타입을 선택하세요 [달램핏, 워케이션]", example = "워케이션")
-        @RequestParam String type,
-        @Parameter(description = "모임 타입의 상세 내용을 선택하세요 [마인드풀니스, 오피스 스트레칭]", example = "null")
-        @RequestParam(required = false) String typeDetail
+        @Parameter(description = "모임 타입을 선택하세요 [달램핏, 마인드풀니스, 오피스 스트레칭, 워케이션]", example = "워케이션")
+        @RequestParam String type
     ) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(reviewService.getReviewScoreCounts(type, typeDetail));
+            .body(reviewService.getReviewScoreCounts(type));
     }
 }

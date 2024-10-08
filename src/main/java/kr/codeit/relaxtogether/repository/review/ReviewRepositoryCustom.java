@@ -16,5 +16,5 @@ public interface ReviewRepositoryCustom {
     Slice<ReviewDetailsResponse> findReviewsByConditions(ReviewSearchCondition reviewSearchCondition,
         Pageable pageable);
 
-    ReviewScoreCountResponse findReviewScoreCounts(String type, String typeDetail);
+    ReviewScoreCountResponse findReviewScoreCounts(String type);
 }

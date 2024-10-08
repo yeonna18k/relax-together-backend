@@ -140,7 +140,7 @@ public class ReviewRepositoryTest {
         // given
         dataSettings();
 
-        ReviewSearchCondition condition = createReviewSearchCondition("달램핏", null, null, null);
+        ReviewSearchCondition condition = createReviewSearchCondition("달램핏", null, null);
         Pageable pageable = PageRequest.of(0, 10, Sort.by("participantCount"));
 
         // when
@@ -167,10 +167,9 @@ public class ReviewRepositoryTest {
         // given
         dataSettings();
         String type = "달램핏";
-        String typeDetail = null;
 
         // when
-        ReviewScoreCountResponse reviewScoreCounts = reviewRepository.findReviewScoreCounts(type, typeDetail);
+        ReviewScoreCountResponse reviewScoreCounts = reviewRepository.findReviewScoreCounts(type);
 
         // then
         assertThat(reviewScoreCounts).extracting(
@@ -262,11 +261,9 @@ public class ReviewRepositoryTest {
             .build();
     }
 
-    private ReviewSearchCondition createReviewSearchCondition(String type, String typeDetail, String location,
-        ZonedDateTime date) {
+    private ReviewSearchCondition createReviewSearchCondition(String type, String location, ZonedDateTime date) {
         return ReviewSearchCondition.builder()
             .type(type)
-            .typeDetail(typeDetail)
             .location(location)
             .date(date)
             .build();

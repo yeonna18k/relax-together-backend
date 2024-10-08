@@ -11,18 +11,14 @@ public class ReviewSearchCondition {
     @Schema(example = "달램핏")
     private String type;
 
-    @Schema(example = "오피스 스트레칭")
-    private String typeDetail;
-
     @Schema(example = "홍대입구")
     private String location;
 
     private ZonedDateTime date;
 
     @Builder
-    public ReviewSearchCondition(String type, String typeDetail, String location, ZonedDateTime date) {
+    public ReviewSearchCondition(String type, String location, ZonedDateTime date) {
         this.type = type;
-        this.typeDetail = typeDetail;
         this.location = location;
         this.date = date;
     }
