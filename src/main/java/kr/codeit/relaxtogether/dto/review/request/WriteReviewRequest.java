@@ -1,5 +1,6 @@
 package kr.codeit.relaxtogether.dto.review.request;
 
+import jakarta.validation.constraints.Size;
 import kr.codeit.relaxtogether.entity.Review;
 import kr.codeit.relaxtogether.entity.User;
 import kr.codeit.relaxtogether.entity.gathering.Gathering;
@@ -11,6 +12,8 @@ public class WriteReviewRequest {
 
     private Long gatheringId;
     private int score;
+
+    @Size(max = 1000, message = "후기는 1000자 이내로 작성해 주세요.")
     private String comment;
 
     @Builder
