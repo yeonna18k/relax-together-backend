@@ -39,6 +39,7 @@ public class ReviewRepositoryCustomImpl implements ReviewRepositoryCustom {
                     ReviewDetailsResponse.class,
                     gathering.type,
                     gathering.location,
+                    gathering.imageUrl,
                     user.profileImage,
                     user.name,
                     review.score,
@@ -70,6 +71,7 @@ public class ReviewRepositoryCustomImpl implements ReviewRepositoryCustom {
                     ReviewDetailsResponse.class,
                     gathering.type,
                     gathering.location,
+                    gathering.imageUrl,
                     user.profileImage,
                     user.name,
                     review.score,
@@ -95,8 +97,8 @@ public class ReviewRepositoryCustomImpl implements ReviewRepositoryCustom {
         if (totalCount == null) {
             totalCount = 0L;
         }
+        results.forEach(review -> review.setGatheringImage(null));
         Page<ReviewDetailsResponse> page = new PageImpl<>(results, pageable, totalCount);
-
         return GatheringReviewsResponse.of(results, page);
     }
 
@@ -159,6 +161,7 @@ public class ReviewRepositoryCustomImpl implements ReviewRepositoryCustom {
                     ReviewDetailsResponse.class,
                     gathering.type,
                     gathering.location,
+                    gathering.imageUrl,
                     user.profileImage,
                     user.name,
                     review.score,

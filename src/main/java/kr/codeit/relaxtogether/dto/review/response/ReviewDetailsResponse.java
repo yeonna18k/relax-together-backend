@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -14,6 +15,10 @@ public class ReviewDetailsResponse {
 
     private String gatheringType;
     private String gatheringLocation;
+
+    @Setter
+    private String gatheringImage;
+
     private String userProfileImage;
     private String userName;
     private int score;
@@ -21,10 +26,15 @@ public class ReviewDetailsResponse {
     private ZonedDateTime createdDate;
 
     @Builder
-    public ReviewDetailsResponse(Type gatheringType, Location gatheringLocation, String userProfileImage,
-        String userName, int score, String comment, ZonedDateTime createdDate) {
-        this.gatheringType = gatheringType.getParentCategory() + " " + gatheringType.getText();
+    public ReviewDetailsResponse(Type gatheringType, Location gatheringLocation, String gatheringImage,
+        String userProfileImage, String userName, int score, String comment, ZonedDateTime createdDate) {
+        if (gatheringType.getParentCategory().equals("워케이션")) {
+            this.gatheringType = gatheringType.getParentCategory();
+        } else {
+            this.gatheringType = gatheringType.getParentCategory() + " " + gatheringType.getText();
+        }
         this.gatheringLocation = gatheringLocation.getText();
+        this.gatheringImage = gatheringImage;
         this.userProfileImage = userProfileImage;
         this.userName = userName;
         this.score = score;
