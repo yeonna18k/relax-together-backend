@@ -66,17 +66,14 @@ public class JwtFilter extends OncePerRequestFilter {
         if (uri.equals("/api/gatherings") && method.equals("GET")) {
             return true;
         }
-        if (uri.equals("/api/gatherings/my-hosted")) {
-            return false;
-        }
 
         PathPatternParser parser = new PathPatternParser();
         List<PathPattern> publicPatterns = List.of(
             parser.parse("/api/auths/check-email"),
             parser.parse("/api/auths/signup"),
             parser.parse("/api/auths/login"),
-            parser.parse("/api/gatherings/{gatheringId}"),
-            parser.parse("/api/gatherings/{gatheringId}/participants"),
+            parser.parse("/api/gatherings/{gatheringId:\\d+}"),
+            parser.parse("/api/gatherings/{gatheringId:\\d+}/participants"),
             parser.parse("/api/auths/refresh-token"),
             parser.parse("/api/reviews/scores"),
             parser.parse("/h2-console/**"),
