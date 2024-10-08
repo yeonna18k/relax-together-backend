@@ -13,7 +13,6 @@ import java.util.List;
 import kr.codeit.relaxtogether.auth.CustomUserDetails;
 import kr.codeit.relaxtogether.entity.User;
 import kr.codeit.relaxtogether.exception.ApiException;
-import kr.codeit.relaxtogether.repository.JwtTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.server.PathContainer;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,7 +26,6 @@ import org.springframework.web.util.pattern.PathPatternParser;
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    private final JwtTokenRepository jwtTokenRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -42,9 +40,6 @@ public class JwtFilter extends OncePerRequestFilter {
             throw new ApiException(AUTHENTICATION_FAIL);
         }
         String accessToken = authorization.split(" ")[1];
-        if (!jwtTokenRepository.existsByToken(accessToken)) {
-            throw new ApiException(AUTHENTICATION_FAIL);
-        }
         if (jwtUtil.ieExpired(accessToken)) {
             throw new ApiException(TOKEN_EXPIRED);
         }
