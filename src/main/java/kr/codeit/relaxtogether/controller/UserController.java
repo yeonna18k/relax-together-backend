@@ -1,7 +1,9 @@
 package kr.codeit.relaxtogether.controller;
 
 import static kr.codeit.relaxtogether.exception.ErrorCode.AUTHENTICATION_FAIL;
+import static kr.codeit.relaxtogether.exception.ErrorCode.TOKEN_EXPIRED;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -123,10 +125,17 @@ public class UserController {
     public ResponseEntity<JwtResponse> reissueToken(HttpServletRequest request, HttpServletResponse response) {
         // Refresh 토큰 검증
         String refreshToken = getRefreshToken(request.getCookies());
-        if (refreshToken == null
-            || !jwtTokenRepository.existsByToken(refreshToken)
-            || !jwtUtil.getType(refreshToken).equals("refresh")) {
-            throw new ApiException(AUTHENTICATION_FAIL);
+        try {
+            if (refreshToken == null
+                || !jwtTokenRepository.existsByToken(refreshToken)
+                || !jwtUtil.getType(refreshToken).equals("refresh")) {
+                throw new ApiException(AUTHENTICATION_FAIL);
+            }
+            if (jwtUtil.ieExpired(refreshToken)) {
+                throw new ApiException(TOKEN_EXPIRED);
+            }
+        } catch (ExpiredJwtException e) {
+            throw new ApiException(TOKEN_EXPIRED);
         }
 
         // Refresh 토큰 삭제
