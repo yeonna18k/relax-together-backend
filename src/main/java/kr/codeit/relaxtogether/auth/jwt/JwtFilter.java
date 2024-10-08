@@ -3,6 +3,7 @@ package kr.codeit.relaxtogether.auth.jwt;
 import static kr.codeit.relaxtogether.exception.ErrorCode.AUTHENTICATION_FAIL;
 import static kr.codeit.relaxtogether.exception.ErrorCode.TOKEN_EXPIRED;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,6 +16,7 @@ import kr.codeit.relaxtogether.entity.User;
 import kr.codeit.relaxtogether.exception.ApiException;
 import kr.codeit.relaxtogether.repository.JwtTokenRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.server.PathContainer;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -45,14 +47,20 @@ public class JwtFilter extends OncePerRequestFilter {
         if (!jwtTokenRepository.existsByToken(accessToken)) {
             throw new ApiException(AUTHENTICATION_FAIL);
         }
-        if (jwtUtil.ieExpired(accessToken)) {
-            throw new ApiException(TOKEN_EXPIRED);
+        try {
+            if (jwtUtil.ieExpired(accessToken)) {
+                throw new ApiException(TOKEN_EXPIRED);
+            }
+        } catch (ExpiredJwtException e) {
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().write("{\"error\": \"TOKEN_EXPIRED\", \"message\": \"토큰이 만료되었습니다.\"}");
+            return;
         }
 
         User user = User.builder()
             .email(jwtUtil.getEmail(accessToken))
             .build();
-        System.out.println(user.getEmail());
         Authentication authToken = new UsernamePasswordAuthenticationToken(new CustomUserDetails(user), null,
             Collections.emptyList());
         SecurityContextHolder.getContext().setAuthentication(authToken);

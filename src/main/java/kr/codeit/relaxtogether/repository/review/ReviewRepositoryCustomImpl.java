@@ -106,7 +106,7 @@ public class ReviewRepositoryCustomImpl implements ReviewRepositoryCustom {
         int pageSize = pageable.getPageSize();
         JPAQuery<ReviewDetailsResponse> query = createBaseQuery();
         query.where(
-            gatheringTypeEq(reviewSearchCondition.getType(), reviewSearchCondition.getTypeDetail()),
+            gatheringTypeEq(reviewSearchCondition.getType()),
             locationEq(reviewSearchCondition.getLocation()),
             dateEq(reviewSearchCondition.getDate())
         );
@@ -139,10 +139,10 @@ public class ReviewRepositoryCustomImpl implements ReviewRepositoryCustom {
     }
 
     @Override
-    public ReviewScoreCountResponse findReviewScoreCounts(String type, String typeDetail) {
+    public ReviewScoreCountResponse findReviewScoreCounts(String type) {
         List<Review> reviews = queryFactory.selectFrom(review)
             .join(review.gathering).fetchJoin()
-            .where(gatheringTypeEq(type, typeDetail))
+            .where(gatheringTypeEq(type))
             .fetch();
         return ReviewScoreCountResponse.builder()
             .fivePoints(getScoreCount(reviews, 5))
@@ -171,24 +171,22 @@ public class ReviewRepositoryCustomImpl implements ReviewRepositoryCustom {
             .join(review.gathering, gathering);
     }
 
-    private BooleanExpression gatheringTypeEq(String typeCategory, String typeDetail) {
+    private BooleanExpression gatheringTypeEq(String type) {
         Type officeStretching = Type.fromText("오피스 스트레칭");
         Type mindfulness = Type.fromText("마인드풀니스");
         Type worcation = Type.fromText("워케이션");
 
-        if (typeCategory == null || typeCategory.isEmpty()) {
+        if (type == null || type.isEmpty()) {
             return null;
         }
-        if (typeCategory.equals("달램핏")) {
-            if (typeDetail == null || typeDetail.isEmpty()) {
-                return gathering.type.eq(officeStretching).or(gathering.type.eq(mindfulness));
-            }
-            if (typeDetail.equals("오피스 스트레칭")) {
-                return gathering.type.eq(officeStretching);
-            }
-            if (typeDetail.equals("마인드풀니스")) {
-                return gathering.type.eq(mindfulness);
-            }
+        if (type.equals("달램핏")) {
+            return gathering.type.eq(officeStretching).or(gathering.type.eq(mindfulness));
+        }
+        if (type.equals("오피스 스트레칭")) {
+            gathering.type.eq(officeStretching);
+        }
+        if (type.equals("마인드풀니스")) {
+            gathering.type.eq(mindfulness);
         }
         return gathering.type.eq(worcation);
     }
