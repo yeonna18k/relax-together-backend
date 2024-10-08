@@ -10,7 +10,6 @@ import kr.codeit.relaxtogether.auth.jwt.JwtFilter;
 import kr.codeit.relaxtogether.auth.jwt.JwtUtil;
 import kr.codeit.relaxtogether.exception.security.CustomAccessDeniedHandler;
 import kr.codeit.relaxtogether.exception.security.CustomAuthenticationEntryPoint;
-import kr.codeit.relaxtogether.repository.JwtTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,9 +32,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 public class SecurityConfig {
 
-    private final AuthenticationConfiguration authenticationConfiguration;
     private final JwtUtil jwtUtil;
-    private final JwtTokenRepository jwtTokenRepository;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
@@ -82,7 +79,7 @@ public class SecurityConfig {
                     .requestMatchers(DELETE, "/api/gatherings/*/leave").authenticated()
                     .anyRequest().authenticated()
             )
-            .addFilterBefore(new JwtFilter(jwtUtil, jwtTokenRepository), UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
             .build();
     }
 

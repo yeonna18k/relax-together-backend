@@ -91,7 +91,6 @@ public class UserController {
             CustomUserDetails userDetails = (CustomUserDetails) authenticate.getPrincipal();
             String accessToken = jwtUtil.createAccessToken(userDetails.getUsername());
             String refreshToken = jwtUtil.createRefreshToken(userDetails.getUsername());
-            jwtTokenRepository.save(createJwtToken(accessToken));
             jwtTokenRepository.save(createJwtToken(refreshToken));
             response.addCookie(createCookieForRefreshToken(refreshToken));
             response.addCookie(createCookieForIsLoginUser("true"));
@@ -115,9 +114,6 @@ public class UserController {
             throw new ApiException(AUTHENTICATION_FAIL);
         }
         String accessToken = authorization.split(" ")[1];
-        if (!jwtTokenRepository.existsByToken(accessToken)) {
-            throw new ApiException(AUTHENTICATION_FAIL);
-        }
         try {
             if (jwtUtil.ieExpired(accessToken)) {
                 throw new ApiException(TOKEN_EXPIRED);
@@ -126,9 +122,8 @@ public class UserController {
             throw new ApiException(TOKEN_EXPIRED);
         }
 
-        jwtTokenRepository.deleteByToken(accessToken);
-        response.addCookie(createCookieForDeleteRefreshToken());
-        response.addCookie(createCookieForIsLoginUser("false"));
+        String refreshToken = getRefreshToken(request.getCookies());
+        handleLogout(refreshToken, response);
         return ResponseEntity
             .status(HttpStatus.OK)
             .body("success");
@@ -143,12 +138,15 @@ public class UserController {
             if (refreshToken == null
                 || !jwtTokenRepository.existsByToken(refreshToken)
                 || !jwtUtil.getType(refreshToken).equals("refresh")) {
+                handleLogout(refreshToken, response);
                 throw new ApiException(AUTHENTICATION_FAIL);
             }
             if (jwtUtil.ieExpired(refreshToken)) {
+                handleLogout(refreshToken, response);
                 throw new ApiException(TOKEN_EXPIRED);
             }
         } catch (ExpiredJwtException e) {
+            handleLogout(refreshToken, response);
             throw new ApiException(TOKEN_EXPIRED);
         }
 
@@ -158,7 +156,6 @@ public class UserController {
         // 새 토큰들 생성 및 저장
         String newAccessToken = jwtUtil.createNewAccessToken(refreshToken);
         String newRefreshToken = jwtUtil.createNewRefreshToken(refreshToken);
-        jwtTokenRepository.save(createJwtToken(newAccessToken));
         jwtTokenRepository.save(createJwtToken(newRefreshToken));
         response.addCookie(createCookieForRefreshToken(newRefreshToken));
         return ResponseEntity
@@ -166,6 +163,12 @@ public class UserController {
             .body(JwtResponse.builder()
                 .accessToken(newAccessToken)
                 .build());
+    }
+
+    private void handleLogout(String refreshToken, HttpServletResponse response) {
+        jwtTokenRepository.deleteByToken(refreshToken);
+        response.addCookie(createCookieForDeleteRefreshToken());
+        response.addCookie(createCookieForIsLoginUser("false"));
     }
 
     private JwtToken createJwtToken(String token) {
