@@ -111,7 +111,21 @@ public class UserController {
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
         String authorization = request.getHeader("Authorization");
+        if (authorization == null || !authorization.startsWith("Bearer ")) {
+            throw new ApiException(AUTHENTICATION_FAIL);
+        }
         String accessToken = authorization.split(" ")[1];
+        if (!jwtTokenRepository.existsByToken(accessToken)) {
+            throw new ApiException(AUTHENTICATION_FAIL);
+        }
+        try {
+            if (jwtUtil.ieExpired(accessToken)) {
+                throw new ApiException(TOKEN_EXPIRED);
+            }
+        } catch (ExpiredJwtException e) {
+            throw new ApiException(TOKEN_EXPIRED);
+        }
+
         jwtTokenRepository.deleteByToken(accessToken);
         response.addCookie(createCookieForDeleteRefreshToken());
         response.addCookie(createCookieForIsLoginUser("false"));
