@@ -101,7 +101,7 @@ public class ReviewController {
         @Parameter(description = "모임 타입을 선택하세요 [달램핏, 워케이션]", example = "워케이션")
         @RequestParam String type,
         @Parameter(description = "모임 타입의 상세 내용을 선택하세요 [마인드풀니스, 오피스 스트레칭]", example = "null")
-        @RequestParam String typeDetail
+        @RequestParam(required = false) String typeDetail
     ) {
         return ResponseEntity
             .status(HttpStatus.OK)
