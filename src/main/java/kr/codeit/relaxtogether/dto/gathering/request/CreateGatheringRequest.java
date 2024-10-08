@@ -25,7 +25,7 @@ public class CreateGatheringRequest {
     @NotBlank(message = "장소는 필수입니다.")
     private String location;
 
-    @Schema(description = "모임 이미지", type = "string", example = "https://firebasestorage.googleapis.com/b0/b/example")
+    @Schema(description = "모임 이미지", type = "string", example = DEFAULT_IMAGE_URL)
     private String imageUrl;
 
     @Schema(description = "모임 서비스 종류", allowableValues = {"워케이션", "마인드풀니스", "오피스 스트레칭"})
