@@ -63,6 +63,7 @@ public class SecurityConfig {
                         "/api/auths/signup",
                         "/api/auths/login",
                         "/api/auths/logout",
+                        "/api/auths/change-password",
                         "/api/auths/refresh-token",
                         "/api/reviews/scores",
                         "/api/send-email",
