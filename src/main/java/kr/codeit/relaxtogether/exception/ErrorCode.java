@@ -20,6 +20,7 @@ public enum ErrorCode {
 
     EMAIL_ALREADY_EXISTS(CONFLICT, "USER001", "이미 존재하는 이메일입니다."),
     USER_NOT_FOUND(NOT_FOUND, "USER002", "존재하지 않는 유저입니다."),
+    PASSWORD_MISMATCH_ON_UPDATE(CONFLICT, "USER003", "새로운 비밀번호와 비밀번호 확인이 일치하지 않습니다."),
 
     AUTHENTICATION_FAIL(UNAUTHORIZED, "AUTH001", "해당 유저를 찾을 수 없습니다. 로그인 정보를 확인해 주세요."),
     AUTHORIZATION_FAIL(FORBIDDEN, "AUTH002", "해당 요청에 대한 권한이 없습니다."),
