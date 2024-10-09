@@ -65,6 +65,8 @@ public class SecurityConfig {
                         "/api/auths/logout",
                         "/api/auths/refresh-token",
                         "/api/reviews/scores",
+                        "/api/send-email",
+                        "/api/verify-link",
                         "/h2-console/**",
                         "/swagger-ui/**",
                         "/v3/api-docs/**",
