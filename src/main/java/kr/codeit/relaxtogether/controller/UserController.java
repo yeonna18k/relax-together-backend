@@ -166,8 +166,9 @@ public class UserController {
                 .build());
     }
 
+    @Operation(summary = "비밀번호 분실 시, 비밀번호 변경", description = "비밀번호 분실 시에 새로운 비밀번호로 변경합니다.")
     @PostMapping("/change-password")
-    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest passwordRequest) {
+    public ResponseEntity<String> changePassword(@Valid @RequestBody ChangePasswordRequest passwordRequest) {
         userService.changePassword(passwordRequest);
         return ResponseEntity
             .status(HttpStatus.NO_CONTENT)
