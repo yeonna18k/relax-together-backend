@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import kr.codeit.relaxtogether.auth.CustomUserDetails;
 import kr.codeit.relaxtogether.auth.jwt.JwtUtil;
+import kr.codeit.relaxtogether.dto.user.request.ChangePasswordRequest;
 import kr.codeit.relaxtogether.dto.user.request.EmailCheckRequest;
 import kr.codeit.relaxtogether.dto.user.request.JoinUserRequest;
 import kr.codeit.relaxtogether.dto.user.request.LoginRequest;
@@ -163,6 +164,14 @@ public class UserController {
             .body(JwtResponse.builder()
                 .accessToken(newAccessToken)
                 .build());
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest passwordRequest) {
+        userService.changePassword(passwordRequest);
+        return ResponseEntity
+            .status(HttpStatus.NO_CONTENT)
+            .body("success");
     }
 
     private void handleLogout(String refreshToken, HttpServletResponse response) {
