@@ -1,8 +1,10 @@
 package kr.codeit.relaxtogether.service;
 
 import static kr.codeit.relaxtogether.exception.ErrorCode.EMAIL_ALREADY_EXISTS;
+import static kr.codeit.relaxtogether.exception.ErrorCode.PASSWORD_MISMATCH_ON_UPDATE;
 import static kr.codeit.relaxtogether.exception.ErrorCode.USER_NOT_FOUND;
 
+import kr.codeit.relaxtogether.dto.user.request.ChangePasswordRequest;
 import kr.codeit.relaxtogether.dto.user.request.EmailCheckRequest;
 import kr.codeit.relaxtogether.dto.user.request.JoinUserRequest;
 import kr.codeit.relaxtogether.dto.user.request.UpdateUserRequest;
@@ -46,5 +48,18 @@ public class UserService {
         User user = userRepository.findByEmail(email)
             .orElseThrow(() -> new ApiException(USER_NOT_FOUND));
         user.update(updateUserRequest.getCompanyName(), updateUserRequest.getProfileImage());
+    }
+
+    @Transactional
+    public void changePassword(ChangePasswordRequest passwordRequest) {
+        String newPassword = passwordRequest.getNewPassword();
+        String passwordCheck = passwordRequest.getPasswordCheck();
+        if (!newPassword.equals(passwordCheck)) {
+            throw new ApiException(PASSWORD_MISMATCH_ON_UPDATE);
+        }
+
+        User user = userRepository.findByEmail(passwordRequest.getEmail())
+            .orElseThrow(() -> new ApiException(USER_NOT_FOUND));
+        user.changePassword(passwordEncoder.encode(newPassword));
     }
 }
