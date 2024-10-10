@@ -8,6 +8,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMessage.RecipientType;
 import kr.codeit.relaxtogether.auth.jwt.JwtUtil;
+import kr.codeit.relaxtogether.dto.email.response.TokenVerificationResponse;
 import kr.codeit.relaxtogether.exception.ApiException;
 import kr.codeit.relaxtogether.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -40,12 +41,11 @@ public class EmailService {
                 "<h1><a href=" + "'http://localhost:8080/api/verify-link?token=" + token + "'>비밀번호 변경 링크</a></h1>";
             message.setText(content, "UTF-8", "html"); // 이메일 내용
         } catch (MessagingException e) {
-
         }
         javaMailSender.send(message); // 이메일 발송
     }
 
-    public boolean verifyLink(String token) {
+    public TokenVerificationResponse verifyToken(String token) {
         try {
             if (jwtUtil.ieExpired(token)) {
                 throw new ApiException(TOKEN_EXPIRED);
@@ -54,9 +54,12 @@ public class EmailService {
             throw new ApiException(TOKEN_EXPIRED);
         }
 
-        if (!userRepository.existsByEmail(jwtUtil.getEmail(token))) {
+        String email = jwtUtil.getEmail(token);
+        if (!userRepository.existsByEmail(email)) {
             throw new ApiException(USER_NOT_FOUND);
         }
-        return true;
+        return TokenVerificationResponse.builder()
+            .email(email)
+            .build();
     }
 }
