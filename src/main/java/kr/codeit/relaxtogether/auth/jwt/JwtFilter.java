@@ -74,7 +74,7 @@ public class JwtFilter extends OncePerRequestFilter {
             parser.parse("/api/auths/refresh-token"),
             parser.parse("/api/reviews/scores"),
             parser.parse("/api/send-email"),
-            parser.parse("/api/verify-link"),
+            parser.parse("/api/verify-token"),
             parser.parse("/h2-console/**"),
             parser.parse("/swagger-ui/**"),
             parser.parse("/v3/api-docs/**"),
