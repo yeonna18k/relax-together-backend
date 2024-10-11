@@ -79,7 +79,7 @@ public class UserController {
         userService.update(updateUserRequest, userDetails.getUsername());
         return ResponseEntity
             .status(HttpStatus.NO_CONTENT)
-            .body("success");
+            .build();
     }
 
     @Operation(summary = "로그인", description = "로그인을 진행합니다.")
@@ -172,7 +172,7 @@ public class UserController {
         userService.changePassword(passwordRequest);
         return ResponseEntity
             .status(HttpStatus.NO_CONTENT)
-            .body("success");
+            .build();
     }
 
     private void handleLogout(String refreshToken, HttpServletResponse response) {
