@@ -186,10 +186,10 @@ public class ReviewRepositoryCustomImpl implements ReviewRepositoryCustom {
             return gathering.type.eq(officeStretching).or(gathering.type.eq(mindfulness));
         }
         if (type.equals("오피스 스트레칭")) {
-            gathering.type.eq(officeStretching);
+            return gathering.type.eq(officeStretching);
         }
         if (type.equals("마인드풀니스")) {
-            gathering.type.eq(mindfulness);
+            return gathering.type.eq(mindfulness);
         }
         return gathering.type.eq(worcation);
     }

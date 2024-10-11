@@ -80,6 +80,7 @@ public class SecurityConfig {
                     .requestMatchers(POST, "/api/gatherings/*/join").authenticated()
                     .requestMatchers(PUT, "/api/gatherings/*/cancel").authenticated()
                     .requestMatchers(DELETE, "/api/gatherings/*/leave").authenticated()
+                    .requestMatchers(GET, "/api/gatherings/{gatheringId}/reviews").authenticated()
                     .anyRequest().authenticated()
             )
             .addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)

@@ -70,6 +70,7 @@ public class JwtFilter extends OncePerRequestFilter {
             parser.parse("/api/auths/change-password"),
             parser.parse("/api/gatherings/{gatheringId:\\d+}"),
             parser.parse("/api/gatherings/{gatheringId:\\d+}/participants"),
+            parser.parse("/api/gatherings/{gatheringId:\\d+}/reviews"),
             parser.parse("/api/auths/refresh-token"),
             parser.parse("/api/reviews/scores"),
             parser.parse("/api/send-email"),
