@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import kr.codeit.relaxtogether.auth.CustomUserDetails;
 import kr.codeit.relaxtogether.auth.jwt.JwtUtil;
+import kr.codeit.relaxtogether.dto.user.request.ChangePasswordRequest;
 import kr.codeit.relaxtogether.dto.user.request.EmailCheckRequest;
 import kr.codeit.relaxtogether.dto.user.request.JoinUserRequest;
 import kr.codeit.relaxtogether.dto.user.request.LoginRequest;
@@ -78,7 +79,7 @@ public class UserController {
         userService.update(updateUserRequest, userDetails.getUsername());
         return ResponseEntity
             .status(HttpStatus.NO_CONTENT)
-            .body("success");
+            .build();
     }
 
     @Operation(summary = "로그인", description = "로그인을 진행합니다.")
@@ -163,6 +164,15 @@ public class UserController {
             .body(JwtResponse.builder()
                 .accessToken(newAccessToken)
                 .build());
+    }
+
+    @Operation(summary = "비밀번호 분실 시, 비밀번호 변경", description = "비밀번호 분실 시에 새로운 비밀번호로 변경합니다.")
+    @PostMapping("/change-password")
+    public ResponseEntity<String> changePassword(@Valid @RequestBody ChangePasswordRequest passwordRequest) {
+        userService.changePassword(passwordRequest);
+        return ResponseEntity
+            .status(HttpStatus.NO_CONTENT)
+            .build();
     }
 
     private void handleLogout(String refreshToken, HttpServletResponse response) {

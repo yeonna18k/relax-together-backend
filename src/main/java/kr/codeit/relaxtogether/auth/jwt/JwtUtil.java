@@ -14,6 +14,7 @@ public class JwtUtil {
 
     private static final int ACCESS_TOKEN_EXPIRATION_TIME = 60 * 60 * 1000;
     private static final int REFRESH_TOKEN_EXPIRATION_TIME = 14 * 24 * 60 * 60 * 1000;
+    private static final int EMAIL_VERIFICATION_EXPIRATION_TIME = 5 * 60 * 1000;
 
     private SecretKey secretKey;
 
@@ -88,6 +89,15 @@ public class JwtUtil {
             .claim("email", getEmail(refreshToken))
             .issuedAt(new Date(System.currentTimeMillis()))
             .expiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION_TIME))
+            .signWith(secretKey)
+            .compact();
+    }
+
+    public String createEmailVerificationToken(String email) {
+        return Jwts.builder()
+            .claim("email", email)
+            .issuedAt(new Date(System.currentTimeMillis()))
+            .expiration(new Date(System.currentTimeMillis() + EMAIL_VERIFICATION_EXPIRATION_TIME))
             .signWith(secretKey)
             .compact();
     }
