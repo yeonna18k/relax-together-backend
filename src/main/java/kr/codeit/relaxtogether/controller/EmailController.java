@@ -7,7 +7,6 @@ import kr.codeit.relaxtogether.dto.email.response.TokenVerificationResponse;
 import kr.codeit.relaxtogether.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,7 +28,7 @@ public class EmailController {
     }
 
     @Operation(summary = "토큰 검증", description = "링크를 통해 넘어온 토큰을 검증합니다.")
-    @GetMapping("/verify-token")
+    @PostMapping("/verify-token")
     public ResponseEntity<TokenVerificationResponse> verifyToken(
         @RequestBody TokenVerificationRequest tokenVerificationRequest) {
         return ResponseEntity
