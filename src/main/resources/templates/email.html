@@ -1,0 +1,280 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--$-->
+<html dir="ltr" lang="ko">
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+  <meta name="x-apple-disable-message-reformatting"/>
+  <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+  />
+  <style>
+    .responsiveButton:hover {
+      background-color: #00A033 !important;
+    }
+
+    @media only screen and (max-width: 480px) {
+      .responsiveSection {
+        width: 100vw !important;
+        max-width: 100vw !important;
+        min-width: 100vw !important;
+        margin: 60px auto !important;
+        padding: 0 16px !important;
+      }
+
+      .responsiveTitle {
+        max-width: 235px !important;
+        margin: 0 0 35px !important;,
+      }
+
+      .responsiveText {
+        font-size: 14px !important;,
+      }
+
+      .responsiveButton {
+        margin: 25px auto !important;,
+      }
+    }
+  </style>
+</head>
+
+<body
+    style="
+      margin: 0 auto;
+      background-color: #fafafa;
+      font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    "
+>
+<table
+    align="center"
+    width="100%"
+    class="container"
+    border="0"
+    cellpadding="0"
+    cellspacing="0"
+    role="presentation"
+    style="max-width: 100vw; border: 1px solid #efefef; margin: 0 auto"
+>
+  <tbody>
+  <tr style="width: 100%">
+    <td>
+      <table
+          align="center"
+          width="100%"
+          border="0"
+          cellpadding="0"
+          cellspacing="0"
+          role="presentation"
+          style="
+                background: #ffffff;
+                border-bottom: 1px solid #efefef;
+                margin: 0 auto;
+              "
+      >
+        <tbody>
+        <tr>
+          <td>
+            <table
+                align="center"
+                width="100%"
+                border="0"
+                cellpadding="0"
+                cellspacing="0"
+                role="presentation"
+                style="width: 95px; padding: 18px 0; margin: 0 auto"
+            >
+              <tbody style="width: 100%">
+              <tr style="width: 100%">
+                <td
+                    data-id="__react-email-column"
+                    style="width: 20px"
+                >
+                  <img
+                      src='cid:logo-icon'
+                      alt="logo-icon"
+                      height="20"
+                      style="
+                                display: block;
+                                outline: none;
+                                border: none;
+                                text-decoration: none;
+                                margin: 0 7px 0 0;
+                              "
+                      width="20"
+                  />
+                </td>
+                <td
+                    data-id="__react-email-column"
+                    style="width: 68px"
+                >
+                  <img
+                      src='cid:logo-text'
+                      alt="logo-text"
+                      height="17"
+                      style="
+                                display: block;
+                                outline: none;
+                                border: none;
+                                text-decoration: none;
+                              "
+                      width="68"
+                  />
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      <table
+          align="center"
+          width="100%"
+          class="responsiveSection"
+          border="0"
+          cellpadding="0"
+          cellspacing="0"
+          role="presentation"
+          style="
+                max-width: 410px;
+                min-width: 410px;
+                width: 100%;
+                margin: 100px auto;
+              "
+      >
+        <tbody>
+        <tr>
+          <td>
+            <p
+                class="responsiveTitle"
+                style="
+                        font-size: 30px;
+                        line-height: 42px;
+                        margin: 0 0 45px;
+                        font-weight: 700;
+                        color: #222222;
+                      "
+            >
+              비밀번호 재설정 메일입니다.
+            </p>
+            <p
+                class="responsiveText"
+                style="
+                        font-size: 16px;
+                        line-height: 24px;
+                        margin: 5px 0;
+                        font-weight: 500;
+                        color: #434343;
+                      "
+            >
+              안녕하세요. <span th:text="${userName}">이름</span>님
+            </p>
+            <p
+                class="responsiveText"
+                style="
+                        font-size: 16px;
+                        line-height: 24px;
+                        margin: 5px 0;
+                        font-weight: 500;
+                        color: #434343;
+                      "
+            >
+              같이달램을 이용해 주셔서 감사합니다.
+            </p>
+            <p
+                class="responsiveText"
+                style="
+                        font-size: 16px;
+                        line-height: 24px;
+                        margin: 5px 0;
+                        font-weight: 500;
+                        color: #434343;
+                      "
+            >
+              비밀번호를 재설정하시려면 아래 버튼을 클릭해 주세요.
+            </p>
+            <p
+                class="responsiveText"
+                style="
+                        font-size: 16px;
+                        line-height: 24px;
+                        margin: 5px 0;
+                        font-weight: 500;
+                        color: #434343;
+                      "
+            >
+              버튼을 클릭하면 비밀번호 재설정 페이지로 이동합니다.
+            </p>
+            <a
+                class="responsiveButton"
+                th:href="@{${resetLink}}"
+                style="
+                        line-height: 100%;
+                        text-decoration: none;
+                        display: block;
+                        max-width: 100%;
+                        background-color: #0aaf3b;
+                        border-radius: 6px;
+                        color: #fff;
+                        font-size: 15px;
+                        text-align: center;
+                        width: 300px;
+                        padding: 10px 0px 10px 0px;
+                        margin: 45px auto;
+                      "
+                target="_blank"
+            ><span
+            ><!--[if mso
+                          ]><i
+                style="mso-font-width: NaN%; mso-text-raise: 15"
+                hidden
+            ></i><![endif]--></span
+            ><span
+                style="
+                          max-width: 100%;
+                          display: inline-block;
+                          line-height: 120%;
+                        "
+            >비밀번호 재설정하기</span
+            ><span
+            ><!--[if mso
+                          ]><i style="mso-font-width: NaN%" hidden>&#8203;</i><!
+                        [endif]--></span
+            ></a
+            >
+            <p
+                class="responsiveText"
+                style="
+                        font-size: 16px;
+                        line-height: 24px;
+                        margin: 5px 0;
+                        font-weight: 500;
+                        color: #434343;
+                      "
+            >
+              만약 비밀번호 변경을 원하지 않거나 본인이 요청하지 않은
+              경우, 이 이메일을 무시하거나 삭제해 주시기 바랍니다.
+            </p>
+            <p
+                class="responsiveText"
+                style="
+                        font-size: 16px;
+                        line-height: 24px;
+                        margin: 5px 0;
+                        font-weight: 500;
+                        color: #434343;
+                      "
+            >
+              감사합니다.
+            </p>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </td>
+  </tr>
+  </tbody>
+</table>
+</body>
+</html>
