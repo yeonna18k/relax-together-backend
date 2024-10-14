@@ -7,7 +7,7 @@ import static kr.codeit.relaxtogether.exception.ErrorCode.USER_NOT_FOUND;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import java.util.Random;
+import java.security.SecureRandom;
 import kr.codeit.relaxtogether.auth.jwt.JwtUtil;
 import kr.codeit.relaxtogether.dto.email.response.TokenVerificationResponse;
 import kr.codeit.relaxtogether.entity.User;
@@ -83,7 +83,8 @@ public class EmailService {
             throw new ApiException(USER_NOT_FOUND);
         }
 
-        String code = String.valueOf(new Random().nextInt(999999));
+        SecureRandom random = new SecureRandom();
+        String code = String.format("%06d", random.nextInt(999999));
         tokenForCode = jwtUtil.createEmailVerificationTokenForSignup(code);
 
         Context context = new Context();
