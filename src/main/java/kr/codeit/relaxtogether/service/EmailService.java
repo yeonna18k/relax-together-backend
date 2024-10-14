@@ -1,5 +1,6 @@
 package kr.codeit.relaxtogether.service;
 
+import static kr.codeit.relaxtogether.exception.ErrorCode.EMAIL_ALREADY_EXISTS;
 import static kr.codeit.relaxtogether.exception.ErrorCode.INVALID_VERIFICATION_CODE;
 import static kr.codeit.relaxtogether.exception.ErrorCode.TOKEN_EXPIRED;
 import static kr.codeit.relaxtogether.exception.ErrorCode.USER_NOT_FOUND;
@@ -79,8 +80,8 @@ public class EmailService {
     }
 
     public void sendEmailForSignup(String email) {
-        if (!userRepository.existsByEmail(email)) {
-            throw new ApiException(USER_NOT_FOUND);
+        if (userRepository.existsByEmail(email)) {
+            throw new ApiException(EMAIL_ALREADY_EXISTS);
         }
 
         SecureRandom random = new SecureRandom();
