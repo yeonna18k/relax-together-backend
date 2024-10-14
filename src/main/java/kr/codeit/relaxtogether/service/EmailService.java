@@ -28,7 +28,7 @@ public class EmailService {
     private final SpringTemplateEngine templateEngine;
     private final JavaMailSender mailSender;
 
-    public void sendEmail(String email) {
+    public void sendEmailForPasswordChange(String email) {
         User user = userRepository.findByEmail(email)
             .orElseThrow(() -> new ApiException(USER_NOT_FOUND));
 

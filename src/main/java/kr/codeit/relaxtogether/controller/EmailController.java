@@ -20,9 +20,9 @@ public class EmailController {
     private final EmailService emailService;
 
     @Operation(summary = "이메일 발송", description = "비밀번호 변경 링크를 담은 이메일을 발송합니다.")
-    @PostMapping("/send-email")
-    public ResponseEntity<String> mailSend(@RequestBody SendEmailRequest sendEmailRequest) {
-        emailService.sendEmail(sendEmailRequest.getEmail());
+    @PostMapping("/email/password-change")
+    public ResponseEntity<String> sendEmailForPasswordChange(@RequestBody SendEmailRequest sendEmailRequest) {
+        emailService.sendEmailForPasswordChange(sendEmailRequest.getEmail());
         return ResponseEntity
             .ok("success");
     }
