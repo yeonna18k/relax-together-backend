@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtUtil {
 
-    private static final int ACCESS_TOKEN_EXPIRATION_TIME = 60 * 1000;
+    private static final int ACCESS_TOKEN_EXPIRATION_TIME = 60 * 60 * 1000;
     private static final int REFRESH_TOKEN_EXPIRATION_TIME = 14 * 24 * 60 * 60 * 1000;
     private static final int EMAIL_VERIFICATION_FOR_PASSWORD_CHANGE_EXPIRATION_TIME = 5 * 60 * 1000;
     private static final int EMAIL_VERIFICATION_FOR_SIGNUP_EXPIRATION_TIME = 15 * 60 * 1000;
