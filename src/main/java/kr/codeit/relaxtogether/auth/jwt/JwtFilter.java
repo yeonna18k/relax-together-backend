@@ -14,6 +14,7 @@ import kr.codeit.relaxtogether.auth.CustomUserDetails;
 import kr.codeit.relaxtogether.entity.User;
 import kr.codeit.relaxtogether.exception.ApiException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.server.PathContainer;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,6 +23,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.pattern.PathPattern;
 import org.springframework.web.util.pattern.PathPatternParser;
 
+@Slf4j
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
@@ -30,6 +32,7 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
         throws ServletException, IOException {
+        log.info("Request URI: ({}) {}", request.getMethod(), request.getRequestURI());
         if (isPublicPattern(request.getRequestURI(), request.getMethod())) {
             filterChain.doFilter(request, response);
             return;
@@ -37,6 +40,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String authorization = request.getHeader("Authorization");
         if (authorization == null || !authorization.startsWith("Bearer ")) {
+            log.info("Invalid Token");
             throw new ApiException(AUTHENTICATION_FAIL);
         }
         String accessToken = authorization.split(" ")[1];
@@ -44,8 +48,10 @@ public class JwtFilter extends OncePerRequestFilter {
             throw new ApiException(TOKEN_EXPIRED);
         }
 
+        String email = jwtUtil.getEmail(accessToken);
+        log.info("Login Email: {}", email);
         User user = User.builder()
-            .email(jwtUtil.getEmail(accessToken))
+            .email(email)
             .build();
         Authentication authToken = new UsernamePasswordAuthenticationToken(new CustomUserDetails(user), null,
             Collections.emptyList());
