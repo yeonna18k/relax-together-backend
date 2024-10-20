@@ -23,6 +23,7 @@ import kr.codeit.relaxtogether.exception.ApiException;
 import kr.codeit.relaxtogether.repository.JwtTokenRepository;
 import kr.codeit.relaxtogether.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -37,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/api/auths")
 @RestController
@@ -110,12 +112,18 @@ public class UserController {
     @Operation(summary = "로그아웃", description = "로그아웃을 진행합니다.")
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
+        log.info("Request URI: ({}) {}", request.getMethod(), request.getRequestURI());
+
         String authorization = request.getHeader("Authorization");
+        log.info("Authorization: {}", authorization);
+
         if (authorization == null || !authorization.startsWith("Bearer ")) {
+            log.info("Invalid Token");
             throw new ApiException(AUTHENTICATION_FAIL);
         }
         String accessToken = authorization.split(" ")[1];
         try {
+            log.info("Access Token: {}", accessToken);
             if (jwtUtil.ieExpired(accessToken)) {
                 throw new ApiException(TOKEN_EXPIRED);
             }

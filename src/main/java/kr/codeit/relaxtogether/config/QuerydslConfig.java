@@ -1,4 +1,4 @@
-package kr.codeit.relaxtogether.auth.jwt;
+package kr.codeit.relaxtogether.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
