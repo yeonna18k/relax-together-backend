@@ -94,7 +94,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(
             List.of("http://localhost:3000", "https://dev.relax-together.shop", "https://relax-together.web.app",
-                "https://relax-together.firebaseapp.com/"));
+                "https://relax-together.firebaseapp.com/", "https://relax-together-front.vercel.app/"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setExposedHeaders(List.of("Authorization", "Refresh"));
